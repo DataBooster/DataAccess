@@ -6,22 +6,22 @@ namespace DbParallel.DataAccess
 {
 	public class ParallelExecuteWaitHandle : IDisposable
 	{
-		private ManualResetEventSlim _CompleteEvent;
-		private int _ExecutingCount;
+		protected ManualResetEventSlim _CompleteEvent;
+		protected int _ExecutingCount;
 
-		public ParallelExecuteWaitHandle()
+		public ParallelExecuteWaitHandle(bool initialState = true)
 		{
-			_CompleteEvent = new ManualResetEventSlim(true);
+			_CompleteEvent = new ManualResetEventSlim(initialState);
 			_ExecutingCount = 0;
 		}
 
-		public void EnterTask()
+		protected virtual void EnterTask()
 		{
 			if (Interlocked.Increment(ref _ExecutingCount) == 1)
 				_CompleteEvent.Reset();
 		}
 
-		public void ExitTask()
+		protected virtual void ExitTask()
 		{
 			if (Interlocked.Decrement(ref _ExecutingCount) == 0)
 				_CompleteEvent.Set();
