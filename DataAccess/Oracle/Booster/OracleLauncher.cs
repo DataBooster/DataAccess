@@ -12,8 +12,8 @@ namespace DbParallel.DataAccess.Oracle.Booster
 	{
 		private const int _MinMultipleRockets = 3;
 		private const int _MinBulkSize = 1000;
-		private const int _DefaultMultipleRockets = 8;
-		private const int _DefaultBulkSize = 1000000;
+		private const int _DefaultMultipleRockets = 6;
+		private const int _DefaultBulkSize = 500000;
 		private const int _CommandTimeout = 3600;
 
 		private readonly BlockingCollection<OracleRocket> _FreeQueue;
