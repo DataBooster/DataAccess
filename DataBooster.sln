@@ -3,6 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{0BD1299C-6AE3-407C-844D-F69B90037846}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{3FEA62E2-7223-4577-809D-D5561B6299C8}"
+	ProjectSection(SolutionItems) = preProject
+		License.txt = License.txt
+		Notice.txt = Notice.txt
+		Documents\wikipage_home.htm = Documents\wikipage_home.htm
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 2
