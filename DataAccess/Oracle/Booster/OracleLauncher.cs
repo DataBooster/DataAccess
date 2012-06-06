@@ -88,7 +88,7 @@ namespace DbParallel.DataAccess.Oracle.Booster
 			return dbCommand;
 		}
 
-		public void AddRow(params object[] values)
+		public void Post(params object[] values)
 		{
 			lock (_FillingLock)
 			{
@@ -106,7 +106,7 @@ namespace DbParallel.DataAccess.Oracle.Booster
 			_FreeQueue.Add(rocket);
 		}
 
-		public void CompleteAdding()
+		public void Complete()
 		{
 			lock (_FillingLock)
 			{
@@ -119,7 +119,7 @@ namespace DbParallel.DataAccess.Oracle.Booster
 		{
 			if (_Disposed == false)
 			{
-				CompleteAdding();
+				Complete();
 
 				foreach (OracleRocket rocket in _FreeQueue)
 					rocket.Dispose();
