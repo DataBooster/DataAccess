@@ -13,6 +13,7 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 
+	This is a derivative library of dbParallel project http://dbparallel.codeplex.com.
 	The latest version of the source code can be obtained at the project distribution point:
 	
 		http://databooster.codeplex.com
