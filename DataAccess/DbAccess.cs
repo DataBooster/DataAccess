@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.Common;
 using System.Configuration;
+using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
@@ -143,6 +144,29 @@ namespace DbParallel.DataAccess
 		public void ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<T> readEntity) where T : new()
 		{
 			ExecuteReader<T>(commandText, 0, CommandType.StoredProcedure, parametersBuilder, null, readEntity);
+		}
+
+		public IEnumerable<T> ExecuteReader<T>(string commandText, int commandTimeout, CommandType commandType,
+			Action<DbParameterBuilder> parametersBuilder, Action<DbFieldMap<T>> resultMap = null) where T : new()
+		{
+			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder))
+			{
+				DbFieldMap<T> map = new DbFieldMap<T>();
+
+				if (resultMap == null)
+					map.AddAllPropertiesOrFields();
+				else
+					resultMap(map);
+
+				while (reader.Read())
+					yield return map.ReadNew(reader);
+			}
+		}
+
+		public IEnumerable<T> ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder,
+			Action<DbFieldMap<T>> resultMap = null) where T : new()
+		{
+			return ExecuteReader<T>(commandText, 0, CommandType.StoredProcedure, parametersBuilder, resultMap);
 		}
 
 		public int ExecuteNonQuery(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
