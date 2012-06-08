@@ -10,6 +10,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		Documents\wikipage_home.htm = Documents\wikipage_home.htm
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UtilityScripts", "UtilityScripts", "{6678001D-3677-4C0C-963B-9B04AE215E8B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{F2F76E08-6590-4F62-A2D3-A72F3A80A780}"
+	ProjectSection(SolutionItems) = preProject
+		UtilityScripts\Oracle\UTL_CS-Example.tst = UtilityScripts\Oracle\UTL_CS-Example.tst
+		UtilityScripts\Oracle\UTL_CS.pck = UtilityScripts\Oracle\UTL_CS.pck
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 2
@@ -32,5 +40,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F2F76E08-6590-4F62-A2D3-A72F3A80A780} = {6678001D-3677-4C0C-963B-9B04AE215E8B}
 	EndGlobalSection
 EndGlobal
