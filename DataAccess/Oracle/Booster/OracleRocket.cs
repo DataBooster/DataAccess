@@ -15,7 +15,8 @@ namespace DbParallel.DataAccess.Booster.Oracle
 		private Array[] _AssociativeArrayValues;
 		private bool _AssociativeArrayInitialized;
 
-		public OracleRocket(OracleCommand command, int[] associativeArrayParameterIds, int bulkSize) : base(bulkSize)
+		public OracleRocket(OracleCommand command, int[] associativeArrayParameterIds, int bulkSize)
+			: base(bulkSize)
 		{
 			_Command = command;
 

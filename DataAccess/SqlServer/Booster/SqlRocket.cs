@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Diagnostics;
 using System.Data.SqlClient;
 
@@ -13,7 +12,8 @@ namespace DbParallel.DataAccess.Booster.SqlServer
 		private DataTable _BufferTable;
 		private bool _BufferTableInitialized;
 
-		public SqlRocket(SqlBulkCopy bulkCopy, SqlConnection dbConnection, int bulkSize) : base(bulkSize)
+		public SqlRocket(SqlBulkCopy bulkCopy, SqlConnection dbConnection, int bulkSize)
+			: base(bulkSize)
 		{
 			_BulkCopy = bulkCopy;
 			_Connection = dbConnection;
@@ -24,10 +24,10 @@ namespace DbParallel.DataAccess.Booster.SqlServer
 
 		public override bool AddRow(params object[] values)
 		{
-			Debug.Assert(values.Length == _BufferTable.Columns.Count, "The number of input parameters does not match with initial columns!");
-
 			if (_FillingCount == 0)
 				InitializeBufferTable(values);
+			else
+				Debug.Assert(values.Length == _BufferTable.Columns.Count, "The number of input parameters does not match with initial columns!");
 
 			for (int i = 0; i < values.Length; i++)
 				_BufferTable.Rows.Add(values);
