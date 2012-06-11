@@ -2,27 +2,13 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Collections.Concurrent;
 using System.Configuration;
 using DDTek.Oracle;
 
-namespace DbParallel.DataAccess.Oracle.Booster
+namespace DbParallel.DataAccess.Booster.Oracle
 {
-	public class OracleLauncher : IDisposable
+	public class OracleLauncher : DbLauncher
 	{
-		private const int _MinMultipleRockets = 3;
-		private const int _MinBulkSize = 1000;
-		private const int _DefaultMultipleRockets = 6;
-		private const int _DefaultBulkSize = 500000;
-		private const int _CommandTimeout = 3600;
-
-		private readonly BlockingCollection<OracleRocket> _FreeQueue;
-		private OracleRocket _FillingRocket;
-		private object _FillingLock;
-		private ParallelExecuteWaitHandle _ExecutingHandle;
-
-		private bool _Disposed = false;
-
 		public OracleLauncher(DbProviderFactory dbProviderFactory, string connectionString, string storedProcedure, Action<DbParameterBuilder> parametersBuilder,
 			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
 		{
@@ -37,16 +23,12 @@ namespace DbParallel.DataAccess.Oracle.Booster
 			OracleCommand dbCommand = CreateCommand(dbProviderFactory, connectionString, storedProcedure, parametersBuilder, commandTimeout);
 			associativeArrayParameterIds = OracleRocket.SearchAssociativeArrayParameters(dbCommand.Parameters);
 			_FillingRocket = new OracleRocket(dbCommand, associativeArrayParameterIds, bulkSize);
-			_FreeQueue = new BlockingCollection<OracleRocket>();
 
 			for (int i = 1; i < multipleRockets; i++)
 			{
 				dbCommand = CreateCommand(dbProviderFactory, connectionString, storedProcedure, parametersBuilder, commandTimeout);
 				_FreeQueue.Add(new OracleRocket(dbCommand, associativeArrayParameterIds, bulkSize));
 			}
-
-			_FillingLock = new object();
-			_ExecutingHandle = new ParallelExecuteWaitHandle();
 		}
 
 		public OracleLauncher(string providerName, string connectionString, string storedProcedure, Action<DbParameterBuilder> parametersBuilder,
@@ -87,54 +69,10 @@ namespace DbParallel.DataAccess.Oracle.Booster
 
 			return dbCommand;
 		}
-
-		public void Post(params object[] values)
-		{
-			lock (_FillingLock)
-			{
-				if (_FillingRocket.AddRow(values))
-				{
-					_ExecutingHandle.StartNewTask(LaunchRocket, _FillingRocket);
-					_FillingRocket = _FreeQueue.Take();
-				}
-			}
-		}
-
-		private void LaunchRocket(OracleRocket rocket)
-		{
-			rocket.Launch();
-			_FreeQueue.Add(rocket);
-		}
-
-		public void Complete()
-		{
-			lock (_FillingLock)
-			{
-				_FillingRocket.Launch();
-				_ExecutingHandle.Wait();
-			}
-		}
-
-		public void Dispose()
-		{
-			if (_Disposed == false)
-			{
-				Complete();
-
-				foreach (OracleRocket rocket in _FreeQueue)
-					rocket.Dispose();
-
-				if (_FillingRocket != null)
-					_FillingRocket.Dispose();
-
-				_ExecutingHandle.Dispose();
-
-				_Disposed = true;
-			}
-		}
 	}
 }
 #endif
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //

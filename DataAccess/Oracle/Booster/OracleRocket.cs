@@ -2,31 +2,26 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DDTek.Oracle;
 
-namespace DbParallel.DataAccess.Oracle.Booster
+namespace DbParallel.DataAccess.Booster.Oracle
 {
-	class OracleRocket : IDisposable
+	class OracleRocket : DbRocket
 	{
 		private readonly OracleCommand _Command;
-		private readonly int _BulkSize;
 
-		#region Filling Control
 		private readonly int[] _AssociativeArrayParameterIds;
 		private Array[] _AssociativeArrayValues;
 		private bool _AssociativeArrayInitialized;
-		private int _FillingCount;
-		#endregion
 
-		public OracleRocket(OracleCommand command, int[] associativeArrayParameterIds, int bulkSize)
+		public OracleRocket(OracleCommand command, int[] associativeArrayParameterIds, int bulkSize) : base(bulkSize)
 		{
 			_Command = command;
-			_BulkSize = bulkSize;
 
 			_AssociativeArrayParameterIds = associativeArrayParameterIds;
 			_AssociativeArrayValues = new Array[associativeArrayParameterIds.Length];
 			_AssociativeArrayInitialized = false;
-			_FillingCount = 0;
 		}
 
 		public OracleRocket(OracleCommand command, int bulkSize)
@@ -45,9 +40,9 @@ namespace DbParallel.DataAccess.Oracle.Booster
 			return associativeArrayParameterList.ToArray();
 		}
 
-		public bool AddRow(params object[] values)
+		public override bool AddRow(params object[] values)
 		{
-			System.Diagnostics.Debug.Assert(values.Length == _AssociativeArrayParameterIds.Length, "The number of input parameters does not match with Associative Array Parameters!");
+			Debug.Assert(values.Length == _AssociativeArrayParameterIds.Length, "The number of input parameters does not match with Associative Array Parameters!");
 
 			if (_FillingCount == 0)
 				InitializeAssociativeArray(values);
@@ -71,7 +66,7 @@ namespace DbParallel.DataAccess.Oracle.Booster
 			}
 		}
 
-		public int Launch()
+		public override int Launch()
 		{
 			int fillingCount = _FillingCount;
 
@@ -107,7 +102,7 @@ namespace DbParallel.DataAccess.Oracle.Booster
 			return newArray;
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			Launch();
 
@@ -117,6 +112,7 @@ namespace DbParallel.DataAccess.Oracle.Booster
 	}
 }
 #endif
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
