@@ -44,8 +44,11 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Booster\DbLauncher.cs" />
+    <Compile Include="Booster\DbRocket.cs" />
     <Compile Include="DbAccess.cs" />
     <Compile Include="DbExtensions.cs" />
     <Compile Include="DbFieldMap.cs" />
@@ -57,13 +60,13 @@
     <Compile Include="Oracle\DbParameterBuilder.partial.cs" />
     <Compile Include="ParallelExecuteWaitHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServer\Booster\SqlLauncher.cs" />
+    <Compile Include="SqlServer\Booster\SqlRocket.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="SqlServer\" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="Booster\Booster.cd" />
     <None Include="DataAccess.cd" />
-    <None Include="Oracle\Booster\OracleBooster.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

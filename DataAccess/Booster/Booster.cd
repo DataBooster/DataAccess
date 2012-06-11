@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DbParallel.DataAccess.Booster.DbLauncher">
+    <Position X="1" Y="1" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AkEAAAAACCEAAAJAAEAAACAACEAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Booster\DbLauncher.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DbParallel.DataAccess.Booster.DbRocket">
+    <Position X="8" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQCAAAAAAACAAAAAAAAAAAAAAEAAAAAAAEAA=</HashCode>
+      <FileName>Booster\DbRocket.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DbParallel.DataAccess.Booster.SqlServer.SqlLauncher">
+    <Position X="3.5" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>SqlServer\Booster\SqlLauncher.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DbParallel.DataAccess.Booster.SqlServer.SqlRocket">
+    <Position X="9.25" Y="4.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAACQCwAAAAAAAAAAAAAAAAAQAAAEAAAAAAAAAA=</HashCode>
+      <FileName>SqlServer\Booster\SqlRocket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DbParallel.DataAccess.Booster.Oracle.OracleLauncher">
+    <Position X="0.75" Y="5.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Oracle\Booster\OracleLauncher.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DbParallel.DataAccess.Booster.Oracle.OracleRocket">
+    <Position X="6.25" Y="4.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACQDCAAAAAAAAAABAAAAAAAACAEAAgAACAAAA=</HashCode>
+      <FileName>Oracle\Booster\OracleRocket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
