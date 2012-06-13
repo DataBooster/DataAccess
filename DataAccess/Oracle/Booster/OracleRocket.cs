@@ -13,16 +13,18 @@ namespace DbParallel.DataAccess.Booster.Oracle
 
 		private readonly int[] _AssociativeArrayParameterIds;
 		private Array[] _AssociativeArrayValues;
-		private bool _AssociativeArrayInitialized;
 
 		public OracleRocket(OracleCommand command, int[] associativeArrayParameterIds, int bulkSize)
 			: base(bulkSize)
 		{
+			OracleParameterCollection parameters = command.Parameters;
 			_Command = command;
 
 			_AssociativeArrayParameterIds = associativeArrayParameterIds;
 			_AssociativeArrayValues = new Array[associativeArrayParameterIds.Length];
-			_AssociativeArrayInitialized = false;
+
+			for (int i = 0; i < _AssociativeArrayParameterIds.Length; i++)
+				parameters[_AssociativeArrayParameterIds[i]].Value = _AssociativeArrayValues[i] = new IConvertible[_BulkSize];
 		}
 
 		public OracleRocket(OracleCommand command, int bulkSize)
@@ -41,30 +43,14 @@ namespace DbParallel.DataAccess.Booster.Oracle
 			return associativeArrayParameterList.ToArray();
 		}
 
-		public override bool AddRow(params object[] values)
+		public override bool AddRow(params IConvertible[] values)
 		{
 			Debug.Assert(values.Length == _AssociativeArrayParameterIds.Length, "The number of input parameters does not match with Associative Array Parameters!");
 
-			if (_FillingCount == 0)
-				InitializeAssociativeArray(values);
-
 			for (int i = 0; i < _AssociativeArrayParameterIds.Length; i++)
-				_AssociativeArrayValues[i].SetValue(values[i], _FillingCount);
+				_AssociativeArrayValues[i].SetValue(values[i] ?? DBNull.Value, _FillingCount);
 
 			return (++_FillingCount == _BulkSize);
-		}
-
-		private void InitializeAssociativeArray(object[] values)
-		{
-			if (_AssociativeArrayInitialized == false)
-			{
-				OracleParameterCollection parameters = _Command.Parameters;
-
-				for (int i = 0; i < _AssociativeArrayParameterIds.Length; i++)
-					parameters[_AssociativeArrayParameterIds[i]].Value = _AssociativeArrayValues[i] = Array.CreateInstance(values[i].GetType(), _BulkSize);
-
-				_AssociativeArrayInitialized = true;
-			}
 		}
 
 		public override int Launch()

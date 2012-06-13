@@ -27,7 +27,7 @@ namespace DbParallel.DataAccess.Booster
 			_ExecutingHandle = new ParallelExecuteWaitHandle();
 		}
 
-		public void Post(params object[] values)
+		public void Post(params IConvertible[] values)
 		{
 			lock (_FillingLock)
 			{

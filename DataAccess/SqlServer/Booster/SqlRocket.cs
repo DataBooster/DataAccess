@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Diagnostics;
 using System.Data.SqlClient;
 
@@ -22,28 +23,31 @@ namespace DbParallel.DataAccess.Booster.SqlServer
 			_BufferTableInitialized = false;
 		}
 
-		public override bool AddRow(params object[] values)
+		public override bool AddRow(params IConvertible[] values)
 		{
 			if (_FillingCount == 0)
-				InitializeBufferTable(values);
+				InitializeBufferTable(values.Length);
 			else
 				Debug.Assert(values.Length == _BufferTable.Columns.Count, "The number of input parameters does not match with initial columns!");
 
 			for (int i = 0; i < values.Length; i++)
-				_BufferTable.Rows.Add(values);
+				if (values[i] == null)
+					values[i] = DBNull.Value;
+
+			_BufferTable.Rows.Add(values);
 
 			return (++_FillingCount == _BulkSize);
 		}
 
-		private void InitializeBufferTable(object[] values)
+		private void InitializeBufferTable(int columns)
 		{
 			if (_BufferTableInitialized == false)
 			{
 				if (_BulkCopy.ColumnMappings.Count > 0)
-					Debug.Assert(values.Length == _BulkCopy.ColumnMappings.Count, "The number of input parameters does not match with column mappings!");
+					Debug.Assert(columns == _BulkCopy.ColumnMappings.Count, "The number of input parameters does not match with column mappings!");
 
-				for (int i = 0; i < values.Length; i++)
-					_BufferTable.Columns.Add(null, values[i].GetType());
+				for (int i = 0; i < columns; i++)
+					_BufferTable.Columns.Add(null, typeof(IConvertible));
 
 				_BufferTableInitialized = true;
 			}

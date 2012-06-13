@@ -13,7 +13,7 @@ namespace DbParallel.DataAccess.Booster
 			_FillingCount = 0;
 		}
 
-		public abstract bool AddRow(params object[] values);
+		public abstract bool AddRow(params IConvertible[] values);
 		public abstract int Launch();
 
 		public abstract void Dispose();
