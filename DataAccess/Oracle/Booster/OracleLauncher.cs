@@ -1,15 +1,17 @@
 ﻿#if ORACLE
 using System;
 using System.Data;
-using System.Data.Common;
-using System.Configuration;
+#if DATADIRECT
 using DDTek.Oracle;
+#else // ODP.NET
+using Oracle.DataAccess.Client;
+#endif
 
 namespace DbParallel.DataAccess.Booster.Oracle
 {
 	public class OracleLauncher : DbLauncher
 	{
-		public OracleLauncher(DbProviderFactory dbProviderFactory, string connectionString, string storedProcedure, Action<DbParameterBuilder> parametersBuilder,
+		public OracleLauncher(string connectionString, string storedProcedure, Action<DbParameterBuilder> parametersBuilder,
 			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
 		{
 			int[] associativeArrayParameterIds;
@@ -20,43 +22,21 @@ namespace DbParallel.DataAccess.Booster.Oracle
 			if (bulkSize < _MinBulkSize)
 				bulkSize = _MinBulkSize;
 
-			OracleCommand dbCommand = CreateCommand(dbProviderFactory, connectionString, storedProcedure, parametersBuilder, commandTimeout);
+			OracleCommand dbCommand = CreateCommand(connectionString, storedProcedure, parametersBuilder, commandTimeout);
 			associativeArrayParameterIds = OracleRocket.SearchAssociativeArrayParameters(dbCommand.Parameters);
 			_FillingRocket = new OracleRocket(dbCommand, associativeArrayParameterIds, bulkSize);
 
 			for (int i = 1; i < multipleRockets; i++)
 			{
-				dbCommand = CreateCommand(dbProviderFactory, connectionString, storedProcedure, parametersBuilder, commandTimeout);
+				dbCommand = CreateCommand(connectionString, storedProcedure, parametersBuilder, commandTimeout);
 				_FreeQueue.Add(new OracleRocket(dbCommand, associativeArrayParameterIds, bulkSize));
 			}
 		}
 
-		public OracleLauncher(string providerName, string connectionString, string storedProcedure, Action<DbParameterBuilder> parametersBuilder,
-			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
-			: this(DbProviderFactories.GetFactory(providerName), connectionString,
-			storedProcedure, parametersBuilder, multipleRockets, bulkSize, commandTimeout)
+		private static OracleCommand CreateCommand(string connectionString, string storedProcedure,
+			Action<DbParameterBuilder> parametersBuilder, int commandTimeout)
 		{
-		}
-
-		public OracleLauncher(ConnectionStringSettings connSetting, string storedProcedure, Action<DbParameterBuilder> parametersBuilder,
-			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
-			: this(DbProviderFactories.GetFactory(connSetting.ProviderName), connSetting.ConnectionString,
-			storedProcedure, parametersBuilder, multipleRockets, bulkSize, commandTimeout)
-		{
-		}
-
-		public OracleLauncher(string connectionStringKey, string storedProcedure, Action<DbParameterBuilder> parametersBuilder,
-			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
-			: this(ConfigurationManager.ConnectionStrings[connectionStringKey],
-			storedProcedure, parametersBuilder, multipleRockets, bulkSize, commandTimeout)
-		{
-		}
-
-		private static OracleCommand CreateCommand(DbProviderFactory dbProviderFactory, string connectionString,
-			string storedProcedure, Action<DbParameterBuilder> parametersBuilder, int commandTimeout)
-		{
-			OracleConnection dbConnection = dbProviderFactory.CreateConnection() as OracleConnection;
-			dbConnection.ConnectionString = connectionString;
+			OracleConnection dbConnection = new OracleConnection(connectionString);
 
 			OracleCommand dbCommand = dbConnection.CreateCommand();
 			dbCommand.CommandType = CommandType.StoredProcedure;

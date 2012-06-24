@@ -3,7 +3,11 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if DATADIRECT
 using DDTek.Oracle;
+#else // ODP.NET
+using Oracle.DataAccess.Client;
+#endif
 
 namespace DbParallel.DataAccess.Booster.Oracle
 {
