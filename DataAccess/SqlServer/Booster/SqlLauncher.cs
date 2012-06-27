@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Data.Common;
-using System.Configuration;
 using System.Data.SqlClient;
 
 namespace DbParallel.DataAccess.Booster.SqlServer
 {
 	public class SqlLauncher : DbLauncher
 	{
-		public SqlLauncher(DbProviderFactory dbProviderFactory, string connectionString, string destinationTableName, Action<SqlBulkCopyColumnMappingCollection> columnMappings = null,
+		public SqlLauncher(string connectionString, string destinationTableName, Action<SqlBulkCopyColumnMappingCollection> columnMappings = null,
 			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
 		{
 			if (multipleRockets < _MinMultipleRockets)
@@ -17,42 +15,20 @@ namespace DbParallel.DataAccess.Booster.SqlServer
 				bulkSize = _MinBulkSize;
 
 			SqlConnection dbConnection;
-			SqlBulkCopy bulkCopy = CreateBulkCopy(dbProviderFactory, connectionString, out dbConnection, destinationTableName, columnMappings, commandTimeout);
+			SqlBulkCopy bulkCopy = CreateBulkCopy(connectionString, out dbConnection, destinationTableName, columnMappings, commandTimeout);
 			_FillingRocket = new SqlRocket(bulkCopy, dbConnection, bulkSize);
 
 			for (int i = 1; i < multipleRockets; i++)
 			{
-				bulkCopy = CreateBulkCopy(dbProviderFactory, connectionString, out dbConnection, destinationTableName, columnMappings, commandTimeout);
+				bulkCopy = CreateBulkCopy(connectionString, out dbConnection, destinationTableName, columnMappings, commandTimeout);
 				_FreeQueue.Add(new SqlRocket(bulkCopy, dbConnection, bulkSize));
 			}
 		}
 
-		public SqlLauncher(string providerName, string connectionString, string destinationTableName, Action<SqlBulkCopyColumnMappingCollection> columnMappings = null,
-			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
-			: this(DbProviderFactories.GetFactory(providerName), connectionString,
-			destinationTableName, columnMappings, multipleRockets, bulkSize, commandTimeout)
-		{
-		}
-
-		public SqlLauncher(ConnectionStringSettings connSetting, string destinationTableName, Action<SqlBulkCopyColumnMappingCollection> columnMappings = null,
-			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
-			: this(DbProviderFactories.GetFactory(connSetting.ProviderName), connSetting.ConnectionString,
-			destinationTableName, columnMappings, multipleRockets, bulkSize, commandTimeout)
-		{
-		}
-
-		public SqlLauncher(string connectionStringKey, string destinationTableName, Action<SqlBulkCopyColumnMappingCollection> columnMappings = null,
-			int multipleRockets = _DefaultMultipleRockets, int bulkSize = _DefaultBulkSize, int commandTimeout = _CommandTimeout)
-			: this(ConfigurationManager.ConnectionStrings[connectionStringKey],
-			destinationTableName, columnMappings, multipleRockets, bulkSize, commandTimeout)
-		{
-		}
-
-		private static SqlBulkCopy CreateBulkCopy(DbProviderFactory dbProviderFactory, string connectionString, out SqlConnection dbConnection,
+		private static SqlBulkCopy CreateBulkCopy(string connectionString, out SqlConnection dbConnection,
 			string destinationTableName, Action<SqlBulkCopyColumnMappingCollection> mapColumns, int commandTimeout)
 		{
-			dbConnection = dbProviderFactory.CreateConnection() as SqlConnection;
-			dbConnection.ConnectionString = connectionString;
+			dbConnection = new SqlConnection(connectionString);
 
 			SqlBulkCopy bulkCopy = new SqlBulkCopy(dbConnection);
 
