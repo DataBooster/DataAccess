@@ -8,7 +8,7 @@
 <div>The dbParallel DataBooster library is a high-performance extension to ADO.NET Data Provider, includes two aspects:</div>
 <ul>
 <li>A slimmed down API encapsulation which simplified the most common data access operations (DbConnection -&gt; DbCommand -&gt; DbParameter -&gt; DbDataReader) into a single class <strong>DbAccess</strong>, to help application with a clean DAL, avoid over-packing and redundant-copy of data transfer.<br />Please consider using this for your application development if Entity Framework can not meet your performance requirement. </li>
-<li>A booster for writing mass data onto database. Base on a rational utilization of database concurrency and a effective utilization of network bandwidth, the booster implements a transmitting pipeline of dataflow like a Multiple Launch Rocket System, The speed of writing data into database can be improved about 5 times faster than an ordinary bulk insert/copy, or up to 700 times faster than a row-by-row insert.<br />The detail implement closely depends on the specific database. For the moment, the class <strong>OracleLauncher</strong> is ready for Oracle. It handles the throughput control and other low-level synchronization details. It's thread-safe which avoid locks. By using the Launcher, you can maximize the performance of your code while filling data row-by-row simply. </li>
+<li>A booster for writing mass data onto database. Base on a rational utilization of database concurrency and a effective utilization of network bandwidth, the booster implements a transmitting pipeline of dataflow like a Multiple Launch Rocket System, The speed of writing data into database can be improved about 5 times faster than an ordinary bulk insert/copy, or up to 700 times faster than a row-by-row insert.<br />The detail implement closely depends on the specific database. For the moment, the class <strong>OracleLauncher</strong> and <strong>SqlLauncher</strong> are ready for Oracle and SQL Server. They handle the throughput control and other low-level synchronization details. They are thread-safe which avoid locks. By using the Launcher, you can maximize the performance of your code while filling data row-by-row simply. </li>
 </ul>
 <div><img style="vertical-align: middle;" src="http://www.codeplex.com/Download?ProjectName=databooster&amp;DownloadId=386321" alt="Data Launcher" width="600" height="336" /></div>
 <p><strong>Quick Starts</strong></p>
@@ -138,7 +138,7 @@
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">using</span> System;
 <span style="color: blue;">using</span> System.Threading.Tasks;
-<span style="color: blue;">using</span> DbParallel.DataAccess.Oracle.Booster;
+<span style="color: blue;">using</span> DbParallel.DataAccess.Booster.Oracle;
 <span style="color: blue;">using</span> DDTek.Oracle;
 
 <span style="color: blue;">namespace</span> OracleLauncherExamples
@@ -147,7 +147,7 @@
     {
         <span style="color: blue;">static</span> <span style="color: blue;">void</span> Main(<span style="color: blue;">string</span>[] args)
         {
-            <span style="color: blue;">using</span> (OracleLauncher launcher = <span style="color: blue;">new</span> OracleLauncher(<span style="color: #a31515;">"MyDbConnKey"</span>,
+            <span style="color: blue;">using</span> (OracleLauncher launcher = <span style="color: blue;">new</span> OracleLauncher(ConfigurationManager.ConnectionStrings[<span style="color: #a31515;">"MyDbConnKey"</span>].ConnectionString,
                 <span style="color: #a31515;">"SCHEMA.PACKAGE.WRITE_BULK_DATA"</span><span style="color: green;">/* stored procedure */</span>,
                 parameters =&gt;
                 {
@@ -219,7 +219,7 @@ DbAccess(<span style="color: blue;">string</span> providerName, <span style="col
 DbAccess(ConnectionStringSettings connSetting);
 DbAccess(<span style="color: blue;">string</span> connectionStringKey);</pre>
 </div>
-<div><strong>Methods</strong><br />- ExecuteReader (7 overloads):</div>
+<div><strong>Methods</strong><br />- ExecuteReader (9 overloads):</div>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, CommandType commandType, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbDataReader&gt; dataReader);
 
@@ -233,7 +233,11 @@ DbAccess(<span style="color: blue;">string</span> connectionStringKey);</pre>
 
 <span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbFieldMap&lt;T&gt;&gt; resultMap, Action&lt;T&gt; readEntity);
 
-<span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;T&gt; readEntity);</pre>
+<span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;T&gt; readEntity);
+
+IEnumerable&lt;T&gt; ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, CommandType commandType, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbFieldMap&lt;T&gt;&gt; resultMap = <span style="color: blue;">null</span>);
+
+IEnumerable&lt;T&gt; ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbFieldMap&lt;T&gt;&gt; resultMap = <span style="color: blue;">null</span>);</pre>
 </div>
 <div>- ExecuteNonQuery (2 overloads):</div>
 <div style="color: black; background-color: white;">
@@ -243,17 +247,12 @@ DbAccess(<span style="color: blue;">string</span> connectionStringKey);</pre>
 </div>
 </div>
 <ul>
-<li><strong><span style="text-decoration: underline;">OracleLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Oracle.Booster) </li>
+<li><strong><span style="text-decoration: underline;">OracleLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Booster.Oracle) </li>
 </ul>
-<div style="margin-left: 40px;"><strong>Constructors</strong> (4 overloads):
+<div style="margin-left: 40px;"><strong>Constructors</strong>:
 <div style="color: black; background-color: white;">
-<pre>OracleLauncher(DbProviderFactory dbProviderFactory, <span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> storedProcedure, Action&lt;DbParameterBuilder&gt; parametersBuilder, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
-
-OracleLauncher(<span style="color: blue;">string</span> providerName, <span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> storedProcedure, Action&lt;DbParameterBuilder&gt; parametersBuilder, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
-
-OracleLauncher(ConnectionStringSettings connSetting, <span style="color: blue;">string</span> storedProcedure, Action&lt;DbParameterBuilder&gt; parametersBuilder, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
-
-OracleLauncher(<span style="color: blue;">string</span> connectionStringKey, <span style="color: blue;">string</span> storedProcedure, Action&lt;DbParameterBuilder&gt; parametersBuilder, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);</pre>
+<pre>OracleLauncher(<span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> storedProcedure, Action&lt;DbParameterBuilder&gt; parametersBuilder, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
+</pre>
 </div>
 <div>The <em>_DefaultMultipleRockets</em> is <span style="color: #ff0000;">6</span>:</div>
 <div><img style="vertical-align: middle;" src="http://www.codeplex.com/Download?ProjectName=databooster&amp;DownloadId=386327" alt="Multiple Rockets" width="360" height="180" /></div>
@@ -270,10 +269,24 @@ Your application DAL should wrap this method as&nbsp;strong type&nbsp;parameters
 </pre>
 </div>
 </div>
+<ul>
+<li><strong><span style="text-decoration: underline;">SqlLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Booster.SqlServer) </li>
+</ul>
+<div style="margin-left: 40px;"><strong>Constructors</strong>:
+<div style="color: black; background-color: white;">
+<pre>SqlLauncher(<span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> destinationTableName, Action&lt;SqlBulkCopyColumnMappingCollection&gt; columnMappings = <span style="color: blue;">null</span>, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
+</pre>
+</div>
+<p><br /><strong>Methods</strong><br />- Post: the same as OracleLauncher</p>
+</div>
 <div><strong>Requirements</strong></div>
 <ul>
 <li>.NET Framework 4.0 or later. </li>
-<li>ADO.NET Provider:<br />- Oracle - <em>DataDirect Connect for ADO.NET v3.5 (the provider can be easily replaced by other provider for Oracle)</em> </li>
+<li>Oracle ADO.NET Provider:<br />- DataDirect Connect for ADO.NET (Reference: DDTek.Oracle.dll; Conditional Compilation Symbols; "ORACLE;DATADIRECT")<br />
+or<br />
+- ODP.NET (Reference: Oracle.DataAccess.dll; Conditional Compilation Symbols; "ORACLE;ODP_NET")<br />
+or<br />
+ <em>(the provider can be easily replaced by other provider for Oracle)</em></li>
 </ul>
 <div><strong>Contribute</strong></div>
 <ul>
