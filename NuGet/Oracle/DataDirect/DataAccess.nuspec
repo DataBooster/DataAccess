@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package >
+	<metadata>
+		<id>DataBooster.Oracle.DataDirect</id>
+		<version>$version$</version>
+		<title>$title$ for SQL Server + Oracle (use DataDirect Provider)</title>
+		<authors>$author$</authors>
+		<owners>http://databooster.codeplex.com</owners>
+		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
+		<projectUrl>http://databooster.codeplex.com</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>$description$</description>
+		<releaseNotes>http://databooster.codeplex.com/releases</releaseNotes>
+		<copyright>Copyright 2013 Abel Cheng</copyright>
+		<tags>DbParallel DataAccess ADO.NET Booster Launcher Throughput</tags>
+		<frameworkAssemblies>
+			<frameworkAssembly assemblyName="System.Configuration" />
+			<frameworkAssembly assemblyName="DDTek.Oracle" />
+		</frameworkAssemblies>
+	</metadata>
+	<files>
+		<file src="..\NuGet\Oracle\DataDirect\web.config.transform" target="content" />
+		<file src="..\NuGet\Oracle\DataDirect\web.config.transform" target="content\app.config.transform" />
+		<file src="..\NuGet\Oracle\DataDirect\Readme.txt" target="" />
+		<file src="..\NuGet\DataAccess\*.cs.pp" target="content\DataAccess" />
+	</files>
+</package>

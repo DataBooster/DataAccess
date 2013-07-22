@@ -54,7 +54,12 @@ namespace DbParallel.DataAccess
 
 		public static T Parameter<T>(this DbCommand cmd, string parameterName)
 		{
-			return TryConvert<T>(cmd.Parameters[parameterName].Value);
+			return cmd.Parameters.Parameter<T>(parameterName);
+		}
+
+		public static T Parameter<T>(this DbParameterCollection parameters, string parameterName)
+		{
+			return parameters[parameterName].Parameter<T>();
 		}
 
 		public static T Parameter<T>(this DbParameter parameter)

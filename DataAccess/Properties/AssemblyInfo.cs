@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DbParallel.DataAccess")]
-[assembly: AssemblyDescription("dbParallel Database Access Extensions")]
+[assembly: AssemblyTitle("DataBooster")]
+[assembly: AssemblyDescription("DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing mass data onto database.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http://dbparallel.codeplex.com/")]
+[assembly: AssemblyCompany("Abel Cheng")]
 [assembly: AssemblyProduct("dbParallel Database Task Parallel Foundation")]
-[assembly: AssemblyCopyright("Abel Cheng. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright ©  2012 Abel Cheng")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.2")]
-[assembly: AssemblyFileVersion("1.0.0.2")]
+[assembly: AssemblyVersion("1.0.0.4")]
+[assembly: AssemblyFileVersion("1.0.0.4")]
