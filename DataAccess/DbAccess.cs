@@ -8,9 +8,16 @@ namespace DbParallel.DataAccess
 {
 	public partial class DbAccess : IDisposable
 	{
-		private const int _MaxRetryCount = 2;
-		private DbConnection _Connection;
+		private static CommandType _DefaultCommandType = CommandType.StoredProcedure;
+		public static CommandType DefaultCommandType
+		{
+			get { return _DefaultCommandType; }
+			set { _DefaultCommandType = value; }
+		}
 
+		private const int _MaxRetryCount = 2;
+
+		private DbConnection _Connection;
 		public DbConnection Connection { get { return _Connection; } }
 
 		public DbAccess(DbProviderFactory dbProviderFactory, string connectionString)
@@ -88,7 +95,7 @@ namespace DbParallel.DataAccess
 
 		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader> dataReader)
 		{
-			ExecuteReader(commandText, 0, CommandType.StoredProcedure, parametersBuilder, dataReader);
+			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, dataReader);
 		}
 
 		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader, int> dataReaders)
@@ -112,7 +119,7 @@ namespace DbParallel.DataAccess
 
 		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader, int> dataReaders)
 		{
-			ExecuteReader(commandText, 0, CommandType.StoredProcedure, parametersBuilder, dataReaders);
+			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, dataReaders);
 		}
 
 		public void ExecuteReader<T>(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder,
@@ -138,12 +145,12 @@ namespace DbParallel.DataAccess
 		public void ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder,
 			Action<DbFieldMap<T>> resultMap, Action<T> readEntity) where T : new()
 		{
-			ExecuteReader<T>(commandText, 0, CommandType.StoredProcedure, parametersBuilder, resultMap, readEntity);
+			ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap, readEntity);
 		}
 
 		public void ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<T> readEntity) where T : new()
 		{
-			ExecuteReader<T>(commandText, 0, CommandType.StoredProcedure, parametersBuilder, null, readEntity);
+			ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, null, readEntity);
 		}
 
 		public IEnumerable<T> ExecuteReader<T>(string commandText, int commandTimeout, CommandType commandType,
@@ -166,7 +173,7 @@ namespace DbParallel.DataAccess
 		public IEnumerable<T> ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder,
 			Action<DbFieldMap<T>> resultMap = null) where T : new()
 		{
-			return ExecuteReader<T>(commandText, 0, CommandType.StoredProcedure, parametersBuilder, resultMap);
+			return ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap);
 		}
 
 		public int ExecuteNonQuery(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
@@ -194,7 +201,7 @@ namespace DbParallel.DataAccess
 
 		public int ExecuteNonQuery(string commandText, Action<DbParameterBuilder> parametersBuilder = null)
 		{
-			return ExecuteNonQuery(commandText, 0, CommandType.StoredProcedure, parametersBuilder);
+			return ExecuteNonQuery(commandText, 0, _DefaultCommandType, parametersBuilder);
 		}
 
 		private void ReConnect()

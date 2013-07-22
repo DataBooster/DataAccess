@@ -18,6 +18,44 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{F2F76E
 		UtilityScripts\Oracle\UTL_CS.pck = UtilityScripts\Oracle\UTL_CS.pck
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{AD2D90F7-A0E0-49B1-ADF5-0136A606A591}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\Download NuGet Command-Line.htm = NuGet\Download NuGet Command-Line.htm
+		NuGet\Pack-Oracle-DataDirect.bat = NuGet\Pack-Oracle-DataDirect.bat
+		NuGet\Pack-Oracle-ODP.NET.bat = NuGet\Pack-Oracle-ODP.NET.bat
+		NuGet\Pack-SqlServer.bat = NuGet\Pack-SqlServer.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlServer", "SqlServer", "{D9B66967-C5C5-4672-BB5B-9DDBFC8680B9}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\SqlServer\DataAccess.nuspec = NuGet\SqlServer\DataAccess.nuspec
+		NuGet\SqlServer\Readme.txt = NuGet\SqlServer\Readme.txt
+		NuGet\SqlServer\web.config.transform = NuGet\SqlServer\web.config.transform
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{E493C41C-F2CE-4549-926F-302AAD70C309}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODP.NET", "ODP.NET", "{48614A38-33AB-4FFA-9403-836184E2BB50}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\Oracle\ODP.NET\DataAccess.nuspec = NuGet\Oracle\ODP.NET\DataAccess.nuspec
+		NuGet\Oracle\ODP.NET\Readme.txt = NuGet\Oracle\ODP.NET\Readme.txt
+		NuGet\Oracle\ODP.NET\web.config.transform = NuGet\Oracle\ODP.NET\web.config.transform
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataDirect", "DataDirect", "{DAC86E88-8B89-4FAC-8B5E-A292E6791F15}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\Oracle\DataDirect\DataAccess.nuspec = NuGet\Oracle\DataDirect\DataAccess.nuspec
+		NuGet\Oracle\DataDirect\Readme.txt = NuGet\Oracle\DataDirect\Readme.txt
+		NuGet\Oracle\DataDirect\web.config.transform = NuGet\Oracle\DataDirect\web.config.transform
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{84793F2B-6172-408D-B814-B66E92C45B03}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\DataAccess\ConfigHelper.sample.cs.pp = NuGet\DataAccess\ConfigHelper.sample.cs.pp
+		NuGet\DataAccess\DbPackage.sample.cs.pp = NuGet\DataAccess\DbPackage.sample.cs.pp
+		NuGet\DataAccess\MyBizMain.sample.cs.pp = NuGet\DataAccess\MyBizMain.sample.cs.pp
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 2
@@ -43,5 +81,10 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F2F76E08-6590-4F62-A2D3-A72F3A80A780} = {6678001D-3677-4C0C-963B-9B04AE215E8B}
+		{D9B66967-C5C5-4672-BB5B-9DDBFC8680B9} = {AD2D90F7-A0E0-49B1-ADF5-0136A606A591}
+		{E493C41C-F2CE-4549-926F-302AAD70C309} = {AD2D90F7-A0E0-49B1-ADF5-0136A606A591}
+		{84793F2B-6172-408D-B814-B66E92C45B03} = {AD2D90F7-A0E0-49B1-ADF5-0136A606A591}
+		{48614A38-33AB-4FFA-9403-836184E2BB50} = {E493C41C-F2CE-4549-926F-302AAD70C309}
+		{DAC86E88-8B89-4FAC-8B5E-A292E6791F15} = {E493C41C-F2CE-4549-926F-302AAD70C309}
 	EndGlobalSection
 EndGlobal
