@@ -1,4 +1,5 @@
 ﻿#if ORACLE
+using System.Data.Common;
 #if DATADIRECT
 using DDTek.Oracle;
 #else // ODP.NET
@@ -9,6 +10,11 @@ namespace DbParallel.DataAccess
 {
 	public static partial class DbExtensions
 	{
+		public static OracleParameter AsOracleParameter(this DbParameter oracleParameter)
+		{
+			return oracleParameter as OracleParameter;
+		}
+
 		public static OracleParameter SetOracleType(this OracleParameter oracleParameter, OracleDbType oraType)
 		{
 			oracleParameter.OracleDbType = oraType;
