@@ -58,13 +58,14 @@
     <Compile Include="DbParameterBuilder.cs" />
     <Compile Include="Oracle\Booster\OracleLauncher.cs" />
     <Compile Include="Oracle\Booster\OracleRocket.cs" />
-    <Compile Include="Oracle\DbAccess.cs" />
+    <Compile Include="Oracle\DbAccess.partial.cs" />
     <Compile Include="Oracle\DbExtensions.partial.cs" />
     <Compile Include="Oracle\DbParameterBuilder.partial.cs" />
     <Compile Include="ParallelExecuteWaitHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServer\Booster\SqlLauncher.cs" />
     <Compile Include="SqlServer\Booster\SqlRocket.cs" />
+    <Compile Include="SqlServer\DbAccess.partial.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

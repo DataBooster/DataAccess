@@ -1,27 +1,22 @@
-﻿#if ORACLE
-using System;
-#if DATADIRECT
-using DDTek.Oracle;
-#else // ODP.NET
-using Oracle.DataAccess.Client;
-#endif
+﻿using System;
+using System.Data.SqlClient;
 
 namespace DbParallel.DataAccess
 {
 	public partial class DbAccess
 	{
-		partial void OnOracleConnectionLoss(Exception dbException, ref bool canRetry)
+		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry)
 		{
-			if (_Connection is OracleConnection)
+			if (_Connection is SqlConnection)
 			{
-				OracleException e = dbException as OracleException;
+				SqlException e = dbException as SqlException;
 
 				if (e == null)
 					canRetry = false;
 				else
 					switch (e.Number)
 					{
-						case 4068: canRetry = true; break;
+						case -2: canRetry = true; break;
 						// To add other cases
 						default: canRetry = false; break;
 					}
@@ -29,7 +24,6 @@ namespace DbParallel.DataAccess
 		}
 	}
 }
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -40,7 +34,7 @@ namespace DbParallel.DataAccess
 //	You must not remove this notice, or any other, from this software.
 //
 //	Original Author:	Abel Cheng <abelcys@gmail.com>
-//	Created Date:		2012-03-23
+//	Created Date:		2013-07-‎29
 //	Primary Host:		http://dbParallel.codeplex.com
 //	Change Log:
 //	Author				Date			Comment

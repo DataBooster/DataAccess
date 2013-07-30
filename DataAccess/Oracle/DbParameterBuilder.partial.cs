@@ -9,7 +9,7 @@ namespace DbParallel.DataAccess
 {
 	public partial class DbParameterBuilder
 	{
-		public OracleParameter AddOracleAssociativeArray(string parameterName, OracleDbType oraType)
+		public OracleParameter AddAssociativeArray(string parameterName, OracleDbType oraType)
 		{
 			OracleCommand oraCommand = _DbCommand as OracleCommand;
 			OracleParameter parameter = oraCommand.CreateParameter();
@@ -20,6 +20,14 @@ namespace DbParallel.DataAccess
 			oraCommand.Parameters.Add(parameter);
 
 			return parameter;
+		}
+
+		public OracleParameter AddRefCursor(string parameterName)
+		{
+			OracleParameter oraParam = AddOutput(parameterName) as OracleParameter;
+			oraParam.OracleDbType = OracleDbType.RefCursor;
+
+			return oraParam;
 		}
 	}
 }

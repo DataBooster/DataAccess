@@ -5,6 +5,11 @@ namespace $rootnamespace$.DataAccess
 {
 	public static partial class ConfigHelper
 	{
+		#region Setting key names defined in your config file, can be overridden in partial OnInitializing()
+		private static string _ConnectionSettingKey = "$rootnamespace$.MainConnection";
+		private static string _PackageSettingKey = "$rootnamespace$.MainPackage";
+		#endregion
+
 		#region Properties
 		private static DbProviderFactory _DbProviderFactory;
 		public static DbProviderFactory DbProviderFactory
@@ -27,24 +32,22 @@ namespace $rootnamespace$.DataAccess
 
 		static ConfigHelper()
 		{
-			#region Setting key names defined in your config file
-			const string connectionSettingKey = "$rootnamespace$.MainConnection";
-			const string packageSettingKey = "$rootnamespace$.MainPackage";
-			#endregion
+			OnInitializing();
 
 			#region Default Initialization
-			ConnectionStringSettings connSetting = ConfigurationManager.ConnectionStrings[connectionSettingKey];
+			ConnectionStringSettings connSetting = ConfigurationManager.ConnectionStrings[_ConnectionSettingKey];
 			_DbProviderFactory = DbProviderFactories.GetFactory(connSetting.ProviderName);
 			_ConnectionString = connSetting.ConnectionString;
 
-			_DatabasePackage = ConfigurationManager.AppSettings[packageSettingKey];
+			_DatabasePackage = ConfigurationManager.AppSettings[_PackageSettingKey];
 			if (_DatabasePackage == null)
 				_DatabasePackage = string.Empty;
 			#endregion
 
-			ConfigInit();
+			OnInitialized();
 		}
 
-		static partial void ConfigInit();
+		static partial void OnInitializing();
+		static partial void OnInitialized();
 	}
 }

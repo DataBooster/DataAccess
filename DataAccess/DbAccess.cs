@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Configuration;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace DbParallel.DataAccess
 {
@@ -16,6 +17,7 @@ namespace DbParallel.DataAccess
 		}
 
 		private const int _MaxRetryCount = 2;
+		private const int _IncreasingDelayRetry = 500;		// Increases 500 milliseconds delay time for every retry.
 
 		private DbConnection _Connection;
 		public DbConnection Connection { get { return _Connection; } }
@@ -57,12 +59,20 @@ namespace DbParallel.DataAccess
 			return dbCommand;
 		}
 
-		partial void OnOracleConnectionLoss(Exception dbException, ref bool canRetry);
-		private bool OnConnectionLoss(Exception dbException)
+		partial void OnOracleConnectionLost(Exception dbException, ref bool canRetry);
+		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry);
+		private bool OnConnectionLost(Exception dbException)
 		{
 			bool canRetry = false;
-			OnOracleConnectionLoss(dbException, ref canRetry);
+			OnOracleConnectionLost(dbException, ref canRetry);
+			OnSqlConnectionLost(dbException, ref canRetry);
 			return canRetry;
+		}
+
+		partial void OnOracleReaderExecuting(DbCommand dbCmd);
+		private void OnReaderExecuting(DbCommand dbCmd)
+		{
+			OnOracleReaderExecuting(dbCmd);
 		}
 
 		private DbDataReader CreateReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
@@ -71,12 +81,16 @@ namespace DbParallel.DataAccess
 			{
 				try
 				{
-					return CreateCommand(commandText, commandTimeout, commandType, parametersBuilder).ExecuteReader();
+					DbCommand dbCmd = CreateCommand(commandText, commandTimeout, commandType, parametersBuilder);
+
+					OnReaderExecuting(dbCmd);
+
+					return dbCmd.ExecuteReader();
 				}
 				catch (Exception e)
 				{
-					if (retry < _MaxRetryCount && OnConnectionLoss(e))
-						ReConnect();
+					if (retry < _MaxRetryCount && OnConnectionLost(e))
+						ReConnect(retry);
 					else
 						throw;
 				}
@@ -189,8 +203,8 @@ namespace DbParallel.DataAccess
 				}
 				catch (Exception e)
 				{
-					if (retry < _MaxRetryCount && OnConnectionLoss(e))
-						ReConnect();
+					if (retry < _MaxRetryCount && OnConnectionLost(e))
+						ReConnect(retry);
 					else
 						throw;
 				}
@@ -204,12 +218,16 @@ namespace DbParallel.DataAccess
 			return ExecuteNonQuery(commandText, 0, _DefaultCommandType, parametersBuilder);
 		}
 
-		private void ReConnect()
+		private void ReConnect(int retrying)
 		{
 			if (_Connection != null)
 				if (_Connection.State != ConnectionState.Closed)
 				{
 					_Connection.Close();
+
+					if (retrying > 0)
+						Thread.Sleep(retrying * _IncreasingDelayRetry);	// retrying starts at 0, increases delay time for every retry.
+
 					_Connection.Open();
 				}
 		}

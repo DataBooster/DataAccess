@@ -1,7 +1,8 @@
 ﻿Installation Notes:
 
 This edition of library requires "Oracle Data Provider for .NET (ODP.NET)"
-(http://www.oracle.com/technetwork/topics/dotnet/index-085163.html) on your own license.
+http://www.oracle.com/technetwork/developer-tools/visual-studio/overview/index.html
+or http://www.oracle.com/technetwork/topics/dotnet/index-085163.html on your own license.
 Please note that you must install it manually (in GAC) before installing this edition.
 
 
@@ -9,7 +10,7 @@ Two setting items have been added into your config file:
 
 <configuration>
 	<connectionStrings>
-		<add name="$rootnamespace$.MainConnection" providerName="Oracle.DataAccess.Client" connectionString="Data Source=SAMPLEDB;Integrated Security=yes;"/>
+		<add name="$rootnamespace$.MainConnection" providerName="Oracle.DataAccess.Client" connectionString="Data Source=SAMPLEDB;User Id=/"/>
 	</connectionStrings>
 	<appSettings>
 		<add key="$rootnamespace$.MainPackage" value="SCHEMA.PACKAGE." />
