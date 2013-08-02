@@ -7,30 +7,26 @@ namespace $rootnamespace$
 {
 	class MyBizMain
 	{
-		private readonly DbAccess _MainDbAccess;
-
-		public MyBizMain()
+		public void MyTestAccess()
 		{
-			_MainDbAccess = DbPackage.CreateConnection();
-		}
-
-		public void MyTestProcess()
-		{
-			try
+			using (DbAccess db = DbPackage.CreateConnection())
 			{
 				// ...
-				var test1 = _MainDbAccess.GetSampleSetting("TestDomain");
+				var test1 = db.GetSampleSetting("TestDomain");
 				// ...
-				var test2 = _MainDbAccess.LoadSampleObjByAction(test1.Item1, test1.Item2);
+				var test2 = db.LoadSampleObjByAction(test1.Item1, test1.Item2);
 				// ...
-				var test3 = _MainDbAccess.LoadSampleObjByMap(test1.Item1, test1.Item2);
+				using (DbTransactionScope tran = db.NewTransactionScope())	// Start a transaction
+				{
+					var test3 = db.LoadSampleObjByMap(test1.Item1, test1.Item2);
+					// ...
+					db.LogSampleError(e.Source, e.Message);
+					// ...
+					tran.Complete();
+				}	// Exit (Commit) the transaction
 				// ...
-				var test4 = _MainDbAccess.LoadSampleObjAutoMap(test1.Item1, test1.Item2);
+				var test4 = db.LoadSampleObjAutoMap(test1.Item1, test1.Item2);
 				// ...
-			}
-			catch (Exception e)
-			{
-				_MainDbAccess.LogSampleError(e.Source, e.Message);
 			}
 		}
 	}

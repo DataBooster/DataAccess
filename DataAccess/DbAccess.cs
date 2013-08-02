@@ -22,11 +22,15 @@ namespace DbParallel.DataAccess
 		private DbConnection _Connection;
 		public DbConnection Connection { get { return _Connection; } }
 
+		#region Constructors
+
 		public DbAccess(DbProviderFactory dbProviderFactory, string connectionString)
 		{
 			_Connection = dbProviderFactory.CreateConnection();
 			_Connection.ConnectionString = connectionString;
 			_Connection.Open();
+
+			_TransactionManager = new DbTransactionManager(_Connection);
 		}
 
 		public DbAccess(string providerName, string connectionString)
@@ -44,11 +48,14 @@ namespace DbParallel.DataAccess
 		{
 		}
 
+		#endregion
+
 		private DbCommand CreateCommand(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
 		{
 			DbCommand dbCommand = _Connection.CreateCommand();
 			dbCommand.CommandType = commandType;
 			dbCommand.CommandText = commandText;
+			dbCommand.Transaction = _TransactionManager.Transaction;
 
 			if (commandTimeout > 0)
 				dbCommand.CommandTimeout = commandTimeout;
@@ -64,8 +71,13 @@ namespace DbParallel.DataAccess
 		private bool OnConnectionLost(Exception dbException)
 		{
 			bool canRetry = false;
-			OnOracleConnectionLost(dbException, ref canRetry);
-			OnSqlConnectionLost(dbException, ref canRetry);
+
+			if (_TransactionManager.Transaction == null)
+			{
+				OnOracleConnectionLost(dbException, ref canRetry);
+				OnSqlConnectionLost(dbException, ref canRetry);
+			}
+
 			return canRetry;
 		}
 
@@ -96,6 +108,8 @@ namespace DbParallel.DataAccess
 				}
 			}
 		}
+
+		#region ExecuteReader Overloads
 
 		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader> dataReader)
 		{
@@ -190,6 +204,10 @@ namespace DbParallel.DataAccess
 			return ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap);
 		}
 
+		#endregion
+
+		#region ExecuteNonQuery Overloads
+
 		public int ExecuteNonQuery(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
 		{
 			int nAffectedRows = 0;
@@ -218,6 +236,8 @@ namespace DbParallel.DataAccess
 			return ExecuteNonQuery(commandText, 0, _DefaultCommandType, parametersBuilder);
 		}
 
+		#endregion
+
 		private void ReConnect(int retrying)
 		{
 			if (_Connection != null)
@@ -232,20 +252,63 @@ namespace DbParallel.DataAccess
 				}
 		}
 
+		#region Transaction
+
+		private DbTransactionManager _TransactionManager;
+
+		#region Flat Transaction Methods
+		public void BeginTransaction()
+		{
+			_TransactionManager.BeginTransaction();
+		}
+
+		public void BeginTransaction(IsolationLevel isolationLevel)
+		{
+			_TransactionManager.BeginTransaction(isolationLevel);
+		}
+
+		public void CommitTransaction()
+		{
+			_TransactionManager.Commit();
+		}
+
+		public void RollbackTransaction()
+		{
+			_TransactionManager.Rollback();
+		}
+		#endregion
+
+		#region Auto-Scope Transaction Methods
+		public DbTransactionScope NewTransactionScope()
+		{
+			return new DbTransactionScope(_TransactionManager);
+		}
+
+		public DbTransactionScope NewTransactionScope(IsolationLevel isolationLevel)
+		{
+			return new DbTransactionScope(_TransactionManager, isolationLevel);
+		}
+		#endregion
+
+		#endregion
+
 		#region IDisposable Members
 		public void Dispose()
 		{
 			if (_Connection != null)
 			{
 				if (_Connection.State != ConnectionState.Closed)
+				{
+					_TransactionManager.Dispose();
 					_Connection.Close();
+				}
+
 				_Connection = null;
 			}
 		}
 		#endregion
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //

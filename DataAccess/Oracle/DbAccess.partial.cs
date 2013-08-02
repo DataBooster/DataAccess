@@ -48,7 +48,7 @@ namespace DbParallel.DataAccess
 						OracleParameterCollection paramCollection = oraCmd.Parameters;
 						IEnumerable<string> explicitParamNames = paramCollection.Cast<OracleParameter>().Select(p => p.ParameterName);
 
-						foreach (OracleParameter derivedParam in DeriveParameters(oraCmd.CommandText))
+						foreach (OracleParameter derivedParam in DeriveParameters(oraCmd))
 							if (!explicitParamNames.Contains(derivedParam.ParameterName, StringComparer.OrdinalIgnoreCase))
 								paramCollection.Add(derivedParam);
 					}
@@ -65,16 +65,18 @@ namespace DbParallel.DataAccess
 		}
 #endif
 
-		private OracleParameter[] DeriveParameters(string storedProcedure)
+		private OracleParameter[] DeriveParameters(OracleCommand spCmd)
 		{
 			OracleCommand oraCmd = _Connection.CreateCommand() as OracleCommand;
 			oraCmd.CommandType = CommandType.StoredProcedure;
-			oraCmd.CommandText = storedProcedure;
+			oraCmd.CommandText = spCmd.CommandText;
+			oraCmd.Transaction = spCmd.Transaction;
 
 			OracleCommandBuilder.DeriveParameters(oraCmd);
 
 			OracleParameter[] derivedParams = oraCmd.Parameters.Cast<OracleParameter>().ToArray();
 			oraCmd.Parameters.Clear();
+			oraCmd.Dispose();
 			oraCmd = null;
 
 			return derivedParams;
