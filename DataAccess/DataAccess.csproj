@@ -56,6 +56,8 @@
     <Compile Include="DbExtensions.cs" />
     <Compile Include="DbFieldMap.cs" />
     <Compile Include="DbParameterBuilder.cs" />
+    <Compile Include="DbTransactionManager.cs" />
+    <Compile Include="DbTransactionScope.cs" />
     <Compile Include="Oracle\Booster\OracleLauncher.cs" />
     <Compile Include="Oracle\Booster\OracleRocket.cs" />
     <Compile Include="Oracle\DbAccess.partial.cs" />
