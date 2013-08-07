@@ -1,4 +1,7 @@
-﻿#if (DEBUG && !NO_SAMPLE)
+﻿#region Usage Examples
+// To turn off following sample code in DEBUG mode, just add NO_SAMPLE into the project properties ...
+// Project Properties Dialog -> Build -> General -> Conditional Compilation Symbols.
+#if (DEBUG && !NO_SAMPLE)
 using System;
 using System.Threading.Tasks;
 using DbParallel.DataAccess;
@@ -63,3 +66,4 @@ namespace $rootnamespace$
 	}
 }
 #endif
+#endregion
