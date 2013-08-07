@@ -1,6 +1,8 @@
-﻿#if DEBUG
+﻿#if (DEBUG && !NO_SAMPLE)
 using System;
+using System.Threading.Tasks;
 using DbParallel.DataAccess;
+using DbParallel.DataAccess.Booster.SqlServer;
 using $rootnamespace$.DataAccess;
 
 namespace $rootnamespace$
@@ -20,13 +22,27 @@ namespace $rootnamespace$
 				{
 					var test3 = db.LoadSampleObjByMap(test1.Item1, test1.Item2);
 					// ...
-					db.LogSampleError(e.Source, e.Message);
+					db.LogSampleError("Test source", "Test message ...");
 					// ...
 					tran.Complete();
 				}	// Exit (Commit) the transaction
 				// ...
 				var test4 = db.LoadSampleObjAutoMap(test1.Item1, test1.Item2);
 				// ...
+			}
+		}
+
+		public void MyTestSqlLauncher()
+		{
+			using (SqlLauncher launcher = DbPackage.CreateSampleSqlLauncher())
+			{
+				Parallel.For(0, 100, i =>   // Just simulating multiple(100) producers
+				{
+					for (int j = 0; j < 200000; j++)
+					{
+						launcher.AddSampleSqlRow(i, j.ToString(), (i * 200000 + j) * 0.618m);
+					}
+				});
 			}
 		}
 	}

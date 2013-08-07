@@ -36,16 +36,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DDTek.Oracle, Version=3.5.0.0, Culture=neutral, PublicKeyToken=c84cd5c63851e072, processorArchitecture=MSIL">
+    <Reference Include="DDTek.Oracle">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Progress\DataDirect\Connect_for_ADO.NET_35\DDTek.Oracle.dll</HintPath>
     </Reference>
-    <Reference Include="Oracle.DataAccess, Version=4.112.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86">
+    <Reference Include="Oracle.DataAccess">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Oracle\Downloads\ODP.NET\odp.net4\odp.net\bin\4\Oracle.DataAccess.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.XML" />
   </ItemGroup>
@@ -68,6 +68,7 @@
     <Compile Include="SqlServer\Booster\SqlLauncher.cs" />
     <Compile Include="SqlServer\Booster\SqlRocket.cs" />
     <Compile Include="SqlServer\DbAccess.partial.cs" />
+    <Compile Include="SqlServer\DbExtensions.partial.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

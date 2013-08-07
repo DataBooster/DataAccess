@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Collections.Generic;
+using DDTek.Oracle;
 using DbParallel.DataAccess;
+using DbParallel.DataAccess.Booster.Oracle;
+using DbParallel.DataAccess.Booster.SqlServer;
 
 namespace $rootnamespace$.DataAccess
 {
@@ -25,16 +29,16 @@ namespace $rootnamespace$.DataAccess
 		}
 		#endregion
 
-#if DEBUG
-		#region Some samples for using DbAccess class
+#if (DEBUG && !NO_SAMPLE)
+		#region Some samples of using DbAccess class
 
 		#region A sample of reader action
 		public class SampleClassA
 		{
 			public string PropertyA { get; set; }
 			public int PropertyB { get; set; }
-			public decimal PropertyC { get; set; }
-			public SampleClassA(string a, int b, decimal c)
+			public decimal? PropertyC { get; set; }
+			public SampleClassA(string a, int b, decimal? c)
 			{
 				PropertyA = a;
 				PropertyB = b;
@@ -54,8 +58,7 @@ namespace $rootnamespace$.DataAccess
 				},
 				row =>
 				{
-					// ...
-					sampleClsList.Add(new SampleClassA(row.Field<string>("COL_A"), row.Field<int>("COL_B"), row.Field<decimal>("COL_C")));
+					sampleClsList.Add(new SampleClassA(row.Field<string>("COL_A"), row.Field<int>("COL_B"), row.Field<decimal?>("COL_C")));
 				});
 
 			return sampleClsList;
@@ -67,7 +70,7 @@ namespace $rootnamespace$.DataAccess
 		{
 			public string PropertyA { get; set; }
 			public int PropertyB { get; set; }
-			public decimal PropertyC { get; set; }
+			public decimal? PropertyC { get; set; }
 		//	public SampleClassB() { }	// Implicitly or Explicitly
 		}
 
@@ -96,7 +99,7 @@ namespace $rootnamespace$.DataAccess
 		{
 			public string Column_Name1 { get; set; }
 			public int Column_Name2 { get; set; }
-			public decimal Column_Name3 { get; set; }
+			public decimal? Column_Name3 { get; set; }
 			public bool Column_Name4 { get; set; }
 		//	public SampleClassC() { }	// Implicitly or Explicitly
 		}
@@ -150,7 +153,97 @@ namespace $rootnamespace$.DataAccess
 
 		#endregion
 
-		// Please see http://databooster.codeplex.com for more samples
+		#region A sample of using SqlLauncher class
+
+		public static SqlLauncher CreateSampleSqlLauncher()
+		{
+			return new SqlLauncher(ConfigHelper.AuxConnectionString, "schema.DestBigTable",
+				/*	(Optional)
+				 *	If the data source and the destination table have the same number of columns,
+				 *	and the ordinal position of each source column within the data source matches the ordinal position
+				 *	of the corresponding destination column, the ColumnMappings collection is unnecessary.
+				 *	However, if the column counts differ, or the ordinal positions are not consistent,
+				 *	you must use ColumnMappings to make sure that data is copied into the correct columns.
+				 *	(this remark is excerpted from MSDN http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.columnmappings.aspx,
+				 *	please see also http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopycolumnmappingcollection.aspx)
+				 */	columnMappings =>
+					{
+						columnMappings.Add(0, "ProdID");
+						columnMappings.Add(1, "ProdName");
+						columnMappings.Add(2, "ProdPrice");
+					}
+			);
+		}
+
+		public static void AddSampleSqlRow(this SqlLauncher launcher, int col0, string col1, decimal col2)
+		{
+			launcher.Post(col0, col1, col2);
+		}
+
+		#endregion
+
+		#region A sample of using OracleLauncher class
+
+		public static OracleLauncher CreateSampleOraLauncher(int grpId)
+		{
+			return new OracleLauncher(ConfigHelper.ConnectionString, GetProcedure("WRITE_BULK_DATA"),
+				parameters =>
+				{
+					parameters.Add("inGroup_ID", grpId);			// Ordinary parameter
+
+					// All Array Bind Types must be explicitly specified and must match PL/SQL table row types defined in database side
+					parameters.AddAssociativeArray("inItem_IDs", OracleDbType.Int32);
+					parameters.AddAssociativeArray("inItem_Values", OracleDbType.Double);
+				});
+		}
+
+		public static void AddSampleOraRow(this OracleLauncher launcher, int itemId, double itemValue)
+		{
+			launcher.Post(itemId, itemValue);
+		}
+
+		// The database side package:
+
+		//	CREATE OR REPLACE PACKAGE SCHEMA.PACKAGE IS
+		//	TYPE NUMBER_ARRAY IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+		//	TYPE DOUBLE_ARRAY IS TABLE OF BINARY_DOUBLE INDEX BY PLS_INTEGER;
+		//	-- ...
+		//	PROCEDURE WRITE_BULK_DATA
+		//	(
+		//		inGroup_ID      NUMBER,
+		//		inItem_IDs      NUMBER_ARRAY,
+		//		inItem_Values   DOUBLE_ARRAY
+		//	);
+		//	-- ...
+		//	END TEMP_TEST;
+		//	/
+		//	CREATE OR REPLACE PACKAGE BODY SCHEMA.PACKAGE IS
+		//	-- ...
+		//	PROCEDURE WRITE_BULK_DATA
+		//	(
+		//		inGroup_ID      NUMBER,
+		//		inItem_IDs      NUMBER_ARRAY,
+		//		inItem_Values   DOUBLE_ARRAY
+		//	)	AS
+		//	BEGIN
+		//		FORALL i IN inItem_IDs.FIRST .. inItem_IDs.LAST
+		//		INSERT /*+ APPEND_VALUES */ INTO SCHEMA.TEST_WRITE_DATA
+		//		(
+		//			GROUP_ID,
+		//			ITEM_ID,
+		//			ITEM_VALUE
+		//		)
+		//		VALUES
+		//		(
+		//			inGroup_ID,
+		//			inItem_IDs(i),
+		//			inItem_Values(i)
+		//		);
+		//		COMMIT;
+		//	END WRITE_BULK_DATA;
+		//	-- ...
+		//	END TEMP_TEST;
+		#endregion
 #endif
 	}
 }
