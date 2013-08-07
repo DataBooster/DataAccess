@@ -16,5 +16,5 @@ Please update them as your practical environment.
 And three *.sample.cs files have been copied into your project\DataAccess folder for quick starts.
 
 
-See Also:
+Open Source:
 http://databooster.codeplex.com

@@ -29,6 +29,9 @@ namespace $rootnamespace$.DataAccess
 		}
 		#endregion
 
+		#region Usage Examples
+		// To turn off following sample code in DEBUG mode, just add NO_SAMPLE into the project properties ...
+		// Project Properties Dialog -> Build -> General -> Conditional Compilation Symbols.
 #if (DEBUG && !NO_SAMPLE)
 		#region Some samples of using DbAccess class
 
@@ -245,5 +248,6 @@ namespace $rootnamespace$.DataAccess
 		//	END TEMP_TEST;
 		#endregion
 #endif
+		#endregion
 	}
 }
