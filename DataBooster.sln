@@ -49,11 +49,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataDirect", "DataDirect", 
 		NuGet\Oracle\DataDirect\web.config.transform = NuGet\Oracle\DataDirect\web.config.transform
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{84793F2B-6172-408D-B814-B66E92C45B03}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{5761EAB7-BBB5-48E3-80C7-5CF0AB424479}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\DataAccess\ConfigHelper.sample.cs.pp = NuGet\DataAccess\ConfigHelper.sample.cs.pp
-		NuGet\DataAccess\DbPackage.sample.cs.pp = NuGet\DataAccess\DbPackage.sample.cs.pp
-		NuGet\DataAccess\MyBizMain.sample.cs.pp = NuGet\DataAccess\MyBizMain.sample.cs.pp
+		NuGet\Oracle\DataDirect\DataAccess\ConfigHelper.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\ConfigHelper.sample.cs.pp
+		NuGet\Oracle\DataDirect\DataAccess\DbPackage.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\DbPackage.sample.cs.pp
+		NuGet\Oracle\DataDirect\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\MyBizMain.sample.cs.pp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{EFFD5514-7954-4202-8B76-6C51734B3C48}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\Oracle\ODP.NET\DataAccess\ConfigHelper.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\ConfigHelper.sample.cs.pp
+		NuGet\Oracle\ODP.NET\DataAccess\DbPackage.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\DbPackage.sample.cs.pp
+		NuGet\Oracle\ODP.NET\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\MyBizMain.sample.cs.pp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{D0C1EFCD-C5FB-4BA9-8C92-A8EB5475726A}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet\SqlServer\DataAccess\ConfigHelper.sample.cs.pp = NuGet\SqlServer\DataAccess\ConfigHelper.sample.cs.pp
+		NuGet\SqlServer\DataAccess\DbPackage.sample.cs.pp = NuGet\SqlServer\DataAccess\DbPackage.sample.cs.pp
+		NuGet\SqlServer\DataAccess\MyBizMain.sample.cs.pp = NuGet\SqlServer\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
 EndProject
 Global
@@ -83,8 +97,10 @@ Global
 		{F2F76E08-6590-4F62-A2D3-A72F3A80A780} = {6678001D-3677-4C0C-963B-9B04AE215E8B}
 		{D9B66967-C5C5-4672-BB5B-9DDBFC8680B9} = {AD2D90F7-A0E0-49B1-ADF5-0136A606A591}
 		{E493C41C-F2CE-4549-926F-302AAD70C309} = {AD2D90F7-A0E0-49B1-ADF5-0136A606A591}
-		{84793F2B-6172-408D-B814-B66E92C45B03} = {AD2D90F7-A0E0-49B1-ADF5-0136A606A591}
+		{D0C1EFCD-C5FB-4BA9-8C92-A8EB5475726A} = {D9B66967-C5C5-4672-BB5B-9DDBFC8680B9}
 		{48614A38-33AB-4FFA-9403-836184E2BB50} = {E493C41C-F2CE-4549-926F-302AAD70C309}
 		{DAC86E88-8B89-4FAC-8B5E-A292E6791F15} = {E493C41C-F2CE-4549-926F-302AAD70C309}
+		{EFFD5514-7954-4202-8B76-6C51734B3C48} = {48614A38-33AB-4FFA-9403-836184E2BB50}
+		{5761EAB7-BBB5-48E3-80C7-5CF0AB424479} = {DAC86E88-8B89-4FAC-8B5E-A292E6791F15}
 	EndGlobalSection
 EndGlobal

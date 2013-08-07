@@ -22,6 +22,6 @@
 		<file src="..\NuGet\Oracle\DataDirect\web.config.transform" target="content" />
 		<file src="..\NuGet\Oracle\DataDirect\web.config.transform" target="content\app.config.transform" />
 		<file src="..\NuGet\Oracle\DataDirect\Readme.txt" target="" />
-		<file src="..\NuGet\DataAccess\*.cs.pp" target="content\DataAccess" />
+		<file src="..\NuGet\Oracle\DataDirect\DataAccess\*.cs.pp" target="content\DataAccess" />
 	</files>
 </package>
