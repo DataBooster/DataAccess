@@ -6,7 +6,7 @@ or http://www.oracle.com/technetwork/topics/dotnet/index-085163.html on your own
 Please note that you must install it manually (in GAC) before installing this edition.
 
 
-Two setting items have been added into your config file:
+Three setting items have been added into your config file:
 
 <configuration>
 	<connectionStrings>

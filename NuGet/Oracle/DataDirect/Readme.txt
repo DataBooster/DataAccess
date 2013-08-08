@@ -5,7 +5,7 @@ This edition of library requires "Progress DataDirect Connect ADO.NET PROVIDER F
 Please note that you must install it manually (in GAC) before installing this edition.
 
 
-Two setting items have been added into your config file:
+Three setting items have been added into your config file:
 
 <configuration>
 	<connectionStrings>

@@ -218,7 +218,7 @@ namespace $rootnamespace$.DataAccess
 		//		inItem_Values   DOUBLE_ARRAY
 		//	);
 		//	-- ...
-		//	END TEMP_TEST;
+		//	END PACKAGE;
 		//	/
 		//	CREATE OR REPLACE PACKAGE BODY SCHEMA.PACKAGE IS
 		//	-- ...
@@ -245,7 +245,7 @@ namespace $rootnamespace$.DataAccess
 		//		COMMIT;
 		//	END WRITE_BULK_DATA;
 		//	-- ...
-		//	END TEMP_TEST;
+		//	END PACKAGE;
 		#endregion
 #endif
 		#endregion
