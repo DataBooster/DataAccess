@@ -40,10 +40,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Progress\DataDirect\Connect_for_ADO.NET_35\DDTek.Oracle.dll</HintPath>
     </Reference>
-    <Reference Include="Oracle.DataAccess">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Oracle\Downloads\ODP.NET\odp.net4\odp.net\bin\4\Oracle.DataAccess.dll</HintPath>
-    </Reference>
+    <Reference Include="Oracle.DataAccess, Version=4.112.3.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
