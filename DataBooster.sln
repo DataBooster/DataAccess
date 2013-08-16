@@ -18,56 +18,78 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{F2F76E
 		UtilityScripts\Oracle\UTL_CS.pck = UtilityScripts\Oracle\UTL_CS.pck
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{AD2D90F7-A0E0-49B1-ADF5-0136A606A591}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3C05CBB9-43F8-49D8-B416-8FA49AB41F6D}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\Download NuGet Command-Line.htm = NuGet\Download NuGet Command-Line.htm
-		NuGet\Pack-Oracle-DataDirect.bat = NuGet\Pack-Oracle-DataDirect.bat
-		NuGet\Pack-Oracle-ODP.NET.bat = NuGet\Pack-Oracle-ODP.NET.bat
-		NuGet\Pack-SqlServer.bat = NuGet\Pack-SqlServer.bat
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+		.nuget\Pack-Oracle-DataDirect.bat = .nuget\Pack-Oracle-DataDirect.bat
+		.nuget\Pack-Oracle-ODP.NET.bat = .nuget\Pack-Oracle-ODP.NET.bat
+		.nuget\Pack-Oracle-ODP.NET.Managed.bat = .nuget\Pack-Oracle-ODP.NET.Managed.bat
+		.nuget\Pack-SqlServer.bat = .nuget\Pack-SqlServer.bat
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlServer", "SqlServer", "{D9B66967-C5C5-4672-BB5B-9DDBFC8680B9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{5A312832-F3CA-4601-82EF-077D1F13677C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlServer", "SqlServer", "{AEAB4836-1B52-4B7B-830F-53FE398428E5}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\SqlServer\DataAccess.nuspec = NuGet\SqlServer\DataAccess.nuspec
-		NuGet\SqlServer\Readme.txt = NuGet\SqlServer\Readme.txt
-		NuGet\SqlServer\web.config.transform = NuGet\SqlServer\web.config.transform
+		.nuget\SqlServer\DataAccess.nuspec = .nuget\SqlServer\DataAccess.nuspec
+		.nuget\SqlServer\Readme.txt = .nuget\SqlServer\Readme.txt
+		.nuget\SqlServer\web.config.transform = .nuget\SqlServer\web.config.transform
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{E493C41C-F2CE-4549-926F-302AAD70C309}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODP.NET", "ODP.NET", "{48614A38-33AB-4FFA-9403-836184E2BB50}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{1867E8F5-1680-444E-BDBE-DD8B15DF55D1}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\Oracle\ODP.NET\DataAccess.nuspec = NuGet\Oracle\ODP.NET\DataAccess.nuspec
-		NuGet\Oracle\ODP.NET\Readme.txt = NuGet\Oracle\ODP.NET\Readme.txt
-		NuGet\Oracle\ODP.NET\web.config.transform = NuGet\Oracle\ODP.NET\web.config.transform
+		.nuget\SqlServer\DataAccess\ConfigHelper.sample.cs.pp = .nuget\SqlServer\DataAccess\ConfigHelper.sample.cs.pp
+		.nuget\SqlServer\DataAccess\DbPackage.sample.cs.pp = .nuget\SqlServer\DataAccess\DbPackage.sample.cs.pp
+		.nuget\SqlServer\DataAccess\MyBizMain.sample.cs.pp = .nuget\SqlServer\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataDirect", "DataDirect", "{DAC86E88-8B89-4FAC-8B5E-A292E6791F15}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataDirect", "DataDirect", "{693C7829-9CD1-470E-9307-08429026527E}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\Oracle\DataDirect\DataAccess.nuspec = NuGet\Oracle\DataDirect\DataAccess.nuspec
-		NuGet\Oracle\DataDirect\Readme.txt = NuGet\Oracle\DataDirect\Readme.txt
-		NuGet\Oracle\DataDirect\web.config.transform = NuGet\Oracle\DataDirect\web.config.transform
+		.nuget\Oracle\DataDirect\DataAccess.nuspec = .nuget\Oracle\DataDirect\DataAccess.nuspec
+		.nuget\Oracle\DataDirect\Readme.txt = .nuget\Oracle\DataDirect\Readme.txt
+		.nuget\Oracle\DataDirect\web.config.transform = .nuget\Oracle\DataDirect\web.config.transform
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{5761EAB7-BBB5-48E3-80C7-5CF0AB424479}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODP.NET", "ODP.NET", "{28EF1E07-C762-4EB2-B813-6E7B63AE1E35}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\Oracle\DataDirect\DataAccess\ConfigHelper.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\ConfigHelper.sample.cs.pp
-		NuGet\Oracle\DataDirect\DataAccess\DbPackage.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\DbPackage.sample.cs.pp
-		NuGet\Oracle\DataDirect\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\MyBizMain.sample.cs.pp
+		.nuget\Oracle\ODP.NET\DataAccess.nuspec = .nuget\Oracle\ODP.NET\DataAccess.nuspec
+		.nuget\Oracle\ODP.NET\Readme.txt = .nuget\Oracle\ODP.NET\Readme.txt
+		.nuget\Oracle\ODP.NET\web.config.transform = .nuget\Oracle\ODP.NET\web.config.transform
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{EFFD5514-7954-4202-8B76-6C51734B3C48}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{45834C0B-06B9-492F-BDDE-FF2B36FB0755}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\Oracle\ODP.NET\DataAccess\ConfigHelper.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\ConfigHelper.sample.cs.pp
-		NuGet\Oracle\ODP.NET\DataAccess\DbPackage.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\DbPackage.sample.cs.pp
-		NuGet\Oracle\ODP.NET\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\MyBizMain.sample.cs.pp
+		.nuget\Oracle\ODP.NET\DataAccess\ConfigHelper.sample.cs.pp = .nuget\Oracle\ODP.NET\DataAccess\ConfigHelper.sample.cs.pp
+		.nuget\Oracle\ODP.NET\DataAccess\DbPackage.sample.cs.pp = .nuget\Oracle\ODP.NET\DataAccess\DbPackage.sample.cs.pp
+		.nuget\Oracle\ODP.NET\DataAccess\MyBizMain.sample.cs.pp = .nuget\Oracle\ODP.NET\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{D0C1EFCD-C5FB-4BA9-8C92-A8EB5475726A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{55D98943-8A77-4C34-968D-4CAC28E5C16C}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\SqlServer\DataAccess\ConfigHelper.sample.cs.pp = NuGet\SqlServer\DataAccess\ConfigHelper.sample.cs.pp
-		NuGet\SqlServer\DataAccess\DbPackage.sample.cs.pp = NuGet\SqlServer\DataAccess\DbPackage.sample.cs.pp
-		NuGet\SqlServer\DataAccess\MyBizMain.sample.cs.pp = NuGet\SqlServer\DataAccess\MyBizMain.sample.cs.pp
+		.nuget\Oracle\DataDirect\DataAccess\ConfigHelper.sample.cs.pp = .nuget\Oracle\DataDirect\DataAccess\ConfigHelper.sample.cs.pp
+		.nuget\Oracle\DataDirect\DataAccess\DbPackage.sample.cs.pp = .nuget\Oracle\DataDirect\DataAccess\DbPackage.sample.cs.pp
+		.nuget\Oracle\DataDirect\DataAccess\MyBizMain.sample.cs.pp = .nuget\Oracle\DataDirect\DataAccess\MyBizMain.sample.cs.pp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nupkg", "nupkg", "{5F61870C-3F0B-4528-BC3D-A78730782235}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\nupkg\NuGet Command-Line.htm = .nuget\nupkg\NuGet Command-Line.htm
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODP.NET.Managed", "ODP.NET.Managed", "{90AEFF64-7137-47EB-8505-747A053FD4E4}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\Oracle\ODP.NET.Managed\DataAccess.nuspec = .nuget\Oracle\ODP.NET.Managed\DataAccess.nuspec
+		.nuget\Oracle\ODP.NET.Managed\Readme.txt = .nuget\Oracle\ODP.NET.Managed\Readme.txt
+		.nuget\Oracle\ODP.NET.Managed\web.config.transform = .nuget\Oracle\ODP.NET.Managed\web.config.transform
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{F2A6200A-FC30-40F8-B3FB-4528FD0EAB84}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\Oracle\ODP.NET.Managed\DataAccess\ConfigHelper.sample.cs.pp = .nuget\Oracle\ODP.NET.Managed\DataAccess\ConfigHelper.sample.cs.pp
+		.nuget\Oracle\ODP.NET.Managed\DataAccess\DbPackage.sample.cs.pp = .nuget\Oracle\ODP.NET.Managed\DataAccess\DbPackage.sample.cs.pp
+		.nuget\Oracle\ODP.NET.Managed\DataAccess\MyBizMain.sample.cs.pp = .nuget\Oracle\ODP.NET.Managed\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
 EndProject
 Global
@@ -95,12 +117,15 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F2F76E08-6590-4F62-A2D3-A72F3A80A780} = {6678001D-3677-4C0C-963B-9B04AE215E8B}
-		{D9B66967-C5C5-4672-BB5B-9DDBFC8680B9} = {AD2D90F7-A0E0-49B1-ADF5-0136A606A591}
-		{E493C41C-F2CE-4549-926F-302AAD70C309} = {AD2D90F7-A0E0-49B1-ADF5-0136A606A591}
-		{D0C1EFCD-C5FB-4BA9-8C92-A8EB5475726A} = {D9B66967-C5C5-4672-BB5B-9DDBFC8680B9}
-		{48614A38-33AB-4FFA-9403-836184E2BB50} = {E493C41C-F2CE-4549-926F-302AAD70C309}
-		{DAC86E88-8B89-4FAC-8B5E-A292E6791F15} = {E493C41C-F2CE-4549-926F-302AAD70C309}
-		{EFFD5514-7954-4202-8B76-6C51734B3C48} = {48614A38-33AB-4FFA-9403-836184E2BB50}
-		{5761EAB7-BBB5-48E3-80C7-5CF0AB424479} = {DAC86E88-8B89-4FAC-8B5E-A292E6791F15}
+		{5A312832-F3CA-4601-82EF-077D1F13677C} = {3C05CBB9-43F8-49D8-B416-8FA49AB41F6D}
+		{AEAB4836-1B52-4B7B-830F-53FE398428E5} = {3C05CBB9-43F8-49D8-B416-8FA49AB41F6D}
+		{5F61870C-3F0B-4528-BC3D-A78730782235} = {3C05CBB9-43F8-49D8-B416-8FA49AB41F6D}
+		{693C7829-9CD1-470E-9307-08429026527E} = {5A312832-F3CA-4601-82EF-077D1F13677C}
+		{28EF1E07-C762-4EB2-B813-6E7B63AE1E35} = {5A312832-F3CA-4601-82EF-077D1F13677C}
+		{90AEFF64-7137-47EB-8505-747A053FD4E4} = {5A312832-F3CA-4601-82EF-077D1F13677C}
+		{1867E8F5-1680-444E-BDBE-DD8B15DF55D1} = {AEAB4836-1B52-4B7B-830F-53FE398428E5}
+		{55D98943-8A77-4C34-968D-4CAC28E5C16C} = {693C7829-9CD1-470E-9307-08429026527E}
+		{45834C0B-06B9-492F-BDDE-FF2B36FB0755} = {28EF1E07-C762-4EB2-B813-6E7B63AE1E35}
+		{F2A6200A-FC30-40F8-B3FB-4528FD0EAB84} = {90AEFF64-7137-47EB-8505-747A053FD4E4}
 	EndGlobalSection
 EndGlobal
