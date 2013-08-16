@@ -4,7 +4,7 @@ A dependency NuGet package "odp.net.managed" - Oracle Data Provider for .NET (OD
 http://www.nuget.org/packages/odp.net.managed is also installed automatically.
 
 
-Three setting items have been added into your config file:
+Four setting items have been added into your config file:
 
 <configuration>
 	<connectionStrings>
@@ -14,6 +14,13 @@ Three setting items have been added into your config file:
 	<appSettings>
 		<add key="$rootnamespace$.MainPackage" value="SCHEMA.PACKAGE." />
 	</appSettings>
+	<oracle.manageddataaccess.client>
+		<version number="*">
+			<settings>
+				<setting name="TNS_ADMIN" value="C:\oracle\product\11.2.0\client_1\network\admin"/>
+			</settings>
+		</version>
+	</oracle.manageddataaccess.client>
 </configuration>
 
 Please update them as your practical environment.
