@@ -21,9 +21,9 @@
 		</dependencies>
 		</metadata>
 	<files>
-		<file src="..\.nuget\Oracle\ODP.NET.Managed\web.config.transform" target="content" />
-		<file src="..\.nuget\Oracle\ODP.NET.Managed\web.config.transform" target="content\app.config.transform" />
-		<file src="..\.nuget\Oracle\ODP.NET.Managed\Readme.txt" target="" />
-		<file src="..\.nuget\Oracle\ODP.NET.Managed\DataAccess\*.cs.pp" target="content\DataAccess" />
+		<file src="..\NuGet\Oracle\ODP.NET.Managed\web.config.transform" target="content" />
+		<file src="..\NuGet\Oracle\ODP.NET.Managed\web.config.transform" target="content\app.config.transform" />
+		<file src="..\NuGet\Oracle\ODP.NET.Managed\Readme.txt" target="" />
+		<file src="..\NuGet\Oracle\ODP.NET.Managed\DataAccess\*.cs.pp" target="content\DataAccess" />
 	</files>
 </package>
