@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 #if DATADIRECT
 using DDTek.Oracle;
-#else // ODP.NET
+#elif ODP_NET	// ODP.NET
 using Oracle.DataAccess.Client;
+#else			// ODP.NET.Managed
+using Oracle.ManagedDataAccess.Client;
 #endif
 
 namespace DbParallel.DataAccess.Booster.Oracle

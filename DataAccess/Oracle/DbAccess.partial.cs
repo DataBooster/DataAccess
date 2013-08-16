@@ -6,8 +6,10 @@ using System.Data.Common;
 using System.Collections.Generic;
 #if DATADIRECT
 using DDTek.Oracle;
-#else // ODP.NET
+#elif ODP_NET	// ODP.NET
 using Oracle.DataAccess.Client;
+#else			// ODP.NET.Managed
+using Oracle.ManagedDataAccess.Client;
 #endif
 
 namespace DbParallel.DataAccess
@@ -33,7 +35,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-#if ODP_NET		// ODP.NET
+#if (ODP_NET || ODP_NET_MANAGED)		// ODP.NET
 		partial void OnOracleReaderExecuting(DbCommand dbCmd)
 		{
 			OracleCommand oraCmd = dbCmd as OracleCommand;
