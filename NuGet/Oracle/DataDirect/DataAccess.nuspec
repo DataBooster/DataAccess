@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package >
 	<metadata>
-		<id>DataBooster.SqlServer</id>
+		<id>DataBooster.Oracle.DataDirect</id>
 		<version>$version$</version>
-		<title>$title$ for SQL Server</title>
+		<title>$title$ for SQL Server + Oracle (use DataDirect Provider)</title>
 		<authors>$author$</authors>
 		<owners>http://databooster.codeplex.com</owners>
 		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
@@ -12,17 +12,16 @@
 		<description>$description$</description>
 		<releaseNotes>http://databooster.codeplex.com/releases</releaseNotes>
 		<copyright>Copyright 2013 Abel Cheng</copyright>
-		<tags>
-			DbParallel DataAccess ADO.NET Booster Launcher Throughput Database
-		</tags>
+		<tags>DbParallel DataAccess ADO.NET Booster Launcher Throughput Oracle Progress DataDirect</tags>
 		<frameworkAssemblies>
 			<frameworkAssembly assemblyName="System.Configuration" />
+			<frameworkAssembly assemblyName="DDTek.Oracle" />
 		</frameworkAssemblies>
 	</metadata>
 	<files>
-		<file src="..\.nuget\SqlServer\web.config.transform" target="content" />
-		<file src="..\.nuget\SqlServer\web.config.transform" target="content\app.config.transform" />
-		<file src="..\.nuget\SqlServer\Readme.txt" target="" />
-		<file src="..\.nuget\SqlServer\DataAccess\*.cs.pp" target="content\DataAccess" />
+		<file src="..\NuGet\Oracle\DataDirect\web.config.transform" target="content" />
+		<file src="..\NuGet\Oracle\DataDirect\web.config.transform" target="content\app.config.transform" />
+		<file src="..\NuGet\Oracle\DataDirect\Readme.txt" target="" />
+		<file src="..\NuGet\Oracle\DataDirect\DataAccess\*.cs.pp" target="content\DataAccess" />
 	</files>
 </package>

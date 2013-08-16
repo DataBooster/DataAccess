@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package >
 	<metadata>
-		<id>DataBooster.Oracle.ODP</id>
+		<id>DataBooster.SqlServer</id>
 		<version>$version$</version>
-		<title>$title$ for SQL Server + Oracle (use ODP.NET Provider)</title>
+		<title>$title$ for SQL Server</title>
 		<authors>$author$</authors>
 		<owners>http://databooster.codeplex.com</owners>
 		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
@@ -12,16 +12,17 @@
 		<description>$description$</description>
 		<releaseNotes>http://databooster.codeplex.com/releases</releaseNotes>
 		<copyright>Copyright 2013 Abel Cheng</copyright>
-		<tags>DbParallel DataAccess ADO.NET Booster Launcher Throughput Oracle ODP.NET</tags>
+		<tags>
+			DbParallel DataAccess ADO.NET Booster Launcher Throughput Database
+		</tags>
 		<frameworkAssemblies>
 			<frameworkAssembly assemblyName="System.Configuration" />
-			<frameworkAssembly assemblyName="Oracle.DataAccess" />
 		</frameworkAssemblies>
 	</metadata>
 	<files>
-		<file src="..\.nuget\Oracle\ODP.NET\web.config.transform" target="content" />
-		<file src="..\.nuget\Oracle\ODP.NET\web.config.transform" target="content\app.config.transform" />
-		<file src="..\.nuget\Oracle\ODP.NET\Readme.txt" target="" />
-		<file src="..\.nuget\Oracle\ODP.NET\DataAccess\*.cs.pp" target="content\DataAccess" />
+		<file src="..\NuGet\SqlServer\web.config.transform" target="content" />
+		<file src="..\NuGet\SqlServer\web.config.transform" target="content\app.config.transform" />
+		<file src="..\NuGet\SqlServer\Readme.txt" target="" />
+		<file src="..\NuGet\SqlServer\DataAccess\*.cs.pp" target="content\DataAccess" />
 	</files>
 </package>
