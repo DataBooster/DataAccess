@@ -86,7 +86,7 @@ namespace $rootnamespace$.DataAccess
 				},
 				map =>
 				{
-					// Known issue: Visual Studio Intellisense may not able to infer the type of map and t correctly
+					// In order to allow Visual Studio Intellisense to be able to infer the type of map and t correctly
 					// Please make sure that SampleClassB class has a parameterless constructor or default constructor implicitly
 					map.Add("COL_A", t => t.PropertyA);
 					map.Add("COL_B", t => t.PropertyB);
@@ -168,9 +168,9 @@ namespace $rootnamespace$.DataAccess
 				 *	please see also http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopycolumnmappingcollection.aspx)
 				 */	columnMappings =>
 					{
-						columnMappings.Add(0, "ProdID");
-						columnMappings.Add(1, "ProdName");
-						columnMappings.Add(2, "ProdPrice");
+						columnMappings.Add(/* 0, */"ProdID");
+						columnMappings.Add(/* 1, */"ProdName");
+						columnMappings.Add(/* 2, */"ProdPrice");
 					}
 			);
 		}
