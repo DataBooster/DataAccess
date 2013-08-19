@@ -152,9 +152,9 @@
                 parameters =&gt;
                 {
                     parameters.Add(<span style="color: #a31515;">"inGroup_ID"</span>, 1001);     <span style="color: green;">// Ordinary parameter</span>
-                    parameters.AddOracleAssociativeArray(<span style="color: #a31515;">"inItem_IDs"</span>,
+                    parameters.AddAssociativeArray(<span style="color: #a31515;">"inItem_IDs"</span>,
                         OracleDbType.Int32);
-                    parameters.AddOracleAssociativeArray(<span style="color: #a31515;">"inItem_Values"</span>,
+                    parameters.AddAssociativeArray(<span style="color: #a31515;">"inItem_Values"</span>,
                         OracleDbType.Double);
                 }))
             {
@@ -180,15 +180,14 @@
 </div>
 <div style="padding-left: 40px;">The database side stored procedure is like following:
 <div style="color: black; background-color: white;">
-<pre><span style="color: blue;">TYPE</span> Number_Column <span style="color: blue;">IS</span> <span style="color: blue;">TABLE</span> <span style="color: blue;">OF</span> NUMBER <span style="color: blue;">INDEX</span> <span style="color: blue;">BY</span> PLS_INTEGER;
-<span style="color: blue;">TYPE</span> Double_Column <span style="color: blue;">IS</span> <span style="color: blue;">TABLE</span> <span style="color: blue;">OF</span> BINARY_DOUBLE <span style="color: blue;">INDEX</span> <span style="color: blue;">BY</span> PLS_INTEGER;
-
+<pre><span style="color: blue;">TYPE</span> NUMBER_ARRAY <span style="color: blue;">IS</span> <span style="color: blue;">TABLE</span> <span style="color: blue;">OF</span> NUMBER <span style="color: blue;">INDEX</span> <span style="color: blue;">BY</span> PLS_INTEGER;
+<span style="color: blue;">TYPE</span> DOUBLE_ARRAY <span style="color: blue;">IS</span> <span style="color: blue;">TABLE</span> <span style="color: blue;">OF</span> BINARY_DOUBLE <span style="color: blue;">INDEX</span> <span style="color: blue;">BY</span> PLS_INTEGER;
 
 <span style="color: blue;">PROCEDURE</span> WRITE_BULK_DATA
 (
     inGroup_ID      NUMBER,
-    inItem_IDs      Number_Column,
-    inItem_Values   Double_Column
+    inItem_IDs      NUMBER_ARRAY,
+    inItem_Values   DOUBLE_ARRAY
 )   <span style="color: blue;">AS</span>
 <span style="color: blue;">BEGIN</span>
     FORALL i <span style="color: blue;">IN</span> inItem_IDs.FIRST .. inItem_IDs.LAST
@@ -280,19 +279,13 @@ Your application DAL should wrap this method as strong type parameters, like fol
 <p>Detail for destinationTableName and SqlBulkCopyColumnMappingCollection, please refer to <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.destinationtablename.aspx" target="_blank">SqlBulkCopy.DestinationTableName</a>, <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.columnmappings.aspx" target="_blank">SqlBulkCopy.ColumnMappings</a> and <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopycolumnmappingcollection.aspx" target="_blank">SqlBulkCopyColumnMappingCollection</a> on MSDN.</p>
 <p><strong>Methods</strong><br />- Post: The same as OracleLauncher</p>
 </div>
-<div><strong>Requirements</strong></div>
-<ul>
-<li>.NET Framework 4.0 or later. </li>
-<li>Oracle ADO.NET Provider (Optional):<br />- DataDirect Connect for ADO.NET (Reference: DDTek.Oracle.dll; Conditional Compilation Symbols: "ORACLE;DATADIRECT")<br />or<br />- ODP.NET (Reference: Oracle.DataAccess.dll; Conditional Compilation Symbols: "ORACLE;ODP_NET")<br />or<br /><em>(the provider can be easily replaced by other provider for Oracle)</em> </li>
-</ul>
-<p><strong>NuGet Packages</strong></p>
-<div style="padding-left: 30px;">
-It is strongly recommended to use this library through NuGet Library Package Manager right in your Visual Studio.
+<div><strong>NuGet Packages</strong></div>
+<div style="padding-left: 30px;">It is strongly recommended to use this library through NuGet Library Package Manager right in Visual Studio. 
 <table>
 <tbody>
 <tr>
-<td>Package</td>
-<td>Package ID</td>
+<td align="center">Package</td>
+<td align="center">Package ID</td>
 </tr>
 <tr>
 <td>DataBooster for SQL Server</td>
@@ -303,16 +296,26 @@ It is strongly recommended to use this library through NuGet Library Package Man
 <td>DataBooster.Oracle.ODP</td>
 </tr>
 <tr>
-<td>DataBooster for SQL Server + Oracle (use DataDirect Provider) &nbsp; &nbsp;</td>
+<td>DataBooster for SQL Server + Oracle (use ODP.NET Managed Driver) &nbsp; &nbsp;</td>
+<td>DataBooster.Oracle.Managed</td>
+</tr>
+<tr>
+<td>DataBooster for SQL Server + Oracle (use DataDirect Provider)</td>
 <td>DataBooster.Oracle.DataDirect &nbsp;</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><strong>Contribute</strong></p>
+<p><strong>Requirements</strong></p>
 <ul>
-<li>Welcome all feedback through the CodePlex project (through comments, patches, or items in the Issue Tracker), or <a href="mailto:abelcys@gmail.com">abelcys@gmail.com</a>; </li>
-<li>Earnestly request adding support for other databases; </li>
+<li>.NET Framework 4.0 or later. </li>
+<li>Oracle ADO.NET Provider (Optional):<br />- ODP.NET 4 (Reference: Oracle.DataAccess.dll; Conditional Compilation Symbols: "ORACLE;ODP_NET")<br />or<br />- ODP.NET Managed Driver (Reference: Oracle.ManagedDataAccess.dll; Conditional Compilation Symbols: "ORACLE;ODP_NET_MANAGED")<br />or<br />- DataDirect Connect for ADO.NET (Reference: DDTek.Oracle.dll; Conditional Compilation Symbols: "ORACLE;DATADIRECT")<br />or<br /><em>(the provider can be easily replaced by other provider for Oracle)</em> </li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li>Welcome all feedback through the CodePlex project (through comments, patches, or items in the Issue Tracker); </li>
+<li>Needs to add support for other databases; </li>
+<li>Looking for Clean-Style Developers, Testers and Editors. </li>
 </ul>
 <div><strong>Support</strong></div>
 <div style="padding-left: 30px;">Feel free to use the source or binaries in your apps, and products.<br />This project is developed in personal time, the source code support can be available only at night - Easten Time (US &amp; Canada).</div>
