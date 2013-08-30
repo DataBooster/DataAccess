@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DataBooster")]
-[assembly: AssemblyDescription("DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing mass data onto database.")]
+[assembly: AssemblyDescription("Less Code, Less Configuration, Less Time. DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing mass data onto database.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Abel Cheng")]
 [assembly: AssemblyProduct("dbParallel Database Task Parallel Foundation")]
