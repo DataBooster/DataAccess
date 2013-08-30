@@ -5,7 +5,7 @@
 </head>
 <body>
 <div><strong>Project Description</strong></div>
-<div>The dbParallel DataBooster library is a high-performance extension to ADO.NET Data Provider, includes two aspects:</div>
+<div>Less Code, Less Configuration, Less Time!<br />The DataBooster library is a high-performance extension to ADO.NET Data Provider, includes two aspects:</div>
 <ul>
 <li>A slimmed down API encapsulation which simplified the most common data access operations (DbConnection -&gt; DbCommand -&gt; DbParameter -&gt; DbDataReader) into a single class <strong>DbAccess</strong>, to help application with a clean DAL, avoid over-packing and redundant-copy of data transfer.<br />Please consider using this for your application development if Entity Framework can not meet your performance requirement. </li>
 <li>A booster for writing mass data onto database. Base on a rational utilization of database concurrency and a effective utilization of network bandwidth, the booster implements a transmitting pipeline of dataflow like a Multiple Launch Rocket System, The speed of writing data into database can be improved about 5 times faster than an ordinary bulk insert/copy, or up to 700 times faster than a row-by-row insert.<br />The detail implement closely depends on the specific database. For the moment, the class <strong>OracleLauncher</strong> and <strong>SqlLauncher</strong> are ready for Oracle and SQL Server. They handle the throughput control and other low-level synchronization details. They are thread-safe which avoid locks. By using the Launcher, you can maximize the performance of your code while filling data row-by-row simply. </li>
@@ -207,6 +207,7 @@
 <span style="color: blue;">END</span> WRITE_BULK_DATA;</pre>
 </div>
 </div>
+<div>&nbsp;</div>
 <p><strong>API Reference</strong></p>
 <ul>
 <li><strong><span style="text-decoration: underline;">DbAccess</span></strong><br />(Namespace: DbParallel.DataAccess) </li>
@@ -280,7 +281,7 @@ Your application DAL should wrap this method as strong type parameters, like fol
 <p><strong>Methods</strong><br />- Post: The same as OracleLauncher</p>
 </div>
 <div><strong>NuGet Packages</strong></div>
-<div style="padding-left: 30px;">It is strongly recommended to use this library through NuGet Library Package Manager right in Visual Studio. 
+<div style="padding-left: 30px;">It is strongly recommended to use this library through NuGet Library Package Manager right in Visual Studio. NuGet Packages can also generate some scaffolding, sample code and configuration into your project for a very quick start from the ground. 
 <table>
 <tbody>
 <tr>
@@ -305,7 +306,7 @@ Your application DAL should wrap this method as strong type parameters, like fol
 </tr>
 </tbody>
 </table>
-</div>
+All sample code is only available in DEBUG mode, you can even turn off sample code in DEBUG mode easily, just add NO_SAMPLE into your project Conditional Compilation Symbols (Visual Studio Project Properties Dialog -&gt; Build -&gt; General -&gt; Conditional Compilation Symbols).<br />&nbsp;</div>
 <p><strong>Requirements</strong></p>
 <ul>
 <li>.NET Framework 4.0 or later. </li>
