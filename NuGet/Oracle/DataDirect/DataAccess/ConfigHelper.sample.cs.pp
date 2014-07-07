@@ -59,8 +59,12 @@ namespace $rootnamespace$.DataAccess
 			if (string.IsNullOrWhiteSpace(_AuxConnectionSettingKey) == false)
 			{
 				connSetting = ConfigurationManager.ConnectionStrings[_AuxConnectionSettingKey];
-				_AuxDbProviderFactory = DbProviderFactories.GetFactory(connSetting.ProviderName);
-				_AuxConnectionString = connSetting.ConnectionString;
+
+				if (connSetting != null)
+				{
+					_AuxDbProviderFactory = DbProviderFactories.GetFactory(connSetting.ProviderName);
+					_AuxConnectionString = connSetting.ConnectionString;
+				}
 			}
 			#endregion
 

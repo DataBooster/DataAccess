@@ -14,6 +14,21 @@ namespace DbParallel.DataAccess
 			_DbCommand = dbCommand;
 		}
 
+		public DbParameter AddReturn(string parameterName = "RETURN_VALUE", DbType dbType = DbType.Int32, int nSize = 0)
+		{
+			DbParameter parameter = _DbCommand.CreateParameter();
+			parameter.ParameterName = parameterName;
+			parameter.DbType = dbType;
+			parameter.Direction = ParameterDirection.ReturnValue;
+
+			if (nSize > 0)
+				parameter.Size = nSize;
+
+			_DbCommand.Parameters.Add(parameter);
+
+			return parameter;
+		}
+
 		public DbParameter Add()
 		{
 			DbParameter parameter = _DbCommand.CreateParameter();
@@ -22,11 +37,15 @@ namespace DbParallel.DataAccess
 			return parameter;
 		}
 
-		public DbParameter Add(string parameterName, object oValue)
+		public DbParameter Add(string parameterName, object oValue, int nSize = 0)
 		{
 			DbParameter parameter = _DbCommand.CreateParameter();
 			parameter.ParameterName = parameterName;
 			parameter.Value = (oValue == null) ? DBNull.Value : oValue;
+
+			if (nSize > 0)
+				parameter.Size = nSize;
+
 			_DbCommand.Parameters.Add(parameter);
 
 			return parameter;
@@ -36,6 +55,21 @@ namespace DbParallel.DataAccess
 		{
 			DbParameter parameter = _DbCommand.CreateParameter();
 			parameter.ParameterName = parameterName;
+			parameter.Direction = ParameterDirection.Output;
+
+			if (nSize > 0)
+				parameter.Size = nSize;
+
+			_DbCommand.Parameters.Add(parameter);
+
+			return parameter;
+		}
+
+		public DbParameter AddOutput(string parameterName, DbType dbType, int nSize = 0)
+		{
+			DbParameter parameter = _DbCommand.CreateParameter();
+			parameter.ParameterName = parameterName;
+			parameter.DbType = dbType;
 			parameter.Direction = ParameterDirection.Output;
 
 			if (nSize > 0)
