@@ -198,7 +198,7 @@ namespace DbParallel.DataAccess
 			return ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap);
 		}
 
-		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType,
+		public void ExecuteMultiReader(string commandText, int commandTimeout, CommandType commandType,
 			Action<DbParameterBuilder> parametersBuilder, Action<DbMultiResultSet> multiResultSetMap)
 		{
 			DbMultiResultSet multiResultSet = new DbMultiResultSet();
@@ -212,9 +212,9 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbMultiResultSet> multiResultSetMap)
+		public void ExecuteMultiReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbMultiResultSet> multiResultSetMap)
 		{
-			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, multiResultSetMap);
+			ExecuteMultiReader(commandText, 0, _DefaultCommandType, parametersBuilder, multiResultSetMap);
 		}
 
 		#endregion
