@@ -36,15 +36,15 @@ namespace DbParallel.DataAccess
 		}
 
 #if (ODP_NET || ODP_NET_MANAGED)		// ODP.NET
-		partial void OnOracleReaderExecuting(DbCommand dbCmd)
+		partial void OnOracleReaderExecuting(DbCommand dbCmd, int resultSetCnt/* = 1 */)
 		{
 			OracleCommand oraCmd = dbCmd as OracleCommand;
 
 			if (oraCmd != null && oraCmd.CommandType == CommandType.StoredProcedure)
 			{
-				OracleParameter paramRefCursor = oraCmd.Parameters.Cast<OracleParameter>().LastOrDefault(p => p.OracleDbType == OracleDbType.RefCursor && p.Direction != ParameterDirection.Input);
+				int cntRefCursorParam = oraCmd.Parameters.Cast<OracleParameter>().Count(p => p.OracleDbType == OracleDbType.RefCursor && p.Direction != ParameterDirection.Input);
 
-				if (paramRefCursor == null)
+				if (cntRefCursorParam < resultSetCnt)
 					if (oraCmd.BindByName)
 					{
 						OracleParameterCollection paramCollection = oraCmd.Parameters;
@@ -56,12 +56,15 @@ namespace DbParallel.DataAccess
 					}
 					else
 					{
-						paramRefCursor = oraCmd.CreateParameter();
-						paramRefCursor.OracleDbType = OracleDbType.RefCursor;
-						paramRefCursor.Direction = ParameterDirection.Output;
-						paramRefCursor.Value = DBNull.Value;
+						for (; cntRefCursorParam < resultSetCnt; cntRefCursorParam++)
+						{
+							OracleParameter paramRefCursor = oraCmd.CreateParameter();
+							paramRefCursor.OracleDbType = OracleDbType.RefCursor;
+							paramRefCursor.Direction = ParameterDirection.Output;
+							paramRefCursor.Value = DBNull.Value;
 
-						oraCmd.Parameters.Add(paramRefCursor);
+							oraCmd.Parameters.Add(paramRefCursor);
+						}
 					}
 			}
 		}

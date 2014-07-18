@@ -3,14 +3,14 @@
   <Class Name="DbParallel.DataAccess.DbExtensions">
     <Position X="5.5" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AEAACAAAAAAAAgAEAgAIAAAAAAASAAAAAACEQABAsCA=</HashCode>
+      <HashCode>AEIACAAAAAAAAgAEAgAIAAAAAAASAAAAAACEQABAsCA=</HashCode>
       <FileName>DbExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.DbParameterBuilder">
     <Position X="3.25" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAIAAAAAAAABAAAQAAAABAAAAAAAAAEAIAAAAAAAAAA=</HashCode>
+      <HashCode>AAICAAAAAAABAAAQAAAABAAAAAAAAAEAIAAAAAAAAAA=</HashCode>
       <FileName>DbParameterBuilder.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -32,7 +32,7 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAIAAAAAAAAIAAAAAAAAAAAAQAAAAAAEAAAAACAAIAA=</HashCode>
+      <HashCode>AAIAAAgAAAAIAAAAAAAAAAAAQAAAAAAEAAAAACAAIAA=</HashCode>
       <FileName>DbFieldMap.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -51,6 +51,23 @@
       <FileName>DbTransactionScope.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DbParallel.DataAccess.DbMultiResultSet">
+    <Position X="5.75" Y="6" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="DbParallel.DataAccess.DbMultiResultSet.DbResultAdapter&lt;T&gt;">
+        <TypeIdentifier>
+          <NewMemberFileName>DbMultiResultSet.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAIAAAAABAAAAAAAEAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DbMultiResultSet.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

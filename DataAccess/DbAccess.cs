@@ -81,13 +81,13 @@ namespace DbParallel.DataAccess
 			return canRetry;
 		}
 
-		partial void OnOracleReaderExecuting(DbCommand dbCmd);
-		private void OnReaderExecuting(DbCommand dbCmd)
+		partial void OnOracleReaderExecuting(DbCommand dbCmd, int resultSetCnt/* = 1 */);
+		private void OnReaderExecuting(DbCommand dbCmd, int resultSetCnt/* = 1*/)
 		{
-			OnOracleReaderExecuting(dbCmd);
+			OnOracleReaderExecuting(dbCmd, resultSetCnt);
 		}
 
-		private DbDataReader CreateReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
+		private DbDataReader CreateReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int resultSetCnt = 1)
 		{
 			for (int retry = 0; ; retry++)
 			{
@@ -95,7 +95,7 @@ namespace DbParallel.DataAccess
 				{
 					DbCommand dbCmd = CreateCommand(commandText, commandTimeout, commandType, parametersBuilder);
 
-					OnReaderExecuting(dbCmd);
+					OnReaderExecuting(dbCmd, resultSetCnt);
 
 					return dbCmd.ExecuteReader();
 				}
@@ -159,10 +159,7 @@ namespace DbParallel.DataAccess
 				{
 					DbFieldMap<T> map = new DbFieldMap<T>();
 
-					if (resultMap == null)
-						map.AddAllPropertiesOrFields();
-					else
-						resultMap(map);
+					map.PrepareResultMap(resultMap);
 
 					while (reader.Read())
 						readEntity(map.ReadNew(reader));
@@ -188,10 +185,7 @@ namespace DbParallel.DataAccess
 			{
 				DbFieldMap<T> map = new DbFieldMap<T>();
 
-				if (resultMap == null)
-					map.AddAllPropertiesOrFields();
-				else
-					resultMap(map);
+				map.PrepareResultMap(resultMap);
 
 				while (reader.Read())
 					yield return map.ReadNew(reader);
@@ -202,6 +196,25 @@ namespace DbParallel.DataAccess
 			Action<DbFieldMap<T>> resultMap = null) where T : new()
 		{
 			return ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap);
+		}
+
+		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType,
+			Action<DbParameterBuilder> parametersBuilder, Action<DbMultiResultSet> multiResultSetMap)
+		{
+			DbMultiResultSet multiResultSet = new DbMultiResultSet();
+
+			if (multiResultSetMap != null)
+				multiResultSetMap(multiResultSet);
+
+			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder, multiResultSet.Count))
+			{
+				multiResultSet.ReadAll(reader);
+			}
+		}
+
+		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbMultiResultSet> multiResultSetMap)
+		{
+			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, multiResultSetMap);
 		}
 
 		#endregion
