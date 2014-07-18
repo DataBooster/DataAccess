@@ -42,6 +42,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Progress\DataDirect\Connect_for_ADO.NET_35\DDTek.Oracle.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Oracle.DataAccess, Version=4.112.3.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86" />
     <Reference Include="Oracle.ManagedDataAccess">
       <HintPath>..\packages\odp.net.managed.121.1.1\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
@@ -57,6 +58,7 @@
     <Compile Include="DbAccess.cs" />
     <Compile Include="DbExtensions.cs" />
     <Compile Include="DbFieldMap.cs" />
+    <Compile Include="DbMultiResultSet.cs" />
     <Compile Include="DbParameterBuilder.cs" />
     <Compile Include="DbTransactionManager.cs" />
     <Compile Include="DbTransactionScope.cs" />

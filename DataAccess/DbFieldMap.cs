@@ -121,6 +121,14 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		internal void PrepareResultMap(Action<DbFieldMap<T>> resultMap = null)
+		{
+			if (resultMap == null)
+				AddAllPropertiesOrFields();
+			else
+				resultMap(this);
+		}
+
 		internal T ReadNew(DbDataReader dataReader)
 		{
 			T entity = new T();
