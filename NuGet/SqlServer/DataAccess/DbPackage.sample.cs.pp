@@ -117,6 +117,39 @@ namespace $rootnamespace$.DataAccess
 		}
 		#endregion
 
+		#region A sample of Multi-ResultSets with auto/specified fields mapping
+		internal static void ViewReport(this DbAccess dbAccess, DateTime date, int sessionId,
+			out List<SampleClassA> sampleClassAList, out List<SampleClassB> sampleClassBList, out List<SampleClassC> sampleClassCList)
+		{
+			const string sp = "VIEW_REPORT";
+
+			ICollection<SampleClassA> aList = new List<SampleClassA>();
+			ICollection<SampleClassB> bList = new List<SampleClassB>();
+			ICollection<SampleClassC> cList = new List<SampleClassC>();
+
+			dbAccess.ExecuteMultiReader(GetProcedure(sp), parameters =>
+				{
+					parameters.Add("inDate", date);
+					parameters.Add("inSession", sessionId);
+				}, resultSets =>
+					{
+						resultSets.Add(ref aList);					// 1st ResultSet will put into aList - full-automatic fields mapping example
+						resultSets.Add(ref bList, colMap =>			// 2nd ResultSet will put into bList - specified fields mapping example
+							{
+								colMap.Add("COL_A", t => t.PropertyA);
+								colMap.Add("COL_B", t => t.PropertyB);
+								colMap.Add("COL_C", t => t.PropertyC);
+							});
+						resultSets.Add(ref cList);					// 3rd ResultSet will put into cList - full-automatic fields mapping example
+					}
+			);
+
+			sampleClassAList = aList as List<SampleClassA>;
+			sampleClassBList = bList as List<SampleClassB>;
+			sampleClassCList = cList as List<SampleClassC>;
+		}
+		#endregion
+
 		#region A sample of output parameter
 		internal static Tuple<string, int, byte> GetSampleSetting(this DbAccess dbAccess, string sampleDomain)
 		{
@@ -129,8 +162,8 @@ namespace $rootnamespace$.DataAccess
 				{
 					parameters.Add("inSample_Domain", sampleDomain);
 					outStartupMode = parameters.AddOutput("outStartup_Mode", 32);
-					outRefreshInterval = parameters.AddOutput("outRefresh_Interval");
-					outDegreeOfTaskParallelism = parameters.AddOutput("outParallelism_Degree");
+					outRefreshInterval = parameters.AddOutput("outRefresh_Interval", DbType.Int32);
+					outDegreeOfTaskParallelism = parameters.AddOutput("outParallelism_Degree", DbType.Byte);
 				});
 
 			return Tuple.Create(outStartupMode.Parameter<string>(),
