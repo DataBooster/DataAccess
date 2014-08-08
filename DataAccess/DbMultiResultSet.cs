@@ -21,7 +21,7 @@ namespace DbParallel.DataAccess
 				get { return _FieldMap; }
 			}
 
-			public DbResultAdapter(ref ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap)
+			public DbResultAdapter(ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap)
 			{
 				_ResultSet = resultSet;
 				_FieldMap = new DbFieldMap<T>();
@@ -37,9 +37,14 @@ namespace DbParallel.DataAccess
 			_MultiResultSet = new ArrayList();
 		}
 
-		public void Add<T>(ref ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : new()
+        public void Add<T>(ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : new()
+        {
+            _MultiResultSet.Add(new DbResultAdapter<T>(resultSet, resultMap));
+        }
+
+        public void Add<T>(ref ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : new()
 		{
-			_MultiResultSet.Add(new DbResultAdapter<T>(ref resultSet, resultMap));
+			_MultiResultSet.Add(new DbResultAdapter<T>(resultSet, resultMap));
 		}
 
 		internal void ReadAll(DbDataReader reader)
