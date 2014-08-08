@@ -118,14 +118,12 @@ namespace $rootnamespace$.DataAccess
 		#endregion
 
 		#region A sample of Multi-ResultSets with auto/specified fields mapping
-		internal static void ViewReport(this DbAccess dbAccess, DateTime date, int sessionId,
-			out List<SampleClassA> sampleClassAList, out List<SampleClassB> sampleClassBList, out List<SampleClassC> sampleClassCList)
+		internal static Tuple<List<SampleClassA>, List<SampleClassB>, List<SampleClassC>> ViewReport(this DbAccess dbAccess, DateTime date, int sessionId)
 		{
 			const string sp = "VIEW_REPORT";
 
-			ICollection<SampleClassA> aList = new List<SampleClassA>();
-			ICollection<SampleClassB> bList = new List<SampleClassB>();
-			ICollection<SampleClassC> cList = new List<SampleClassC>();
+			Tuple<List<SampleClassA>, List<SampleClassB>, List<SampleClassC>> resultTuple = new Tuple<List<SampleClassA>, List<SampleClassB>, List<SampleClassC>>(
+				new List<SampleClassA>(), new List<SampleClassB>(), new List<SampleClassC>());
 
 			dbAccess.ExecuteMultiReader(GetProcedure(sp), parameters =>
 				{
@@ -133,20 +131,22 @@ namespace $rootnamespace$.DataAccess
 					parameters.Add("inSession", sessionId);
 				}, resultSets =>
 					{
-						resultSets.Add(ref aList);					// 1st ResultSet will put into aList - full-automatic fields mapping example
-						resultSets.Add(ref bList, colMap =>			// 2nd ResultSet will put into bList - specified fields mapping example
-							{
-								colMap.Add("COL_A", t => t.PropertyA);
-								colMap.Add("COL_B", t => t.PropertyB);
-								colMap.Add("COL_C", t => t.PropertyC);
-							});
-						resultSets.Add(ref cList);					// 3rd ResultSet will put into cList - full-automatic fields mapping example
+						// Specified fields mapping example
+						resultSets.Add(resultTuple.Item1,	// Put 1st ResultSet into resultTuple.Item1
+							colMap =>
+								{
+									colMap.Add("COL_A", t => t.PropertyA);
+									colMap.Add("COL_B", t => t.PropertyB);
+									colMap.Add("COL_C", t => t.PropertyC);
+								});
+
+						// Full-automatic (case-insensitive) fields mapping examples
+						resultSets.Add(resultTuple.Item2);   // Put 2nd ResultSet into resultTuple.Item2
+						resultSets.Add(resultTuple.Item3);   // Put 3rd ResultSet into resultTuple.Item3
 					}
 			);
 
-			sampleClassAList = aList as List<SampleClassA>;
-			sampleClassBList = bList as List<SampleClassB>;
-			sampleClassCList = cList as List<SampleClassC>;
+			return resultTuple;
 		}
 		#endregion
 
