@@ -97,9 +97,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "packages", "packages", "{A5FE571E-22FD-4AFA-B061-A14EA9E5DECE}"
-	ProjectSection(SolutionItems) = preProject
-		packages\repositories.config = packages\repositories.config
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution

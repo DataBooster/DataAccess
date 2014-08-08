@@ -39,6 +39,12 @@ namespace $rootnamespace$.DataAccess
 			public string PropertyA { get; set; }
 			public int PropertyB { get; set; }
 			public decimal? PropertyC { get; set; }
+			public SampleClassA()	// => ... <T> ... where T : new()
+			{
+				PropertyA = string.Empty;
+				PropertyB = 0;
+				PropertyC = 0m;
+			}
 			public SampleClassA(string a, int b, decimal? c)
 			{
 				PropertyA = a;
