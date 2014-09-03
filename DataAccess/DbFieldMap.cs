@@ -59,6 +59,9 @@ namespace DbParallel.DataAccess
 		private List<PropertyOrField> _FieldList;
 		private ulong _RowCount;
 
+		private Action<DbDataReader, T> _CustomReaderAction = null;
+		private bool _AllowAutoMatch = true;
+
 		public DbFieldMap()
 		{
 			_FieldList = new List<PropertyOrField>();
@@ -104,6 +107,12 @@ namespace DbParallel.DataAccess
 			return this;
 		}
 
+		public void CustomizeReaderAction(Action<DbDataReader, T> customReaderAction, bool allowAutoMatch /*allowAutoMapAllPropertiesOrFields*/ = false)
+		{
+			_CustomReaderAction = customReaderAction;
+			_AllowAutoMatch = allowAutoMatch;
+		}
+
 		internal void AddAllPropertiesOrFields()
 		{
 			Type type = typeof(T);
@@ -123,10 +132,11 @@ namespace DbParallel.DataAccess
 
 		internal void PrepareResultMap(Action<DbFieldMap<T>> resultMap = null)
 		{
-			if (resultMap == null)
-				AddAllPropertiesOrFields();
-			else
+			if (resultMap != null)
 				resultMap(this);
+			else
+				if (_AllowAutoMatch)
+					AddAllPropertiesOrFields();
 		}
 
 		internal T ReadNew(DbDataReader dataReader)
@@ -138,6 +148,9 @@ namespace DbParallel.DataAccess
 
 			foreach (PropertyOrField field in _FieldList)
 				field.SetValue(entity, dataReader[field.ColumnOrdinal]);
+
+			if (_CustomReaderAction != null)
+				_CustomReaderAction(dataReader, entity);
 
 			_RowCount++;
 			return entity;
