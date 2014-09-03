@@ -152,7 +152,8 @@ namespace DbParallel.DataAccess
 //
 //	Original Author:	Abel Cheng <abelcys@gmail.com>
 //	Created Date:		2013-07-31
-//	Primary Host:		http://dbParallel.codeplex.com
+//	Original Host:		http://dbParallel.codeplex.com
+//	Primary Host:		http://DataBooster.codeplex.com
 //	Change Log:
 //	Author				Date			Comment
 //
