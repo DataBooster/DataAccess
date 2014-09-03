@@ -72,19 +72,19 @@ namespace DbParallel.DataAccess
 
 		private OracleParameter[] DeriveParameters(OracleCommand spCmd)
 		{
-			OracleCommand oraCmd = _Connection.CreateCommand() as OracleCommand;
-			oraCmd.CommandType = CommandType.StoredProcedure;
-			oraCmd.CommandText = spCmd.CommandText;
-			oraCmd.Transaction = spCmd.Transaction;
+			using (OracleCommand oraCmd = _Connection.CreateCommand() as OracleCommand)
+			{
+				oraCmd.CommandType = CommandType.StoredProcedure;
+				oraCmd.CommandText = spCmd.CommandText;
+				oraCmd.Transaction = spCmd.Transaction;
 
-			OracleCommandBuilder.DeriveParameters(oraCmd);
+				OracleCommandBuilder.DeriveParameters(oraCmd);
 
-			OracleParameter[] derivedParams = oraCmd.Parameters.Cast<OracleParameter>().ToArray();
-			oraCmd.Parameters.Clear();
-			oraCmd.Dispose();
-			oraCmd = null;
+				OracleParameter[] derivedParams = oraCmd.Parameters.Cast<OracleParameter>().ToArray();
+				oraCmd.Parameters.Clear();
 
-			return derivedParams;
+				return derivedParams;
+			}
 		}
 	}
 }

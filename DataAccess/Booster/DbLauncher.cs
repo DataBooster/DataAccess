@@ -54,23 +54,36 @@ namespace DbParallel.DataAccess.Booster
 			}
 		}
 
+		#region IDisposable Members
 		public void Dispose()
 		{
-			if (_Disposed == false)
-			{
-				Complete();
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_Disposed)
+				return;
+
+			Complete();
+
+			if (disposing)
+			{
 				foreach (DbRocket rocket in _FreeQueue)
 					rocket.Dispose();
+
+				_FreeQueue.Dispose();
 
 				if (_FillingRocket != null)
 					_FillingRocket.Dispose();
 
 				_ExecutingHandle.Dispose();
-
-				_Disposed = true;
 			}
+
+			_Disposed = true;
 		}
+		#endregion
 	}
 }
 

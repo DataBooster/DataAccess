@@ -126,8 +126,17 @@ namespace DbParallel.DataAccess
 		#region IDisposable Members
 		public void Dispose()
 		{
-			if (_DbTransaction != null)
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing && _DbTransaction != null)
+			{
 				_DbTransaction.Dispose();
+				_DbTransaction = null;
+			}
 		}
 		#endregion
 	}

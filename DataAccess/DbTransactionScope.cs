@@ -7,6 +7,7 @@ namespace DbParallel.DataAccess
 	{
 		private readonly DbTransactionManager _TransactionManager;
 		private bool _IsCompleted;
+		private bool _Disposed = false;
 
 		internal DbTransactionScope(DbTransactionManager dbTransactionManager, IsolationLevel isolationLevel = IsolationLevel.Unspecified)
 		{
@@ -22,7 +23,18 @@ namespace DbParallel.DataAccess
 		#region IDisposable Members
 		public void Dispose()
 		{
-			_TransactionManager.ExitTransactionScope(_IsCompleted);
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_Disposed == false && disposing)
+			{
+				_TransactionManager.ExitTransactionScope(_IsCompleted);
+				_TransactionManager.Dispose();
+				_Disposed = true;
+			}
 		}
 		#endregion
 	}
