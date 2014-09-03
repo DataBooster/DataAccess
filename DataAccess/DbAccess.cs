@@ -20,7 +20,16 @@ namespace DbParallel.DataAccess
 		private const int _IncreasingDelayRetry = 500;		// Increases 500 milliseconds delay time for every retry.
 
 		private DbConnection _Connection;
-		public DbConnection Connection { get { return _Connection; } }
+		public DbConnection Connection
+		{
+			get
+			{
+				if (_Connection == null)
+					throw new ObjectDisposedException("DbAccess");
+
+				return _Connection;
+			}
+		}
 
 		#region Constructors
 
@@ -52,6 +61,9 @@ namespace DbParallel.DataAccess
 
 		private DbCommand CreateCommand(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
 		{
+			if (_Connection == null)
+				throw new ObjectDisposedException("DbAccess");
+
 			DbCommand dbCommand = _Connection.CreateCommand();
 			dbCommand.CommandType = commandType;
 			dbCommand.CommandText = commandText;
@@ -308,12 +320,18 @@ namespace DbParallel.DataAccess
 		#region IDisposable Members
 		public void Dispose()
 		{
-			if (_Connection != null)
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing && _Connection != null)
 			{
 				if (_Connection.State != ConnectionState.Closed)
 				{
 					_TransactionManager.Dispose();
-					_Connection.Close();
+					_Connection.Dispose();			// Close()
 				}
 
 				_Connection = null;

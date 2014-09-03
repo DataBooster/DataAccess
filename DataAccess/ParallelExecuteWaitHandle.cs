@@ -79,14 +79,22 @@ namespace DbParallel.DataAccess
 				_CompleteEvent.Wait(timeout);
 		}
 
+		#region IDisposable Members
 		public void Dispose()
 		{
-			if (_CompleteEvent != null)
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing && _CompleteEvent != null)
 			{
 				_CompleteEvent.Dispose();
 				_CompleteEvent = null;
 			}
 		}
+		#endregion
 	}
 }
 
