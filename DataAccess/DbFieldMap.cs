@@ -89,15 +89,7 @@ namespace DbParallel.DataAccess
 
 		public DbFieldMap<T> Add(string columnName, Expression<Func<T, object>> fieldExpr)
 		{
-			MemberExpression memberExpression = fieldExpr.Body as MemberExpression;
-
-			if (memberExpression == null)
-			{
-				UnaryExpression unaryExpression = fieldExpr.Body as UnaryExpression;
-
-				if (unaryExpression != null)
-					memberExpression = unaryExpression.Operand as MemberExpression;
-			}
+			MemberExpression memberExpression = fieldExpr.GetMemberExpression();
 
 			if (memberExpression == null)
 				throw new ApplicationException("Expression must be a Property or a Field.");
