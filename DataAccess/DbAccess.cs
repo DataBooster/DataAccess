@@ -163,7 +163,7 @@ namespace DbParallel.DataAccess
 		}
 
 		public void ExecuteReader<T>(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder,
-			Action<DbFieldMap<T>> resultMap, Action<T> readEntity) where T : new()
+			Action<DbFieldMap<T>> resultMap, Action<T> readEntity) where T : class, new()
 		{
 			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder))
 			{
@@ -180,18 +180,18 @@ namespace DbParallel.DataAccess
 		}
 
 		public void ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder,
-			Action<DbFieldMap<T>> resultMap, Action<T> readEntity) where T : new()
+			Action<DbFieldMap<T>> resultMap, Action<T> readEntity) where T : class, new()
 		{
 			ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap, readEntity);
 		}
 
-		public void ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<T> readEntity) where T : new()
+		public void ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<T> readEntity) where T : class, new()
 		{
 			ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, null, readEntity);
 		}
 
 		public IEnumerable<T> ExecuteReader<T>(string commandText, int commandTimeout, CommandType commandType,
-			Action<DbParameterBuilder> parametersBuilder, Action<DbFieldMap<T>> resultMap = null) where T : new()
+			Action<DbParameterBuilder> parametersBuilder, Action<DbFieldMap<T>> resultMap = null) where T : class, new()
 		{
 			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder))
 			{
@@ -205,7 +205,7 @@ namespace DbParallel.DataAccess
 		}
 
 		public IEnumerable<T> ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder,
-			Action<DbFieldMap<T>> resultMap = null) where T : new()
+			Action<DbFieldMap<T>> resultMap = null) where T : class, new()
 		{
 			return ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap);
 		}

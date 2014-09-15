@@ -5,7 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\Da
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{3FEA62E2-7223-4577-809D-D5561B6299C8}"
 	ProjectSection(SolutionItems) = preProject
-		License.txt = License.txt
 		Notice.txt = Notice.txt
 		Documents\wikipage_home.htm = Documents\wikipage_home.htm
 	EndProjectSection

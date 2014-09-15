@@ -104,32 +104,6 @@ namespace DbParallel.DataAccess
 			dbParameter.Value = (oValue == null) ? DBNull.Value : oValue;
 			return dbParameter;
 		}
-
-
-		internal static MemberExpression GetMemberExpression(this Expression expression)
-		{
-			MemberExpression memberExpression = expression as MemberExpression;
-
-			if (memberExpression == null)
-			{
-				LambdaExpression lambdaExpression = expression as LambdaExpression;
-
-				if (lambdaExpression != null)
-				{
-					memberExpression = lambdaExpression.Body as MemberExpression;
-
-					if (memberExpression == null)
-					{
-						UnaryExpression unaryExpression = lambdaExpression.Body as UnaryExpression;
-
-						if (unaryExpression != null)
-							memberExpression = unaryExpression.Operand as MemberExpression;
-					}
-				}
-			}
-
-			return memberExpression;
-		}
 	}
 }
 

@@ -7,7 +7,7 @@ namespace DbParallel.DataAccess
 {
 	public class DbMultiResultSet
 	{
-		internal class DbResultAdapter<T> where T : new()
+		internal class DbResultAdapter<T> where T : class, new()
 		{
 			private readonly ICollection<T> _ResultSet;
 			public ICollection<T> ResultSet
@@ -37,12 +37,12 @@ namespace DbParallel.DataAccess
 			_MultiResultSet = new ArrayList();
 		}
 
-        public void Add<T>(ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : new()
+        public void Add<T>(ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : class, new()
         {
             _MultiResultSet.Add(new DbResultAdapter<T>(resultSet, resultMap));
         }
 
-        public void Add<T>(ref ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : new()
+        public void Add<T>(ref ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : class, new()
 		{
 			_MultiResultSet.Add(new DbResultAdapter<T>(resultSet, resultMap));
 		}
