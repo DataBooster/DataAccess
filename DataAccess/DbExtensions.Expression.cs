@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System;
 
 namespace DbParallel.DataAccess
 {
@@ -30,29 +31,31 @@ namespace DbParallel.DataAccess
 
 			return memberExpression;
 		}
-		
-		internal static PropertyOrField[] GetNestedMemberChain(this Expression exprMemberPath)
+
+		public static PropertyOrField[] GetDeepMemberRoute(this Expression exprMemberPath)
 		{
-			Stack<PropertyOrField> memberChain = new Stack<PropertyOrField>();
+			Stack<PropertyOrField> memberRoute = new Stack<PropertyOrField>();
 
 			for (MemberExpression memberExpression = exprMemberPath.GetMemberExpression(); memberExpression != null; memberExpression = memberExpression.Expression.GetMemberExpression())
 				if (memberExpression.Member is PropertyInfo || memberExpression.Member is FieldInfo)
-					memberChain.Push(new PropertyOrField(memberExpression.Member));
+					memberRoute.Push(new PropertyOrField(memberExpression.Member));
+				else
+					throw new ApplicationException("Expression must be a Property or a Field.");
 
-			return memberChain.ToArray();
+			return memberRoute.ToArray();
 		}
 
-		internal static bool SetDeepMemberValue(this PropertyOrField[] memberChain, object rootObject, object dbValue)
+		public static bool SetDeepMemberValue(this PropertyOrField[] memberRoute, object rootObject, object dbValue)
 		{
-			int depth, midMembers = memberChain.Length - 1;
+			int depth, midMembers = memberRoute.Length - 1;
 			object memberObject = rootObject;
 
 			for (depth = 0; depth < midMembers && memberObject != null; depth++)
-				memberObject = memberChain[depth].ConstructNestedMember(memberObject);
+				memberObject = memberRoute[depth].ConstructNestedMember(memberObject);
 
 			if (memberObject != null && depth == midMembers)
 			{
-				memberChain[depth].SetValue(memberObject, dbValue);
+				memberRoute[depth].SetValue(memberObject, dbValue);
 				return true;
 			}
 			else

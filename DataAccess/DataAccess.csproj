@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Booster\DbLauncher.cs" />
     <Compile Include="Booster\DbRocket.cs" />
+    <Compile Include="ColumnMemberInfo.cs" />
     <Compile Include="DbAccess.cs" />
     <Compile Include="DbExtensions.cs" />
     <Compile Include="DbExtensions.Expression.cs" />

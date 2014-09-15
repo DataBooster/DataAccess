@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace DbParallel.DataAccess
 {
-	class PropertyOrField
+	public class PropertyOrField
 	{
 		private PropertyInfo _PropertyInfo;
 		private FieldInfo _FieldInfo;
@@ -11,16 +11,7 @@ namespace DbParallel.DataAccess
 		private Type _DataType;
 		public Type DataType { get { return _DataType; } }
 
-		public PropertyOrField()
-		{
-		}
-
 		public PropertyOrField(MemberInfo memberInfo)
-		{
-			SetMemberInfo(memberInfo);
-		}
-
-		private void SetMemberInfo(MemberInfo memberInfo)
 		{
 			_PropertyInfo = memberInfo as PropertyInfo;
 
@@ -32,24 +23,6 @@ namespace DbParallel.DataAccess
 
 				if (_FieldInfo != null)
 					_DataType = _FieldInfo.FieldType.TryUnderlyingType();
-			}
-		}
-
-		public MemberInfo MemberInfo
-		{
-			get
-			{
-				if (_PropertyInfo != null)
-					return _PropertyInfo;
-				else
-					return _FieldInfo;
-			}
-			set
-			{
-				SetMemberInfo(value);
-
-				if (_DataType.CanMapToDbType() == false)
-					throw new ApplicationException("The (Underlying)Type of Property Or Field must be a Value Type.");
 			}
 		}
 
@@ -109,3 +82,25 @@ namespace DbParallel.DataAccess
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//	Copyright 2014 Abel Cheng
+//	This source code is subject to terms and conditions of the Apache License, Version 2.0.
+//	See http://www.apache.org/licenses/LICENSE-2.0.
+//	All other rights reserved.
+//	You must not remove this notice, or any other, from this software.
+//
+//	Original Author:	Abel Cheng <abelcys@gmail.com>
+//	Created Date:		2014-09-12
+//	Original Host:		http://dbParallel.codeplex.com
+//	Primary Host:		http://DataBooster.codeplex.com
+//	Change Log:
+//	Author				Date			Comment
+//
+//
+//
+//
+//	(Keep clean code rather than complicated code plus long comments.)
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////
