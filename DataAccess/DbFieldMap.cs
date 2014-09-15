@@ -6,9 +6,9 @@ using System.Linq.Expressions;
 
 namespace DbParallel.DataAccess
 {
-	public class DbFieldMap<T> where T : new()
+	public class DbFieldMap<T> where T : class, new()
 	{
-		class PropertyOrField
+		class ColumnMemberInfo
 		{
 			public string ColumnName { get; set; }
 			public int ColumnOrdinal { get; set; }
@@ -56,7 +56,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		private List<PropertyOrField> _FieldList;
+		private List<ColumnMemberInfo> _FieldList;
 		private ulong _RowCount;
 
 		private Action<T> _CustomInitAction = null;
@@ -65,13 +65,13 @@ namespace DbParallel.DataAccess
 
 		public DbFieldMap()
 		{
-			_FieldList = new List<PropertyOrField>();
+			_FieldList = new List<ColumnMemberInfo>();
 			_RowCount = 0;
 		}
 
 		private void MapColumns(DbDataReader dataReader)
 		{
-			PropertyOrField field;
+			ColumnMemberInfo field;
 
 			for (int i = _FieldList.Count - 1; i >= 0; i--)
 			{
@@ -95,7 +95,7 @@ namespace DbParallel.DataAccess
 			if (memberExpression == null)
 				throw new ApplicationException("Expression must be a Property or a Field.");
 
-			_FieldList.Add(new PropertyOrField() { ColumnName = columnName, MemberInfo = memberExpression.Member });
+			_FieldList.Add(new ColumnMemberInfo() { ColumnName = columnName, MemberInfo = memberExpression.Member });
 
 			return this;
 		}
@@ -118,13 +118,13 @@ namespace DbParallel.DataAccess
 			foreach (PropertyInfo p in type.GetProperties())
 			{
 				if (p.CanWrite && p.CanRead && p.PropertyType.TryUnderlyingType().CanMapToDbType())
-					_FieldList.Add(new PropertyOrField() { ColumnName = p.Name, MemberInfo = p });
+					_FieldList.Add(new ColumnMemberInfo() { ColumnName = p.Name, MemberInfo = p });
 			}
 
 			foreach (FieldInfo f in type.GetFields())
 			{
 				if (f.IsInitOnly == false && f.FieldType.TryUnderlyingType().CanMapToDbType())
-					_FieldList.Add(new PropertyOrField() { ColumnName = f.Name, MemberInfo = f });
+					_FieldList.Add(new ColumnMemberInfo() { ColumnName = f.Name, MemberInfo = f });
 			}
 		}
 
@@ -147,7 +147,7 @@ namespace DbParallel.DataAccess
 			if (_RowCount == 0L)
 				MapColumns(dataReader);
 
-			foreach (PropertyOrField field in _FieldList)
+			foreach (ColumnMemberInfo field in _FieldList)
 				field.SetValue(entity, dataReader[field.ColumnOrdinal]);
 
 			if (_CustomReaderAction != null)

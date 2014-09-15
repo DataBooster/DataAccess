@@ -3,7 +3,7 @@
   <Class Name="DbParallel.DataAccess.DbExtensions">
     <Position X="5.5" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AEIACAAAAAAAAgAEAgAIAAAAAAASAAAAAACEQABAsCA=</HashCode>
+      <HashCode>AEIQCAAAAAgAAgAEAgAIAAAAAAASAAAAAACEQABAsCA=</HashCode>
       <FileName>DbExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -28,14 +28,14 @@
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <NestedTypes>
-      <Class Name="DbParallel.DataAccess.DbFieldMap&lt;T&gt;.PropertyOrField">
+      <Class Name="DbParallel.DataAccess.DbFieldMap&lt;T&gt;.ColumnMemberInfo" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>DbFieldMap.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAIAAAgAAAAIAAAAAAAAAAAAQAAAAAAEAAAAACAAIAA=</HashCode>
+      <HashCode>AAoAAAgABAAIAAAAAACAAAAAQAAAAEAEAAAAACAAIBA=</HashCode>
       <FileName>DbFieldMap.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -50,13 +50,13 @@
   <Class Name="DbParallel.DataAccess.DbTransactionScope">
     <Position X="3.25" Y="8.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAACAAAAIAAAAAAAAAAAAAAAAAAAAAAACEAAA=</HashCode>
+      <HashCode>AAAAAAAAACAAAAJAAAAAAAAAAAAAAAAAAAAAAACEAAA=</HashCode>
       <FileName>DbTransactionScope.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DbParallel.DataAccess.DbMultiResultSet">
-    <Position X="5.75" Y="6" Width="2" />
+    <Position X="8.25" Y="0.5" Width="2" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -70,6 +70,13 @@
     <TypeIdentifier>
       <HashCode>AAIAAAAABAAAAAAAEAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DbMultiResultSet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DbParallel.DataAccess.PropertyOrField">
+    <Position X="5.5" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAIAAgAEAAAAIAAAAFAAAAAIgAAAAAAAAAA=</HashCode>
+      <FileName>PropertyOrField.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />
