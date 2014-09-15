@@ -3,7 +3,7 @@
   <Class Name="DbParallel.DataAccess.DbExtensions">
     <Position X="5.5" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AEIQCAAAAAgAAgAEAgAIAAAAAAASAAAAAACEQABAsCA=</HashCode>
+      <HashCode>AEMACAAAAAAEAgAEAgAIAAAAAAASAAAAAACEQABAsCA=</HashCode>
       <FileName>DbExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -27,13 +27,6 @@
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
-    <NestedTypes>
-      <Class Name="DbParallel.DataAccess.DbFieldMap&lt;T&gt;.ColumnMemberInfo" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>DbFieldMap.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-    </NestedTypes>
     <TypeIdentifier>
       <HashCode>AAoAAAgABAAIAAAAAACAAAAAQAAAAEAEAAAAACAAIBA=</HashCode>
       <FileName>DbFieldMap.cs</FileName>
@@ -48,7 +41,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DbParallel.DataAccess.DbTransactionScope">
-    <Position X="3.25" Y="8.75" Width="1.75" />
+    <Position X="3.25" Y="7" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAJAAAAAAAAAAAAAAAAAAAAAAACEAAA=</HashCode>
       <FileName>DbTransactionScope.cs</FileName>
@@ -73,10 +66,17 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.PropertyOrField">
-    <Position X="5.5" Y="5" Width="2.25" />
+    <Position X="5.75" Y="7.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIAIAAgAEAAAAIAAAAFAAAAAIgAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAIAIAAgAEAAAAAAAAAFAAAAAAgAAAAAAAAAA=</HashCode>
       <FileName>PropertyOrField.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DbParallel.DataAccess.ColumnMemberInfo">
+    <Position X="5.5" Y="5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAAgAAEABAAAAACAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>ColumnMemberInfo.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />

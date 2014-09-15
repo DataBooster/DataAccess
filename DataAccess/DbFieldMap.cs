@@ -8,54 +8,6 @@ namespace DbParallel.DataAccess
 {
 	public class DbFieldMap<T> where T : class, new()
 	{
-		class ColumnMemberInfo
-		{
-			public string ColumnName { get; set; }
-			public int ColumnOrdinal { get; set; }
-			private PropertyInfo _PropertyInfo;
-			private FieldInfo _FieldInfo;
-			private Type _ValueType;
-
-			public MemberInfo MemberInfo
-			{
-				get
-				{
-					if (_PropertyInfo != null)
-						return _PropertyInfo;
-					else
-						return _FieldInfo;
-				}
-				set
-				{
-					_PropertyInfo = value as PropertyInfo;
-
-					if (_PropertyInfo != null)
-						_ValueType = _PropertyInfo.PropertyType.TryUnderlyingType();
-					else
-					{
-						_FieldInfo = value as FieldInfo;
-
-						if (_FieldInfo != null)
-							_ValueType = _FieldInfo.FieldType.TryUnderlyingType();
-					}
-
-					if (_ValueType.CanMapToDbType() == false)
-						throw new ApplicationException("The (Underlying)Type of Property Or Field must be a Value Type.");
-				}
-			}
-
-			public void SetValue(object objEntity, object dbValue)
-			{
-				if (Convert.IsDBNull(dbValue))
-					return;
-
-				if (_PropertyInfo != null)
-					_PropertyInfo.SetValue(objEntity, Convert.ChangeType(dbValue, _ValueType), null);
-				else if (_FieldInfo != null)
-					_FieldInfo.SetValue(objEntity, Convert.ChangeType(dbValue, _ValueType));
-			}
-		}
-
 		private List<ColumnMemberInfo> _FieldList;
 		private ulong _RowCount;
 
@@ -90,13 +42,7 @@ namespace DbParallel.DataAccess
 
 		public DbFieldMap<T> Add(string columnName, Expression<Func<T, object>> fieldExpr)
 		{
-			MemberExpression memberExpression = fieldExpr.GetMemberExpression();
-
-			if (memberExpression == null)
-				throw new ApplicationException("Expression must be a Property or a Field.");
-
-			_FieldList.Add(new ColumnMemberInfo() { ColumnName = columnName, MemberInfo = memberExpression.Member });
-
+			_FieldList.Add(new ColumnMemberInfo(columnName, fieldExpr));
 			return this;
 		}
 
@@ -118,13 +64,13 @@ namespace DbParallel.DataAccess
 			foreach (PropertyInfo p in type.GetProperties())
 			{
 				if (p.CanWrite && p.CanRead && p.PropertyType.TryUnderlyingType().CanMapToDbType())
-					_FieldList.Add(new ColumnMemberInfo() { ColumnName = p.Name, MemberInfo = p });
+					_FieldList.Add(new ColumnMemberInfo(p.Name, p));
 			}
 
 			foreach (FieldInfo f in type.GetFields())
 			{
 				if (f.IsInitOnly == false && f.FieldType.TryUnderlyingType().CanMapToDbType())
-					_FieldList.Add(new ColumnMemberInfo() { ColumnName = f.Name, MemberInfo = f });
+					_FieldList.Add(new ColumnMemberInfo(f.Name, f));
 			}
 		}
 
