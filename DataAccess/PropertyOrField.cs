@@ -11,19 +11,37 @@ namespace DbParallel.DataAccess
 		private Type _DataType;
 		public Type DataType { get { return _DataType; } }
 
-		public PropertyOrField(MemberInfo memberInfo)
+		public PropertyOrField(PropertyInfo propertyInfo)
 		{
-			_PropertyInfo = memberInfo as PropertyInfo;
+			if (propertyInfo == null)
+				throw new ArgumentNullException("propertyInfo");
 
-			if (_PropertyInfo != null)
-				_DataType = _PropertyInfo.PropertyType.TryUnderlyingType();
-			else
-			{
-				_FieldInfo = memberInfo as FieldInfo;
+			_PropertyInfo = propertyInfo;
+			_DataType = _PropertyInfo.PropertyType.TryUnderlyingType();
+		}
 
-				if (_FieldInfo != null)
-					_DataType = _FieldInfo.FieldType.TryUnderlyingType();
-			}
+		public PropertyOrField(FieldInfo fieldInfo)
+		{
+			if (fieldInfo == null)
+				throw new ArgumentNullException("fieldInfo");
+
+			_FieldInfo = fieldInfo;
+			_DataType = _FieldInfo.FieldType.TryUnderlyingType();
+		}
+
+		public static PropertyOrField CreateFromMember(MemberInfo memberInfo)
+		{
+			PropertyInfo propertyInfo = memberInfo as PropertyInfo;
+
+			if (propertyInfo != null)
+				return new PropertyOrField(propertyInfo);
+
+			FieldInfo fieldInfo = memberInfo as FieldInfo;
+
+			if (fieldInfo != null)
+				return new PropertyOrField(fieldInfo);
+
+			throw new ArgumentOutOfRangeException("memberInfo", "Expression must be a Property or a Field.");
 		}
 
 		public void SetValue(object objEntity, object dbValue)
