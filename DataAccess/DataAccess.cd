@@ -66,9 +66,9 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.PropertyOrField">
-    <Position X="5.75" Y="7.75" Width="2" />
+    <Position X="5.5" Y="7.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIAIAAgAEAAAAAAAAAFAAAAAAgAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAIAIAAgAEAAAAAAAAgFAAAAAAgAAAAAAAAAA=</HashCode>
       <FileName>PropertyOrField.cs</FileName>
     </TypeIdentifier>
   </Class>

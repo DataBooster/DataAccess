@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
-using System;
 
 namespace DbParallel.DataAccess
 {
@@ -37,10 +35,7 @@ namespace DbParallel.DataAccess
 			Stack<PropertyOrField> memberRoute = new Stack<PropertyOrField>();
 
 			for (MemberExpression memberExpression = exprMemberPath.GetMemberExpression(); memberExpression != null; memberExpression = memberExpression.Expression.GetMemberExpression())
-				if (memberExpression.Member is PropertyInfo || memberExpression.Member is FieldInfo)
-					memberRoute.Push(new PropertyOrField(memberExpression.Member));
-				else
-					throw new ApplicationException("Expression must be a Property or a Field.");
+				memberRoute.Push(PropertyOrField.CreateFromMember(memberExpression.Member));
 
 			return memberRoute.ToArray();
 		}
