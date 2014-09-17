@@ -19,6 +19,7 @@ namespace DbParallel.DataAccess
 		private const int _MaxRetryCount = 2;
 		private const int _IncreasingDelayRetry = 500;		// Increases 500 milliseconds delay time for every retry.
 
+		private DbProviderFactory _ProviderFactory;
 		private DbConnection _Connection;
 		public DbConnection Connection
 		{
@@ -35,6 +36,8 @@ namespace DbParallel.DataAccess
 
 		public DbAccess(DbProviderFactory dbProviderFactory, string connectionString)
 		{
+			_ProviderFactory = dbProviderFactory;
+
 			_Connection = dbProviderFactory.CreateConnection();
 			_Connection.ConnectionString = connectionString;
 			_Connection.Open();
@@ -210,6 +213,10 @@ namespace DbParallel.DataAccess
 			return ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap);
 		}
 
+		#endregion
+
+		#region ExecuteMultiReader Overloads
+
 		public void ExecuteMultiReader(string commandText, int commandTimeout, CommandType commandType,
 			Action<DbParameterBuilder> parametersBuilder, Action<DbMultiResultSet> multiResultSetMap)
 		{
@@ -259,6 +266,24 @@ namespace DbParallel.DataAccess
 		public int ExecuteNonQuery(string commandText, Action<DbParameterBuilder> parametersBuilder = null)
 		{
 			return ExecuteNonQuery(commandText, 0, _DefaultCommandType, parametersBuilder);
+		}
+
+		#endregion
+
+		#region CreateDataAdapter for backward compatibility with some old applications
+
+		public DbDataAdapter CreateDataAdapter(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
+		{
+			DbDataAdapter dbDataAdapter = _ProviderFactory.CreateDataAdapter();
+
+			dbDataAdapter.SelectCommand = CreateCommand(commandText, commandTimeout, commandType, parametersBuilder);
+
+			return dbDataAdapter;
+		}
+
+		public DbDataAdapter CreateDataAdapter(string commandText, Action<DbParameterBuilder> parametersBuilder)
+		{
+			return CreateDataAdapter(commandText, 0, _DefaultCommandType, parametersBuilder);
 		}
 
 		#endregion
