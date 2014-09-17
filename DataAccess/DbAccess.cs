@@ -272,18 +272,18 @@ namespace DbParallel.DataAccess
 
 		#region CreateDataAdapter for backward compatibility with some old applications
 
-		public DbDataAdapter CreateDataAdapter(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
+		public DbDataAdapter CreateDataAdapter(string selectCommandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
 		{
 			DbDataAdapter dbDataAdapter = _ProviderFactory.CreateDataAdapter();
 
-			dbDataAdapter.SelectCommand = CreateCommand(commandText, commandTimeout, commandType, parametersBuilder);
+			dbDataAdapter.SelectCommand = CreateCommand(selectCommandText, commandTimeout, commandType, parametersBuilder);
 
 			return dbDataAdapter;
 		}
 
-		public DbDataAdapter CreateDataAdapter(string commandText, Action<DbParameterBuilder> parametersBuilder)
+		public DbDataAdapter CreateDataAdapter(string selectCommandText, Action<DbParameterBuilder> parametersBuilder)
 		{
-			return CreateDataAdapter(commandText, 0, _DefaultCommandType, parametersBuilder);
+			return CreateDataAdapter(selectCommandText, 0, _DefaultCommandType, parametersBuilder);
 		}
 
 		#endregion
