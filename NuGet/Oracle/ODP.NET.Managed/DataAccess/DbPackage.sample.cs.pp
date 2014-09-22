@@ -130,8 +130,7 @@ namespace $rootnamespace$.DataAccess
 		{
 			const string sp = "VIEW_REPORT";
 
-			Tuple<List<SampleClassA>, List<SampleClassB>, List<SampleClassC>> resultTuple = new Tuple<List<SampleClassA>, List<SampleClassB>, List<SampleClassC>>(
-				new List<SampleClassA>(), new List<SampleClassB>(), new List<SampleClassC>());
+			var resultTuple = Tuple.Create(new List<SampleClassA>(), new List<SampleClassB>(), new List<SampleClassC>());
 
 			dbAccess.ExecuteMultiReader(GetProcedure(sp), parameters =>
 				{

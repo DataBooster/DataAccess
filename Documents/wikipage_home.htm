@@ -5,15 +5,15 @@
 </head>
 <body>
 <div><strong>Project Description</strong></div>
-<div>Less Code, Less Configuration, Less Time!<br />The DataBooster library is a high-performance extension to ADO.NET Data Provider, includes two aspects:</div>
+<div>Less Code, Less Configuration, Less Time.<br />The DataBooster library is a high-performance extension to ADO.NET Data Provider, includes two aspects:</div>
 <ul>
-<li>A slimmed down API encapsulation which simplified the most common data access operations (DbConnection -&gt; DbCommand -&gt; DbParameter -&gt; DbDataReader) into a single class <strong>DbAccess</strong>, to help application with a clean DAL, avoid over-packing and redundant-copy of data transfer.<br />Please consider using this for your application development if Entity Framework can not meet your performance requirement.</li>
-<li>A booster for writing mass data onto database. Base on a rational utilization of database concurrency and a effective utilization of network bandwidth, the booster implements a transmitting pipeline of dataflow like a Multiple Launch Rocket System, The speed of writing data into database can be improved about 5 times faster than an ordinary bulk insert/copy, or up to 700 times faster than a row-by-row insert.<br />The detail implement closely depends on the specific database. For the moment, the class <strong>OracleLauncher</strong> and <strong>SqlLauncher</strong> are ready for Oracle and SQL Server. They handle the throughput control and other low-level synchronization details. They are thread-safe which avoid locks. By using the Launcher, you can maximize the performance of your code while filling data row-by-row simply.</li>
+<li>A slimmed down API encapsulation which simplified the most common data access operations (DbConnection -&gt; DbCommand -&gt; DbParameter -&gt; DbDataReader) into a single class <strong><span style="color: #2b91af;">DbAccess</span></strong>, to help application with a clean DAL, avoid over-packing and redundant-copy of data transfer.<br />Please consider using this for your application development if Entity Framework can not meet your performance requirement.</li>
+<li>A booster for writing mass data onto database. Base on a rational utilization of database concurrency and a effective utilization of network bandwidth, the booster implements a transmitting pipeline of dataflow like a Multiple Launch Rocket System, The speed of writing data into database can be improved about 5 times faster than an ordinary bulk insert/copy, or up to 700 times faster than a row-by-row insert.<br />The detail implement closely depends on the specific database. For the moment, the class <strong><span style="color: #2b91af;">OracleLauncher</span></strong> and <strong><span style="color: #2b91af;">SqlLauncher</span></strong> are ready for Oracle and SQL Server. They handle the throughput control and other low-level synchronization details. They are thread-safe which avoid locks. By using the Launcher, you can maximize the performance of your code while filling data row-by-row simply.</li>
 </ul>
 <div><img style="vertical-align: middle;" src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=databooster&amp;DownloadId=386321" alt="Data Launcher" width="600" height="336" /></div>
 <p><strong>Quick Starts</strong></p>
 <ul>
-<li><strong>DbAccess</strong>:<br />The following examples code shows its 4 different fine-grained user control of usages.</li>
+<li><strong><span style="color: #2b91af;">DbAccess</span></strong>:<br />The following examples code shows its 4 different fine-grained user control of usages.</li>
 </ul>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">using</span> System;
@@ -30,7 +30,7 @@
             <span style="color: blue;">long</span> sumHoldings = 0;
 
             <span style="color: green;">// Example of constructor overload1</span>
-            <span style="color: blue;">using</span> (DbAccess db = <span style="color: blue;">new</span> DbAccess(MyConfigMgr.DbProviderFactory,
+            <span style="color: blue;">using</span> (<span style="color: #2b91af;">DbAccess</span> db = <span style="color: blue;">new</span> <span style="color: #2b91af;">DbAccess</span>(MyConfigMgr.DbProviderFactory,
                 MyConfigMgr.ConnectionString))
             {
                 <span style="color: green;">//=======================================================================</span>
@@ -38,7 +38,7 @@
                 db.ExecuteReader(GetProcedure(<span style="color: #a31515;">"READ_TEST_DATA1"</span>),
                     parameters =&gt;
                     {
-                        parameters.Add(<span style="color: #a31515;">"inDate"</span>, DateTime.Today);
+                        parameters.Add(<span style="color: #a31515;">"inDate"</span>, <span style="color: #2b91af;">DateTime</span>.Today);
                         parameters.Add(<span style="color: #a31515;">"inCount"</span>, 300000);
                     },
                     row =&gt;
@@ -54,7 +54,7 @@
                     parameters =&gt;
                     {
                         parameters.Add(<span style="color: #a31515;">"inMarket"</span>, <span style="color: #a31515;">"NYSE"</span>);
-                        parameters.Add(<span style="color: #a31515;">"inDate"</span>, DateTime.Today);
+                        parameters.Add(<span style="color: #a31515;">"inDate"</span>, <span style="color: #2b91af;">DateTime</span>.Today);
                     },
                     (row, resultSet) =&gt;
                     {
@@ -71,17 +71,17 @@
             }
 
             <span style="color: green;">// Example of constructor overload4</span>
-            <span style="color: blue;">using</span> (DbAccess db = <span style="color: blue;">new</span> DbAccess(<span style="color: #a31515;">"MyDbConnKey"</span>))
+            <span style="color: blue;">using</span> (<span style="color: #2b91af;">DbAccess</span> db = <span style="color: blue;">new</span> <span style="color: #2b91af;">DbAccess</span>(<span style="color: #a31515;">"MyDbConnKey"</span>))
             {
-                <span style="color: #2b91af">List</span>&lt;MyBusiness1&gt; myBusiness1List = <span style="color: blue;">new</span> <span style="color: #2b91af">List</span>&lt;MyBusiness1&gt;();
-                <span style="color: #2b91af">List</span>&lt;MyBusiness2&gt; myBusiness2List = <span style="color: blue;">new</span> <span style="color: #2b91af">List</span>&lt;MyBusiness2&gt;();
+                List&lt;MyBusiness1&gt; myBusiness1List = <span style="color: blue;">new</span> List&lt;MyBusiness1&gt;();
+                List&lt;MyBusiness2&gt; myBusiness2List = <span style="color: blue;">new</span> List&lt;MyBusiness2&gt;();
 
                 <span style="color: green;">//=======================================================================</span>
                 <span style="color: green;">// Example3: map every result row to a business class by specified column-property mappings</span>
                 db.ExecuteReader&lt;MyBusiness1&gt;(GetProcedure(<span style="color: #a31515;">"READ_TEST_DATA3"</span>),
                     parameters =&gt;
                     {
-                        parameters.Add(<span style="color: #a31515;">"inAs_Of_Date"</span>, DateTime.Today);
+                        parameters.Add(<span style="color: #a31515;">"inAs_Of_Date"</span>, <span style="color: #2b91af;">DateTime</span>.Today);
                     },
                     map =&gt;
                     {
@@ -99,7 +99,7 @@
                 db.ExecuteReader&lt;MyBusiness2&gt;(GetProcedure(<span style="color: #a31515;">"READ_TEST_DATA4"</span>),
                     parameters =&gt;
                     {
-                        parameters.Add(<span style="color: #a31515;">"inAs_Of_Date"</span>, DateTime.Today);
+                        parameters.Add(<span style="color: #a31515;">"inAs_Of_Date"</span>, <span style="color: #2b91af;">DateTime</span>.Today);
                         parameters.Add(<span style="color: #a31515;">"inDept_Code"</span>, <span style="color: #a31515;">"LOCAL_SALES"</span>);
                     },
                     myBusiness2 =&gt;
@@ -120,7 +120,7 @@
     {
         <span style="color: blue;">public</span> <span style="color: blue;">int</span> Id { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }
         <span style="color: blue;">public</span> <span style="color: blue;">decimal</span> MarketValue { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }
-        <span style="color: blue;">public</span> DateTime? CloseDate { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }
+        <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span>? CloseDate { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }
     }
 
     <span style="color: blue;">public</span> <span style="color: blue;">class</span> MyBusiness2
@@ -133,34 +133,35 @@
 </div>
 <ul>
 <li>ExecuteMultiReader:<br />Multi-ResultSet is a common scenario in package based (Oracle) or stored procedure based (SQL Server) database development, using the ExecuteMultiReader Method can minimize your DAL code to process multiple results.</li>
-</ul><div style="color: black; background-color: white;"><pre><span style="color: #0000ff">internal</span> <span style="color: #0000ff">static</span> <span style="color: #2b91af">Tuple</span>&lt;<span style="color: #2b91af">List</span>&lt;MyBusiness1&gt;, <span style="color: #2b91af">List</span>&lt;MyBusiness2&gt;, <span style="color: #2b91af">List</span>&lt;MyBusiness3&gt;&gt; ViewReport(<span style="color: #0000ff">this</span> <span style="color: #2b91af">DbAccess</span> dbAccess, DateTime date, <span style="color: #2b91af">int</span> sessionId)
+</ul>
+<div style="color: black; background-color: white;">
+<pre><span style="color: blue;">internal</span> <span style="color: blue;">static</span> <span style="color: #2b91af;">Tuple</span>&lt;<span style="color: #2b91af;">List</span>&lt;MyBusiness1&gt;, <span style="color: #2b91af;">List</span>&lt;MyBusiness2&gt;, <span style="color: #2b91af;">List</span>&lt;MyBusiness3&gt;&gt; ViewReport(<span style="color: blue;">this</span> <span style="color: #2b91af;">DbAccess</span> dbAccess, <span style="color: #2b91af;">DateTime</span> date, <span style="color: #2b91af;">int</span> sessionId)
 {
-    <span style="color: #0000ff">const</span> <span style="color: #2b91af">string</span> sp = <span style="color: #a31515">&quot;VIEW_REPORT&quot;</span>;
+    <span style="color: blue;">const</span> <span style="color: #2b91af;">string</span> sp = <span style="color: #a31515;">"VIEW_REPORT"</span>;
 
-    <span style="color: #2b91af">Tuple</span>&lt;<span style="color: #2b91af">List</span>&lt;MyBusiness1&gt;, <span style="color: #2b91af">List</span>&lt;MyBusiness2&gt;, <span style="color: #2b91af">List</span>&lt;MyBusiness3&gt;&gt; resultTuple = <span style="color: #0000ff">new</span> <span style="color: #2b91af">Tuple</span>&lt;<span style="color: #2b91af">List</span>&lt;MyBusiness1&gt;, <span style="color: #2b91af">List</span>&lt;MyBusiness2&gt;, <span style="color: #2b91af">List</span>&lt;MyBusiness3&gt;&gt;(
-        <span style="color: #0000ff">new</span> <span style="color: #2b91af">List</span>&lt;MyBusiness1&gt;(), <span style="color: #0000ff">new</span> <span style="color: #2b91af">List</span>&lt;MyBusiness2&gt;(), <span style="color: #0000ff">new</span> <span style="color: #2b91af">List</span>&lt;MyBusiness3&gt;());
+    <span style="color: blue;">var</span> resultTuple = <span style="color: #2b91af;">Tuple</span>.Create(<span style="color: blue;">new</span> <span style="color: #2b91af;">List</span>&lt;MyBusiness1&gt;(), <span style="color: blue;">new</span> <span style="color: #2b91af;">List</span>&lt;MyBusiness2&gt;(), <span style="color: blue;">new</span> <span style="color: #2b91af;">List</span>&lt;MyBusiness3&gt;());
 
     dbAccess.ExecuteMultiReader(GetProcedure(sp), parameters =&gt;
         {
-            parameters.Add(<span style="color: #a31515">&quot;inDate&quot;</span>,    date);
-            parameters.Add(<span style="color: #a31515">&quot;inSession&quot;</span>, sessionId);
+            parameters.Add(<span style="color: #a31515;">"inDate"</span>,    date);
+            parameters.Add(<span style="color: #a31515;">"inSession"</span>, sessionId);
         }, resultSets =&gt;
             {
-                <span style="color: #008000">// Specified fields mapping example</span>
-                resultSets.Add(resultTuple.Item1, colMap =&gt;  <span style="color: #008000">// Put 1st ResultSet into resultTuple.Item1</span>
+                <span style="color: #008000;">// Specified fields mapping example</span>
+                resultSets.Add(resultTuple.Item1, colMap =&gt;  <span style="color: #008000;">// 1st ResultSet</span>
                     {
-                        colMap.Add(<span style="color: #a31515">&quot;SEC_ID&quot;</span>,        t =&gt; t.Id);
-                        colMap.Add(<span style="color: #a31515">&quot;MARKET_VALUE&quot;</span>,  t =&gt; t.MarketValue);
-                        colMap.Add(<span style="color: #a31515">&quot;CLOSE_DATE&quot;</span>,    t =&gt; t.CloseDate);
+                        colMap.Add(<span style="color: #a31515;">"SEC_ID"</span>,        t =&gt; t.Id);
+                        colMap.Add(<span style="color: #a31515;">"MARKET_VALUE"</span>,  t =&gt; t.MarketValue);
+                        colMap.Add(<span style="color: #a31515;">"CLOSE_DATE"</span>,    t =&gt; t.CloseDate);
                     });
 
-                <span style="color: #008000">// Full-automatic (case-insensitive) fields mapping examples</span>
-                resultSets.Add(resultTuple.Item2);   <span style="color: #008000">// Put 2nd ResultSet into resultTuple.Item2</span>
-                resultSets.Add(resultTuple.Item3);   <span style="color: #008000">// Put 3rd ResultSet into resultTuple.Item3</span>
+                <span style="color: #008000;">// Full-automatic (case-insensitive) fields mapping examples</span>
+                resultSets.Add(resultTuple.Item2);   <span style="color: #008000;">// 2nd ResultSet</span>
+                resultSets.Add(resultTuple.Item3);   <span style="color: #008000;">// 3rd ResultSet</span>
             }
     );
 
-    <span style="color: #0000ff">return</span> resultTuple;
+    <span style="color: blue;">return</span> resultTuple;
 }
 </pre>
 </div>
@@ -175,7 +176,7 @@
 </ul>
 </div>
 <ul>
-<li><strong>OracleLauncher</strong>:<br />A quick example:</li>
+<li><strong><span style="color: #2b91af;">OracleLauncher</span></strong>:<br />A quick example:</li>
 </ul>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">using</span> System;
@@ -189,7 +190,7 @@
     {
         <span style="color: blue;">static</span> <span style="color: blue;">void</span> Main(<span style="color: blue;">string</span>[] args)
         {
-            <span style="color: blue;">using</span> (OracleLauncher launcher = <span style="color: blue;">new</span> OracleLauncher(ConfigurationManager.ConnectionStrings[<span style="color: #a31515;">"MyDbConnKey"</span>].ConnectionString,
+            <span style="color: blue;">using</span> (<span style="color: #2b91af;">OracleLauncher</span> launcher = <span style="color: blue;">new</span> <span style="color: #2b91af;">OracleLauncher</span>(ConfigurationManager.ConnectionStrings[<span style="color: #a31515;">"MyDbConnKey"</span>].ConnectionString,
                 <span style="color: #a31515;">"SCHEMA.PACKAGE.WRITE_BULK_DATA"</span><span style="color: green;">/* stored procedure */</span>,
                 parameters =&gt;
                 {
@@ -212,7 +213,7 @@
             }
         }
 
-        <span style="color: blue;">static</span> <span style="color: blue;">void</span> AddRow(OracleLauncher launcher, <span style="color: blue;">int</span> itemId, <span style="color: blue;">double</span> itemValue)
+        <span style="color: blue;">static</span> <span style="color: blue;">void</span> AddRow(<span style="color: #2b91af;">OracleLauncher</span> launcher, <span style="color: blue;">int</span> itemId, <span style="color: blue;">double</span> itemValue)
         {
             launcher.Post(itemId, itemValue);
         }
@@ -252,48 +253,72 @@
 <div>&nbsp;</div>
 <p><strong>API Reference</strong></p>
 <ul>
-<li><strong><span style="text-decoration: underline;">DbAccess</span></strong><br />(Namespace: DbParallel.DataAccess)</li>
+<li><strong><span style="text-decoration: underline; color: #2b91af;">DbAccess</span></strong><br />(Namespace: DbParallel.DataAccess)</li>
 </ul>
-<div style="margin-left: 40px;"><strong>Constructors</strong> (4 overloads):
+<div style="margin-left: 40px;"><strong>Constructors</strong> <span style="color: #808080;">(4 overloads)</span>:
 <div style="color: black; background-color: white;">
-<pre>DbAccess(DbProviderFactory dbProviderFactory, <span style="color: blue;">string</span> connectionString);
-DbAccess(<span style="color: blue;">string</span> providerName, <span style="color: blue;">string</span> connectionString);
-DbAccess(ConnectionStringSettings connSetting);
-DbAccess(<span style="color: blue;">string</span> connectionStringKey);</pre>
+<pre><span style="color: blue;">public</span> DbAccess(<span style="color: #2b91af;">DbProviderFactory</span> dbProviderFactory, <span style="color: blue;">string</span> connectionString);
+<span style="color: blue;">public</span> DbAccess(<span style="color: blue;">string</span> providerName, <span style="color: blue;">string</span> connectionString);
+<span style="color: blue;">public</span> DbAccess(<span style="color: #2b91af;">ConnectionStringSettings</span> connSetting);
+<span style="color: blue;">public</span> DbAccess(<span style="color: blue;">string</span> connectionStringKey);</pre>
 </div>
-<div><strong>Methods</strong><br />- ExecuteReader (9 overloads):</div>
+<div><br /><strong>Static Global</strong><br /><span style="color: blue;">public static</span> <span style="color: #2b91af;">CommandType</span> DefaultCommandType { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }<br />&nbsp; &nbsp; The default is <strong>StoredProcedure</strong>.<br />&nbsp;</div>
+<div><strong>Methods</strong><br />- ExecuteReader <span style="color: #808080;">(9 overloads)</span>:</div>
 <div style="color: black; background-color: white;">
-<pre><span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, CommandType commandType, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbDataReader&gt; dataReader);
+<pre><span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbDataReader</span>&gt; dataReader);
 
-<span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbDataReader&gt; dataReader);
+<span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, <span style="color: #2b91af;">CommandType</span> commandType, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbDataReader</span>&gt; dataReader);
 
-<span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, CommandType commandType, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbDataReader, <span style="color: blue;">int</span><span style="color: green;">/*resultSet*/</span>&gt; dataReaders); <span style="color: green;">// For multiple result set</span>
+<span style="color: #2b91af;">IEnumerable</span>&lt;T&gt; ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt;&gt; resultMap = <span style="color: blue;">null</span>) <span style="color: blue;">where</span> T : <span style="color: blue;">new</span>();
 
-<span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, Ation&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbDataReader, <span style="color: blue;">int</span><span style="color: green;">/*resultSet*/</span>&gt; dataReaders); <span style="color: green;">// For multiple result set</span>
+<span style="color: #2b91af;">IEnumerable</span>&lt;T&gt; ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, <span style="color: #2b91af;">CommandType</span> commandType, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt;&gt; resultMap = <span style="color: blue;">null</span>) <span style="color: blue;">where</span> T : <span style="color: blue;">new</span>();
 
-<span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, CommandType commandType, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbFieldMap&lt;T&gt;&gt; resultMap, Action&lt;T&gt; readEntity);
+<span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt;&gt; resultMap, <span style="color: #2b91af;">Action</span>&lt;T&gt; readEntity) <span style="color: blue;">where</span> T : <span style="color: blue;">new</span>();
 
-<span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbFieldMap&lt;T&gt;&gt; resultMap, Action&lt;T&gt; readEntity);
+<span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;T&gt; readEntity) <span style="color: blue;">where</span> T : <span style="color: blue;">new</span>();
 
-<span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;T&gt; readEntity);
+<span style="color: blue;">void</span> ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, <span style="color: #2b91af;">CommandType</span> commandType, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt;&gt; resultMap, <span style="color: #2b91af;">Action</span>&lt;T&gt; readEntity) <span style="color: blue;">where</span> T : <span style="color: blue;">new</span>();
 
-IEnumerable&lt;T&gt; ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, CommandType commandType, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbFieldMap&lt;T&gt;&gt; resultMap = <span style="color: blue;">null</span>);
+<span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbDataReader</span>, <span style="color: blue;">int</span><span style="color: green;">/*resultSet*/</span>&gt; dataReaders); <span style="color: green;">// For multiple result set</span>
 
-IEnumerable&lt;T&gt; ExecuteReader&lt;T&gt;(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder, Action&lt;DbFieldMap&lt;T&gt;&gt; resultMap = <span style="color: blue;">null</span>);</pre>
+<span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, <span style="color: #2b91af;">CommandType</span> commandType, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbDataReader</span>, <span style="color: blue;">int</span><span style="color: green;">/*resultSet*/</span>&gt; dataReaders); <span style="color: green;">// For multiple result set</span></pre>
 </div>
-<div>- ExecuteNonQuery (2 overloads):</div>
+<div><span style="color: #2b91af;">- DbParameterBuilder</span></div>
 <div style="color: black; background-color: white;">
-<pre><span style="color: blue;">int</span> ExecuteNonQuery(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, CommandType commandType, Action&lt;DbParameterBuilder&gt; parametersBuilder);
+<pre><span style="color: blue;">public</span> <span style="color: #2b91af;">DbParameter DbParameterBuilder</span>.Add(<span style="color: blue;">string</span> parameterName, <span style="color: blue;">object</span> oValue, <span style="color: blue;">int</span> nSize = 0); <span style="color: green;">// Direction defaults to ParameterDirection.Input</span>
 
-<span style="color: blue;">int</span> ExecuteNonQuery(<span style="color: blue;">string</span> commandText, Action&lt;DbParameterBuilder&gt; parametersBuilder = <span style="color: blue;">null</span>);</pre>
+<span style="color: blue;">public</span> <span style="color: #2b91af;">DbParameter DbParameterBuilder</span>.AddReturn(<span style="color: blue;">string</span> parameterName = <span style="color: #a31515;">"RETURN_VALUE"</span>, <span style="color: #2b91af;">DbType</span> dbType = <span style="color: #2b91af;">DbType</span>.Int32, <span style="color: blue;">int</span> nSize = 0);
+
+<span style="color: blue;">public</span> <span style="color: #2b91af;">DbParameter DbParameterBuilder</span>.AddOutput(<span style="color: blue;">string</span> parameterName, <span style="color: #2b91af;">DbType</span> dbType, <span style="color: blue;">int</span> nSize = 0);</pre>
+</div>
+<div><span style="color: #2b91af;">- DbFieldMap</span></div>
+<div style="color: black; background-color: white;">
+<pre><span style="color: blue;">public</span> <span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt; <span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt;.Add(string columnName, <span style="color: #2b91af;">Expression</span>&lt;<span style="color: #2b91af;">Func</span>&lt;T, <span style="color: blue;">object</span>&gt;&gt; fieldExpr);</pre>
+</div>
+<div>- ExecuteMultiReader <span style="color: #808080;">(2 overloads)</span>:</div>
+<div style="color: black; background-color: white;">
+<pre><span style="color: blue;">public</span> <span style="color: blue;">void</span> ExecuteMultiReader(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbMultiResultSet</span>&gt; multiResultSetMap);
+
+<span style="color: blue;">public</span> <span style="color: blue;">void</span> ExecuteMultiReader(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, <span style="color: #2b91af;">CommandType</span> commandType, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbMultiResultSet</span>&gt; multiResultSetMap);
+</pre>
+</div>
+<div><span style="color: #2b91af;">- DbMultiResultSet</span></div>
+<div style="color: black; background-color: white;">
+<pre><span style="color: blue;">public void</span> <span style="color: #2b91af;">DbMultiResultSet</span>.Add&lt;T&gt;(<span style="color: #2b91af;">ICollection</span>&lt;T&gt; resultSet, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt;&gt; resultMap = <span style="color: blue;">null</span>) <span style="color: blue;">where</span> T : <span style="color: blue;">new</span>();</pre>
+</div>
+<div>- ExecuteNonQuery <span style="color: #808080;">(2 overloads)</span>:</div>
+<div style="color: black; background-color: white;">
+<pre><span style="color: blue;">int</span> ExecuteNonQuery(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder = <span style="color: blue;">null</span>);
+
+<span style="color: blue;">int</span> ExecuteNonQuery(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, <span style="color: #2b91af;">CommandType</span> commandType, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder);</pre>
 </div>
 </div>
 <ul>
-<li><strong><span style="text-decoration: underline;">OracleLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Booster.Oracle)</li>
+<li><strong><span style="text-decoration: underline; color: #2b91af;">OracleLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Booster.Oracle)</li>
 </ul>
 <div style="margin-left: 40px;"><strong>Constructors</strong>:
 <div style="color: black; background-color: white;">
-<pre>OracleLauncher(<span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> storedProcedure, Action&lt;DbParameterBuilder&gt; parametersBuilder, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
+<pre>OracleLauncher(<span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> storedProcedure, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
 </pre>
 </div>
 <div>The <em>_DefaultMultipleRockets</em> is <span style="color: #ff0000;">6</span>:</div>
@@ -304,7 +329,7 @@ IEnumerable&lt;T&gt; ExecuteReader&lt;T&gt;(<span style="color: blue;">string</s
 </div>
 Your application DAL should wrap this method as strong type parameters, like following example:
 <div style="color: black; background-color: white;">
-<pre><span style="color: blue;">public</span> <span style="color: blue;">void</span> AddQuote(<span style="color: blue;">int</span> id, DateTime time, <span style="color: blue;">int</span> level, <span style="color: blue;">decimal</span> price)
+<pre><span style="color: blue;">public</span> <span style="color: blue;">void</span> AddQuote(<span style="color: blue;">int</span> id, <span style="color: #2b91af;">DateTime</span> time, <span style="color: blue;">int</span> level, <span style="color: blue;">decimal</span> price)
 {
     _launcher.Post(id, time, level, price);
 }
@@ -312,15 +337,15 @@ Your application DAL should wrap this method as strong type parameters, like fol
 </div>
 </div>
 <ul>
-<li><strong><span style="text-decoration: underline;">SqlLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Booster.SqlServer)</li>
+<li><strong><span style="text-decoration: underline; color: #2b91af;">SqlLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Booster.SqlServer)</li>
 </ul>
 <div style="margin-left: 40px;"><strong>Constructors</strong>:
 <div style="color: black; background-color: white;">
-<pre>SqlLauncher(<span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> destinationTableName, Action&lt;SqlBulkCopyColumnMappingCollection&gt; columnMappings = <span style="color: blue;">null</span>, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
+<pre>SqlLauncher(<span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> destinationTableName, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">SqlBulkCopyColumnMappingCollection</span>&gt; columnMappings = <span style="color: blue;">null</span>, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
 </pre>
 </div>
-<p>Detail for destinationTableName and SqlBulkCopyColumnMappingCollection, please refer to <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.destinationtablename.aspx" target="_blank">SqlBulkCopy.DestinationTableName</a>, <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.columnmappings.aspx" target="_blank">SqlBulkCopy.ColumnMappings</a> and <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopycolumnmappingcollection.aspx" target="_blank">SqlBulkCopyColumnMappingCollection</a> on MSDN.</p>
-<p><strong>Methods</strong><br />- Post: The same as OracleLauncher</p>
+<p>Detail for destinationTableName and <span style="color: #2b91af;">SqlBulkCopyColumnMappingCollection</span>, please refer to <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.destinationtablename.aspx" target="_blank">SqlBulkCopy.DestinationTableName</a>, <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.columnmappings.aspx" target="_blank">SqlBulkCopy.ColumnMappings</a> and <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopycolumnmappingcollection.aspx" target="_blank">SqlBulkCopyColumnMappingCollection</a> on MSDN.</p>
+<p><strong>Methods</strong><br />- Post: The same as <span style="color: #2b91af;">OracleLauncher</span></p>
 </div>
 <div><strong>NuGet Packages</strong></div>
 <div style="padding-left: 30px;">It is strongly recommended to use this library through NuGet Library Package Manager right in Visual Studio. NuGet Packages can also generate some scaffolding, sample code and configuration into your project for a very quick start from the ground.
