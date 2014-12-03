@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Collections.Generic;
 using System.Threading;
 using System.Dynamic;
+using System.Linq;
 
 namespace DbParallel.DataAccess
 {
@@ -291,51 +292,70 @@ namespace DbParallel.DataAccess
 
 		#endregion
 
-		#region Load result sets into dynamic data (ExpandoObject)
+		#region Load result sets into dynamic data (ExpandoObject List)
 
-		private dynamic CreateExpando(DbDataReader reader)
+		protected string[] GetVisibleFieldNames(DbDataReader reader)
+		{
+			string[] visibleFieldNames = new string[reader.VisibleFieldCount];
+
+			for (int i = 0; i < reader.VisibleFieldCount; i++)
+				visibleFieldNames[i] = reader.GetName(i);
+
+			return visibleFieldNames;
+		}
+
+		private dynamic CreateExpando(DbDataReader reader, string[] visibleFieldNames)
 		{
 			var expandoObject = new ExpandoObject() as IDictionary<string, object>;
 
-			for (int i = 0; i < reader.VisibleFieldCount; i++)
-				expandoObject.Add(reader.GetName(i), reader[i]);
+			if (visibleFieldNames == null)
+				visibleFieldNames = GetVisibleFieldNames(reader);
+
+			for (int i = 0; i < visibleFieldNames.Length; i++)
+				expandoObject.Add(visibleFieldNames[i], reader[i]);
 
 			return expandoObject;
 		}
 
 		private IEnumerable<dynamic> LoadDynamicData(DbDataReader reader)
 		{
+			string[] visibleFieldNames = GetVisibleFieldNames(reader);
+
 			while (reader.Read())
-				yield return CreateExpando(reader);
+				yield return CreateExpando(reader, visibleFieldNames);
 		}
 
-		public IEnumerable<dynamic> LoadDynamicResultSet(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
+		public List<dynamic> ListDynamicResultSet(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
 		{
 			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder))
 			{
-				return LoadDynamicData(reader);
+				return LoadDynamicData(reader).ToList();
 			}
 		}
 
-		public IEnumerable<dynamic> LoadDynamicResultSet(string commandText, Action<DbParameterBuilder> parametersBuilder)
+		public List<dynamic> ListDynamicResultSet(string commandText, Action<DbParameterBuilder> parametersBuilder)
 		{
-			return LoadDynamicResultSet(commandText, 0, _DefaultCommandType, parametersBuilder);
+			return ListDynamicResultSet(commandText, 0, _DefaultCommandType, parametersBuilder);
 		}
 
-		public IEnumerable<IEnumerable<dynamic>> LoadDynamicResultSets(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
+		public List<List<dynamic>> ListDynamicResultSets(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
 		{
+			List<List<dynamic>> resultSets = new List<List<dynamic>>(oraResultSets);
+
 			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder, oraResultSets))
 			{
 				do
 				{
-					yield return LoadDynamicData(reader);
+					resultSets.Add(LoadDynamicData(reader).ToList());
 				} while (reader.NextResult());
 			}
+
+			return resultSets;
 		}
 
-		public IEnumerable<IEnumerable<dynamic>> LoadDynamicResultSets(string commandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
+		public List<List<dynamic>> ListDynamicResultSets(string commandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
 		{
-			return LoadDynamicResultSets(commandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
+			return ListDynamicResultSets(commandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
 		}
 
 		#endregion
