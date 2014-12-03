@@ -306,7 +306,7 @@ namespace DbParallel.DataAccess
 
 		private dynamic CreateExpando(DbDataReader reader, string[] visibleFieldNames)
 		{
-			var expandoObject = new ExpandoObject() as IDictionary<string, object>;
+			IDictionary<string, object> expandoObject = new ExpandoObject();
 
 			if (visibleFieldNames == null)
 				visibleFieldNames = GetVisibleFieldNames(reader);
