@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Configuration;
 using System.Collections.Generic;
 using System.Threading;
+using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
@@ -286,6 +287,55 @@ namespace DbParallel.DataAccess
 		public DbDataAdapter CreateDataAdapter(string selectCommandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1)
 		{
 			return CreateDataAdapter(selectCommandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
+		}
+
+		#endregion
+
+		#region Load result sets into dynamic data (ExpandoObject)
+
+		private dynamic CreateExpando(DbDataReader reader)
+		{
+			var expandoObject = new ExpandoObject() as IDictionary<string, object>;
+
+			for (int i = 0; i < reader.VisibleFieldCount; i++)
+				expandoObject.Add(reader.GetName(i), reader[i]);
+
+			return expandoObject;
+		}
+
+		private IEnumerable<dynamic> LoadDynamicData(DbDataReader reader)
+		{
+			while (reader.Read())
+				yield return CreateExpando(reader);
+		}
+
+		public IEnumerable<dynamic> LoadDynamicResultSet(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
+		{
+			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder))
+			{
+				return LoadDynamicData(reader);
+			}
+		}
+
+		public IEnumerable<dynamic> LoadDynamicResultSet(string commandText, Action<DbParameterBuilder> parametersBuilder)
+		{
+			return LoadDynamicResultSet(commandText, 0, _DefaultCommandType, parametersBuilder);
+		}
+
+		public IEnumerable<IEnumerable<dynamic>> LoadDynamicResultSets(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
+		{
+			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder, oraResultSets))
+			{
+				do
+				{
+					yield return LoadDynamicData(reader);
+				} while (reader.NextResult());
+			}
+		}
+
+		public IEnumerable<IEnumerable<dynamic>> LoadDynamicResultSets(string commandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
+		{
+			return LoadDynamicResultSets(commandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
 		}
 
 		#endregion
