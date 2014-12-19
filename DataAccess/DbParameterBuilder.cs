@@ -26,6 +26,11 @@ namespace DbParallel.DataAccess
 			set { _DbCommand.Parameters[index] = value; }
 		}
 
+		public int Count
+		{
+			get { return _DbCommand.Parameters.Count; }
+		}
+
 		public DbParameter AddReturn(string parameterName = "RETURN_VALUE", DbType dbType = DbType.Int32, int nSize = 0)
 		{
 			DbParameter parameter = _DbCommand.CreateParameter();
