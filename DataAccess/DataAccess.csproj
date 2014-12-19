@@ -56,8 +56,9 @@
     <Compile Include="Booster\DbRocket.cs" />
     <Compile Include="ColumnMemberInfo.cs" />
     <Compile Include="DbAccess.cs" />
+    <Compile Include="DbAccess.slot.cs" />
     <Compile Include="DbExtensions.cs" />
-    <Compile Include="DbExtensions.Expression.cs" />
+    <Compile Include="DbExtensions.expression.cs" />
     <Compile Include="DbFieldMap.cs" />
     <Compile Include="DbMultiResultSet.cs" />
     <Compile Include="DbParameterBuilder.cs" />

@@ -83,27 +83,6 @@ namespace DbParallel.DataAccess
 			return dbCommand;
 		}
 
-		partial void OnOracleConnectionLost(Exception dbException, ref bool canRetry);
-		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry);
-		private bool OnConnectionLost(Exception dbException)
-		{
-			bool canRetry = false;
-
-			if (_TransactionManager.Transaction == null)
-			{
-				OnOracleConnectionLost(dbException, ref canRetry);
-				OnSqlConnectionLost(dbException, ref canRetry);
-			}
-
-			return canRetry;
-		}
-
-		partial void OnOracleReaderExecuting(DbCommand dbCmd, int resultSetCnt/* = 1 */);
-		private void OnReaderExecuting(DbCommand dbCmd, int resultSetCnt/* = 1*/)
-		{
-			OnOracleReaderExecuting(dbCmd, resultSetCnt);
-		}
-
 		private DbDataReader CreateReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int resultSetCnt = 1)
 		{
 			for (int retry = 0; ; retry++)
