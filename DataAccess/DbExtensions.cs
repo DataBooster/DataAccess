@@ -99,7 +99,7 @@ namespace DbParallel.DataAccess
 			return dbParameter;
 		}
 
-		public static DbParameter SetValue(this DbParameter dbParameter, object oValue)
+		public static DbParameter SetValue(this DbParameter dbParameter, IConvertible oValue)
 		{
 			dbParameter.Value = (oValue == null) ? DBNull.Value : oValue;
 			return dbParameter;

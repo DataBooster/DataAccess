@@ -40,7 +40,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		public DbFieldMap<T> Add(string columnName, Expression<Func<T, object>> fieldExpr)
+		public DbFieldMap<T> Add(string columnName, Expression<Func<T, IConvertible>> fieldExpr)
 		{
 			_FieldList.Add(new ColumnMemberInfo(columnName, fieldExpr));
 			return this;
