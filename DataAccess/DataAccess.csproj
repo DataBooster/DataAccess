@@ -64,6 +64,9 @@
     <Compile Include="DbParameterBuilder.cs" />
     <Compile Include="DbTransactionManager.cs" />
     <Compile Include="DbTransactionScope.cs" />
+    <Compile Include="DerivedParametersCache.cs" />
+    <Compile Include="Dynamic\DbAccess.partial.cs" />
+    <Compile Include="Dynamic\StoredProcedureResponse.cs" />
     <Compile Include="Oracle\Booster\OracleLauncher.cs" />
     <Compile Include="Oracle\Booster\OracleRocket.cs" />
     <Compile Include="Oracle\DbAccess.partial.cs" />
