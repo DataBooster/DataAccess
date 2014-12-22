@@ -21,20 +21,21 @@ namespace DbParallel.DataAccess
 			return visibleFieldNames;
 		}
 
-		private dynamic CreateExpando(DbDataReader reader, string[] visibleFieldNames)
+		private ExpandoObject CreateExpando(DbDataReader reader, string[] visibleFieldNames)
 		{
-			IDictionary<string, object> expandoObject = new ExpandoObject();
+			ExpandoObject expandoObject = new ExpandoObject();
+			IDictionary<string, object> expandoDictionary = expandoObject;
 
 			if (visibleFieldNames == null)
 				visibleFieldNames = GetVisibleFieldNames(reader);
 
 			for (int i = 0; i < visibleFieldNames.Length; i++)
-				expandoObject.Add(visibleFieldNames[i], reader[i]);
+				expandoDictionary.Add(visibleFieldNames[i], reader[i]);
 
 			return expandoObject;
 		}
 
-		private IEnumerable<dynamic> LoadDynamicData(DbDataReader reader)
+		private IEnumerable<ExpandoObject> LoadDynamicData(DbDataReader reader)
 		{
 			string[] visibleFieldNames = GetVisibleFieldNames(reader);
 
@@ -42,35 +43,50 @@ namespace DbParallel.DataAccess
 				yield return CreateExpando(reader, visibleFieldNames);
 		}
 
-		public List<dynamic> ListDynamicResultSet(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
+		public StoredProcedureResponse ListDynamicResultSets(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
 		{
-			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder))
+			StoredProcedureResponse result = new StoredProcedureResponse();
+			List<DbParameter> outputParameters = null;
+			DbParameter returnParameter = null;
+
+			try
 			{
-				return LoadDynamicData(reader).ToList();
-			}
-		}
+				using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parameters =>
+					{
+						if (parametersBuilder != null)
+							parametersBuilder(parameters);
 
-		public List<dynamic> ListDynamicResultSet(string commandText, Action<DbParameterBuilder> parametersBuilder)
-		{
-			return ListDynamicResultSet(commandText, 0, _DefaultCommandType, parametersBuilder);
-		}
-
-		public List<List<dynamic>> ListDynamicResultSets(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
-		{
-			List<List<dynamic>> resultSets = new List<List<dynamic>>(oraResultSets);
-
-			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder, oraResultSets))
-			{
-				do
+						var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
+						outputParameters = dbParameters.Where(p => p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output).ToList();
+						returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
+					}, oraResultSets))
 				{
-					resultSets.Add(LoadDynamicData(reader).ToList());
-				} while (reader.NextResult());
+					do
+					{
+						result.ResultSets.Add(LoadDynamicData(reader).ToList());
+					} while (reader.NextResult());
+				}
+
+				if (outputParameters != null)
+				{
+					IDictionary<string, object> expandoDictionary = result.OutputParameters = new ExpandoObject();
+					foreach (DbParameter op in outputParameters)
+						expandoDictionary.Add(op.ParameterName, op.Value);
+				}
+
+				if (returnParameter != null)
+					result.ReturnValue = returnParameter.Value;
+			}
+			catch (Exception e)
+			{
+				result.Error = e;
+				throw;
 			}
 
-			return resultSets;
+			return result;
 		}
 
-		public List<List<dynamic>> ListDynamicResultSets(string commandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
+		public StoredProcedureResponse ListDynamicResultSets(string commandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
 		{
 			return ListDynamicResultSets(commandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
 		}
