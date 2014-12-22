@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
 	public class StoredProcedureResponse
 	{
-		public List<IList<IDictionary<string, IConvertible>>> ResultSets { get; set; }
+		public List<IList<ExpandoObject>> ResultSets { get; set; }
 
-		public IDictionary<string, IConvertible> OutputParameters { get; set; }
+		public ExpandoObject OutputParameters { get; set; }
 
-		public IConvertible ReturnValue { get; set; }
+		public object ReturnValue { get; set; }
 
 		public Exception Error { get; set; }
 
 		public StoredProcedureResponse()
 		{
-			ResultSets = new List<IList<IDictionary<string, IConvertible>>>();
+			ResultSets = new List<IList<ExpandoObject>>();
 		}
 	}
 }
