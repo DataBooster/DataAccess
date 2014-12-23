@@ -6,7 +6,7 @@ namespace DbParallel.DataAccess
 	{
 		static partial void OracleDeriveParameters(DbCommand dbCmd);
 		static partial void SqlDeriveParameters(DbCommand dbCmd);
-		static private void DeriveParameters(DbCommand dbCmd)
+		static private void DbDeriveParameters(DbCommand dbCmd)
 		{
 			OracleDeriveParameters(dbCmd);
 			SqlDeriveParameters(dbCmd);
