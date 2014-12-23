@@ -43,7 +43,7 @@ namespace DbParallel.DataAccess
 				yield return CreateExpando(reader, visibleFieldNames);
 		}
 
-		public StoredProcedureResponse ListDynamicResultSets(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
+		public StoredProcedureResponse ExecuteStoredProcedure(StoredProcedureRequest request)
 		{
 			StoredProcedureResponse result = new StoredProcedureResponse();
 			List<DbParameter> outputParameters = null;
@@ -51,15 +51,15 @@ namespace DbParallel.DataAccess
 
 			try
 			{
-				using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parameters =>
-					{
-						if (parametersBuilder != null)
-							parametersBuilder(parameters);
+				if (string.IsNullOrWhiteSpace(request.CommandText))
+					throw new ArgumentNullException("request.CommandText");
 
+				using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType, parameters =>
+					{
 						var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
 						outputParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && string.IsNullOrEmpty(p.ParameterName) == false).ToList();
 						returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
-					}, oraResultSets))
+					}, 1))
 				{
 					do
 					{
@@ -84,11 +84,6 @@ namespace DbParallel.DataAccess
 			}
 
 			return result;
-		}
-
-		public StoredProcedureResponse ListDynamicResultSets(string commandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1 /* For Oracle only */)
-		{
-			return ListDynamicResultSets(commandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
 		}
 
 		#endregion

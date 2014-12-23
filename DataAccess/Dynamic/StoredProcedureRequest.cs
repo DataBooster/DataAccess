@@ -1,19 +1,20 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
-using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
-	public class StoredProcedureResponse
+	public class StoredProcedureRequest
 	{
-		public List<IList<ExpandoObject>> ResultSets { get; set; }
-		public ExpandoObject OutputParameters { get; set; }
-		public object ReturnValue { get; set; }
-		public Exception Error { get; set; }
+		public string CommandText { get; set; }
+		public CommandType CommandType { get; set; }
+		public int CommandTimeout { get; set; }
+		public IDictionary<string, IConvertible> InputParameters { get; set; }
 
-		public StoredProcedureResponse()
+		public StoredProcedureRequest()
 		{
-			ResultSets = new List<IList<ExpandoObject>>();
+			CommandType = CommandType.StoredProcedure;
+			CommandTimeout = 0;
 		}
 	}
 }
@@ -27,7 +28,7 @@ namespace DbParallel.DataAccess
 //	You must not remove this notice, or any other, from this software.
 //
 //	Original Author:	Abel Cheng <abelcys@gmail.com>
-//	Created Date:		2014-12-19
+//	Created Date:		2014-12-23
 //	Original Host:		http://dbParallel.codeplex.com
 //	Primary Host:		http://DataBooster.codeplex.com
 //	Change Log:
