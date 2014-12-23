@@ -65,6 +65,7 @@
     <Compile Include="DbTransactionManager.cs" />
     <Compile Include="DbTransactionScope.cs" />
     <Compile Include="DerivedParametersCache.cs" />
+    <Compile Include="DerivedParametersCache.slot.cs" />
     <Compile Include="Dynamic\DbAccess.partial.cs" />
     <Compile Include="Dynamic\StoredProcedureRequest.cs" />
     <Compile Include="Dynamic\StoredProcedureResponse.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Oracle\DbAccess.partial.cs" />
     <Compile Include="Oracle\DbExtensions.partial.cs" />
     <Compile Include="Oracle\DbParameterBuilder.partial.cs" />
+    <Compile Include="Oracle\DerivedParametersCache.partial.cs" />
     <Compile Include="ParallelExecuteWaitHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyOrField.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="SqlServer\Booster\SqlRocket.cs" />
     <Compile Include="SqlServer\DbAccess.partial.cs" />
     <Compile Include="SqlServer\DbExtensions.partial.cs" />
+    <Compile Include="SqlServer\DerivedParametersCache.partial.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
