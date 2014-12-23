@@ -57,7 +57,7 @@ namespace DbParallel.DataAccess
 							parametersBuilder(parameters);
 
 						var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
-						outputParameters = dbParameters.Where(p => p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output).ToList();
+						outputParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && string.IsNullOrEmpty(p.ParameterName) == false).ToList();
 						returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
 					}, oraResultSets))
 				{
