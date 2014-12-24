@@ -7,7 +7,7 @@ namespace DbParallel.DataAccess
 {
 	internal static partial class DerivedParametersCache
 	{
-		class StoredProcedureDictionary : Dictionary<string, DbParameter[]>
+		class StoredProcedureDictionary : Dictionary<string, DbParameterCollection>
 		{
 			public StoredProcedureDictionary()
 				: base(StringComparer.OrdinalIgnoreCase)
@@ -23,10 +23,10 @@ namespace DbParallel.DataAccess
 			_CacheRoot = new Dictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
 		}
 
-		private static DbParameter[] GetCache(string connectionString, string storedProcedure)
+		private static DbParameterCollection GetCache(string connectionString, string storedProcedure)
 		{
 			StoredProcedureDictionary spDictionary;
-			DbParameter[] dbParameters = null;
+			DbParameterCollection dbParameters = null;
 
 			lock (_DerivedParametersCacheLock)
 			{
@@ -37,7 +37,7 @@ namespace DbParallel.DataAccess
 			return dbParameters;
 		}
 
-		private static void SetCache(string connectionString, string storedProcedure, DbParameter[] parameters)
+		private static void SetCache(string connectionString, string storedProcedure, DbParameterCollection parameters)
 		{
 			StoredProcedureDictionary spDictionary;
 
@@ -53,10 +53,18 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		static private DbParameter[] RefreshParameters(DbCommand spCmd)
+		static private DbParameterCollection RefreshParameters(DbCommand spCmd)
 		{
-			// TODO
-			return null;
+			using (DbCommand cmd = spCmd.Connection.CreateCommand())
+			{
+				cmd.CommandType = CommandType.StoredProcedure;
+				cmd.CommandText = spCmd.CommandText;
+				cmd.Transaction = spCmd.Transaction;
+
+				DbDeriveParameters(cmd);
+
+				return cmd.Parameters;
+			}
 		}
 
 		static public bool DeriveParameters(DbCommand dbCommand, bool refresh)
@@ -74,7 +82,7 @@ namespace DbParallel.DataAccess
 			if (string.IsNullOrWhiteSpace(storedProcedure))
 				throw new ArgumentNullException("dbCommand.CommandText");
 
-			DbParameter[] derivedParameters = null;
+			DbParameterCollection derivedParameters = null;
 
 			if (refresh || (derivedParameters = GetCache(connectionString, storedProcedure)) == null)
 			{
