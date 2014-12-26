@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Data;
 using System.Data.Common;
+using System.Reflection;
 using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
@@ -93,6 +95,35 @@ namespace DbParallel.DataAccess
 			// TODO
 
 			return (derivedParameters != null);
+		}
+
+		static public void MemberwiseCopy<T>(T source, T target)
+		{
+			Type tp = source.GetType();
+			var fields = tp.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => !f.IsInitOnly);
+			var properties = tp.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanRead && p.CanWrite);
+
+			foreach (FieldInfo fi in fields)
+			{
+				try
+				{
+					fi.SetValue(target, fi.GetValue(source));
+				}
+				catch
+				{
+				}
+			}
+
+			foreach (PropertyInfo pi in properties)
+			{
+				try
+				{
+					pi.SetValue(target, pi.GetValue(source, null), null);
+				}
+				catch
+				{
+				}
+			}
 		}
 	}
 }

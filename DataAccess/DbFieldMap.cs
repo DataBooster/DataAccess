@@ -61,13 +61,13 @@ namespace DbParallel.DataAccess
 		{
 			Type type = typeof(T);
 
-			foreach (PropertyInfo p in type.GetProperties())
-				if (p.CanWrite && p.CanRead && p.PropertyType.TryUnderlyingType().CanMapToDbType())
-					_FieldList.Add(new ColumnMemberInfo(p.Name, p));
-
-			foreach (FieldInfo f in type.GetFields())
+			foreach (FieldInfo f in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
 				if (f.IsInitOnly == false && f.FieldType.TryUnderlyingType().CanMapToDbType())
 					_FieldList.Add(new ColumnMemberInfo(f.Name, f));
+
+			foreach (PropertyInfo p in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+				if (p.CanWrite && p.CanRead && p.PropertyType.TryUnderlyingType().CanMapToDbType())
+					_FieldList.Add(new ColumnMemberInfo(p.Name, p));
 		}
 
 		internal void PrepareResultMap(Action<DbFieldMap<T>> resultMap = null)
