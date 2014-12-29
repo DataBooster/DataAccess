@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
@@ -95,6 +96,11 @@ namespace DbParallel.DataAccess
 			_DbCommand.Parameters.Add(parameter);
 
 			return parameter;
+		}
+
+		internal bool Derive(IDictionary<string, IConvertible> explicitParameters = null, bool refresh = false)
+		{
+			return DerivedParametersCache.DeriveParameters(_DbCommand, explicitParameters, refresh);
 		}
 	}
 }

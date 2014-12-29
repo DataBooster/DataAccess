@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Data;
 using System.Data.Common;
-using System.Collections.Generic;
+
 #if DATADIRECT
 using DDTek.Oracle;
 #elif ODP_NET	// ODP.NET
@@ -42,18 +42,11 @@ namespace DbParallel.DataAccess
 
 			if (oraCmd != null && oraCmd.CommandType == CommandType.StoredProcedure)
 			{
-				int cntRefCursorParam = oraCmd.Parameters.Cast<OracleParameter>().Count(p => p.OracleDbType == OracleDbType.RefCursor && p.Direction != ParameterDirection.Input);
+				int cntRefCursorParam = oraCmd.Parameters.OfType<OracleParameter>().Count(p => p.OracleDbType == OracleDbType.RefCursor && p.Direction != ParameterDirection.Input);
 
 				if (cntRefCursorParam < resultSetCnt)
 					if (oraCmd.BindByName)
-					{
-						OracleParameterCollection paramCollection = oraCmd.Parameters;
-						IEnumerable<string> explicitParamNames = paramCollection.Cast<OracleParameter>().Select(p => p.ParameterName);
-
-						foreach (OracleParameter derivedParam in DeriveParameters(oraCmd))
-							if (!explicitParamNames.Contains(derivedParam.ParameterName, StringComparer.OrdinalIgnoreCase))
-								paramCollection.Add(derivedParam);
-					}
+						DerivedParametersCache.DeriveParameters(dbCmd, null, false);
 					else
 					{
 						for (; cntRefCursorParam < resultSetCnt; cntRefCursorParam++)
@@ -69,23 +62,6 @@ namespace DbParallel.DataAccess
 			}
 		}
 #endif
-
-		private OracleParameter[] DeriveParameters(OracleCommand spCmd)
-		{
-			using (OracleCommand oraCmd = _Connection.CreateCommand() as OracleCommand)
-			{
-				oraCmd.CommandType = CommandType.StoredProcedure;
-				oraCmd.CommandText = spCmd.CommandText;
-				oraCmd.Transaction = spCmd.Transaction;
-
-				OracleCommandBuilder.DeriveParameters(oraCmd);
-
-				OracleParameter[] derivedParams = oraCmd.Parameters.Cast<OracleParameter>().ToArray();
-				oraCmd.Parameters.Clear();
-
-				return derivedParams;
-			}
-		}
 	}
 }
 #endif

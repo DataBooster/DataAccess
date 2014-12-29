@@ -94,16 +94,19 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.DerivedParametersCache">
-    <Position X="11" Y="5.25" Width="2.25" />
+    <Position X="11" Y="5.25" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
     <NestedTypes>
-      <Class Name="DbParallel.DataAccess.DerivedParametersCache.StoredProcedureDictionary" Collapsed="true">
+      <Class Name="DbParallel.DataAccess.DerivedParametersCache.StoredProcedureDictionary">
         <TypeIdentifier>
           <NewMemberFileName>DerivedParametersCache.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAEAAABAAAAAAAAIAAAAAAAAAAAAAgAAAAAAACAA=</HashCode>
+      <HashCode>gAAAAEAAABAAAAAAEEIAAAAAACAAAAIAgAAAAAAECAA=</HashCode>
       <FileName>DerivedParametersCache.cs</FileName>
     </TypeIdentifier>
   </Class>

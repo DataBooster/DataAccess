@@ -56,10 +56,12 @@ namespace DbParallel.DataAccess
 
 				using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType, parameters =>
 					{
+						parameters.Derive(request.InputParameters);
+
 						var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
-						outputParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && string.IsNullOrEmpty(p.ParameterName) == false).ToList();
+						outputParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
 						returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
-					}, 1))
+					}, 0))
 				{
 					do
 					{
