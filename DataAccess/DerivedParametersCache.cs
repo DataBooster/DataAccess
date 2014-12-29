@@ -75,8 +75,6 @@ namespace DbParallel.DataAccess
 				throw new ArgumentNullException("dbCommand");
 			if (dbCommand.Connection == null)
 				throw new ArgumentNullException("dbCommand.Connection");
-			if (dbCommand.CommandType != CommandType.StoredProcedure)
-				throw new ArgumentOutOfRangeException("dbCommand.CommandType", "Only supports CommandType.StoredProcedure!");
 
 			string connectionString = dbCommand.Connection.ConnectionString;
 			string storedProcedure = dbCommand.CommandText;
@@ -86,14 +84,18 @@ namespace DbParallel.DataAccess
 
 			DbParameterCollection derivedParameters = null;
 
-			if (refresh || (derivedParameters = GetCache(connectionString, storedProcedure)) == null)
-			{
-				derivedParameters = RefreshParameters(dbCommand);
-				SetCache(connectionString, storedProcedure, derivedParameters);
-			}
+			if (dbCommand.CommandType == CommandType.StoredProcedure)
+				if (refresh || (derivedParameters = GetCache(connectionString, storedProcedure)) == null)
+				{
+					derivedParameters = RefreshParameters(dbCommand);
+					SetCache(connectionString, storedProcedure, derivedParameters);
+				}
 
 			if (derivedParameters == null)
+			{
+				TransferParameters(dbCommand, explicitParameters);
 				return false;
+			}
 			else
 			{
 				TransferParameters(dbCommand, derivedParameters, explicitParameters);
@@ -101,21 +103,53 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		static private void TransferParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters)
+		{
+			if (explicitParameters == null)
+				return;
+
+			Dictionary<string, DbParameter> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
+				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimStart('@').Length > 0)
+				.ToDictionary(p => p.ParameterName.TrimStart('@'), StringComparer.OrdinalIgnoreCase);
+
+			DbParameter dbParameter;
+			string explicitName;
+
+			foreach (var p in explicitParameters)
+			{
+				explicitName = p.Key.TrimStart('@');
+
+				if (explicitName.Length > 0)
+					if (specifiedParameters.TryGetValue(explicitName, out dbParameter))
+						dbParameter.Value = p.Value;
+					else
+					{
+						dbParameter = dbCommand.CreateParameter();
+						dbParameter.ParameterName = p.Key;
+						dbParameter.Value = p.Value;
+						dbCommand.Parameters.Add(dbParameter);
+					}
+			}
+		}
+
 		static private void TransferParameters(DbCommand dbCommand, DbParameterCollection derivedParameters, IDictionary<string, IConvertible> explicitParameters)
 		{
-			string name;
 			Dictionary<string, IConvertible> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
 				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimStart('@').Length > 0)
 				.ToDictionary(p => p.ParameterName.TrimStart('@'), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
 
 			if (explicitParameters != null)
+			{
+				string explicitName;
+
 				foreach (var p in explicitParameters)
 				{
-					name = p.Key.TrimStart('@');
+					explicitName = p.Key.TrimStart('@');
 
-					if (name.Length > 0)
-						specifiedParameters[name] = p.Value;
+					if (explicitName.Length > 0)
+						specifiedParameters[p.Key] = p.Value;
 				}
+			}
 
 			DbParameter dbParameter;
 			IConvertible specifiedParameter;
@@ -144,7 +178,7 @@ namespace DbParallel.DataAccess
 					break;
 		}
 
-		static public void MemberwiseCopy<T>(T source, T target)
+		static internal void MemberwiseCopy<T>(T source, T target)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
