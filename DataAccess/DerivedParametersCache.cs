@@ -69,7 +69,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		static public bool DeriveParameters(DbCommand dbCommand, bool refresh)
+		static public bool DeriveParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters, bool refresh)
 		{
 			if (dbCommand == null)
 				throw new ArgumentNullException("dbCommand");
@@ -92,13 +92,65 @@ namespace DbParallel.DataAccess
 				SetCache(connectionString, storedProcedure, derivedParameters);
 			}
 
-			// TODO
+			if (derivedParameters == null)
+				return false;
+			else
+			{
+				TransferParameters(dbCommand, derivedParameters, explicitParameters);
+				return true;
+			}
+		}
 
-			return (derivedParameters != null);
+		static private void TransferParameters(DbCommand dbCommand, DbParameterCollection derivedParameters, IDictionary<string, IConvertible> explicitParameters)
+		{
+			string name;
+			Dictionary<string, IConvertible> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
+				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimStart('@').Length > 0)
+				.ToDictionary(p => p.ParameterName.TrimStart('@'), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
+
+			if (explicitParameters != null)
+				foreach (var p in explicitParameters)
+				{
+					name = p.Key.TrimStart('@');
+
+					if (name.Length > 0)
+						specifiedParameters[name] = p.Value;
+				}
+
+			DbParameter dbParameter;
+			IConvertible specifiedParameter;
+			int specifiedPosition = 0;
+
+			dbCommand.Parameters.Clear();
+
+			for (int i = 0; i < derivedParameters.Count; i++)
+			{
+				dbParameter = dbCommand.CreateParameter();
+				MemberwiseCopy(derivedParameters[i], dbParameter);
+				dbCommand.Parameters.Add(dbParameter);
+
+				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimStart('@'), out specifiedParameter))
+				{
+					dbParameter.Value = specifiedParameter;
+					specifiedPosition = i;
+				}
+			}
+
+			// Remove all trailing unspecified optional parameters
+			for (int i = derivedParameters.Count - 1; i > specifiedPosition; i--)
+				if (dbCommand.Parameters[i].Direction == ParameterDirection.Input)
+					dbCommand.Parameters.RemoveAt(i);
+				else
+					break;
 		}
 
 		static public void MemberwiseCopy<T>(T source, T target)
 		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+			if (target == null)
+				throw new ArgumentNullException("target");
+
 			Type tp = source.GetType();
 			var fields = tp.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => !f.IsInitOnly);
 			var properties = tp.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanRead && p.CanWrite);
@@ -127,3 +179,25 @@ namespace DbParallel.DataAccess
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//	Copyright 2014 Abel Cheng
+//	This source code is subject to terms and conditions of the Apache License, Version 2.0.
+//	See http://www.apache.org/licenses/LICENSE-2.0.
+//	All other rights reserved.
+//	You must not remove this notice, or any other, from this software.
+//
+//	Original Author:	Abel Cheng <abelcys@gmail.com>
+//	Created Date:		2014-12-29
+//	Original Host:		http://dbParallel.codeplex.com
+//	Primary Host:		http://DataBooster.codeplex.com
+//	Change Log:
+//	Author				Date			Comment
+//
+//
+//
+//
+//	(Keep clean code rather than complicated code plus long comments.)
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////
