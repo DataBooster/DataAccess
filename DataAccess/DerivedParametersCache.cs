@@ -18,7 +18,7 @@ namespace DbParallel.DataAccess
 		}
 
 		private static readonly object _DerivedParametersCacheLock = new object();
-		private static readonly HashSet<string> _NonCopyProperties = new HashSet<string>(new string[] { "Value" });
+		private static readonly HashSet<string> _NonCopyProperties = new HashSet<string>(/*new string[] { "Value" }*/);
 		private static Dictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionString
 
 		static DerivedParametersCache()
@@ -169,7 +169,7 @@ namespace DbParallel.DataAccess
 
 				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimPrefix(), out specifiedParameterValue))
 				{
-					if (specifiedParameterValue != null && Convert.IsDBNull(specifiedParameterValue) == false && dbParameter.IsUnpreciseDecimal())
+					if (dbParameter.IsUnpreciseDecimal())	// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
 						dbParameter.ResetDbType();
 
 					dbParameter.Value = specifiedParameterValue;
@@ -195,21 +195,19 @@ namespace DbParallel.DataAccess
 			return (sourceParameter == null) ? null : sourceParameter.Clone() as DbParameter;
 		}
 
-		static internal void MemberwiseCopy<T>(T source, T target, ICollection<string> excludeMembers)
+		static internal void MemberwiseCopy<T>(T source, T target, ICollection<string> excludeMembers = null)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
 			if (target == null)
 				throw new ArgumentNullException("target");
-			if (excludeMembers == null)
-				excludeMembers = new HashSet<string>();
 
 			Type tp = source.GetType();
 			var fields = tp.GetFields(BindingFlags.Public | BindingFlags.Instance);
 			var properties = tp.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
 			foreach (FieldInfo fi in fields)
-				if (!fi.IsInitOnly && !excludeMembers.Contains(fi.Name))
+				if (!fi.IsInitOnly && (excludeMembers == null || !excludeMembers.Contains(fi.Name)))
 				{
 					try
 					{
@@ -221,7 +219,7 @@ namespace DbParallel.DataAccess
 				}
 
 			foreach (PropertyInfo pi in properties)
-				if (pi.CanRead && pi.CanWrite && !excludeMembers.Contains(pi.Name))
+				if (pi.CanRead && pi.CanWrite && (excludeMembers == null || !excludeMembers.Contains(pi.Name)))
 				{
 					try
 					{

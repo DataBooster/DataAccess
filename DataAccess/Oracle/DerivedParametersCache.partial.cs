@@ -19,13 +19,7 @@ namespace DbParallel.DataAccess
 			OracleCommand cmd = dbCmd as OracleCommand;
 
 			if (cmd != null)
-			{
 				OracleCommandBuilder.DeriveParameters(cmd);
-
-				foreach (OracleParameter p in cmd.Parameters)
-					if (p.Direction != ParameterDirection.Input && p.IsUnpreciseDecimal())
-						p.ResetOracleDbType();
-			}
 		}
 	}
 }
