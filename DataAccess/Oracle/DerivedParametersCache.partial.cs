@@ -16,10 +16,31 @@ namespace DbParallel.DataAccess
 	{
 		static partial void OracleDeriveParameters(DbCommand dbCmd)
 		{
-			OracleCommand cmd = dbCmd as OracleCommand;
+			OracleCommand oraCmd = dbCmd as OracleCommand;
 
-			if (cmd != null)
-				OracleCommandBuilder.DeriveParameters(cmd);
+			if (oraCmd != null)
+				OracleCommandBuilder.DeriveParameters(oraCmd);
+		}
+
+		static partial void OracleOmitUnspecifiedInputParameters(DbCommand dbCmd)
+		{
+			OracleCommand oraCmd = dbCmd as OracleCommand;
+
+			if (oraCmd != null)
+			{
+				if (oraCmd.CommandType == CommandType.StoredProcedure && oraCmd.BindByName == false)
+					oraCmd.BindByName = true;
+
+				OracleParameter oraParameter;
+
+				for (int i = oraCmd.Parameters.Count - 1; i >= 0; i--)
+				{
+					oraParameter = oraCmd.Parameters[i];
+
+					if (oraParameter.Value == null && oraParameter.Direction == ParameterDirection.Input)
+						oraCmd.Parameters.RemoveAt(i);
+				}
+			}
 		}
 	}
 }

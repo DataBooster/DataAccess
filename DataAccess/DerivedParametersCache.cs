@@ -154,7 +154,6 @@ namespace DbParallel.DataAccess
 
 			DbParameter dbParameter;
 			IConvertible specifiedParameterValue;
-			int specifiedPosition = 0;
 
 			dbCommand.Parameters.Clear();
 
@@ -169,23 +168,16 @@ namespace DbParallel.DataAccess
 
 				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimPrefix(), out specifiedParameterValue))
 				{
-					if (dbParameter.IsUnpreciseDecimal())	// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
-						dbParameter.ResetDbType();
+					if (dbParameter.IsUnpreciseDecimal())
+						dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
 
 					dbParameter.Value = specifiedParameterValue;
-
-					specifiedPosition = i;
 				}
 
 				dbCommand.Parameters.Add(dbParameter);
 			}
 
-			// Remove all trailing unspecified optional parameters
-			for (int i = dbCommand.Parameters.Count - 1; i > specifiedPosition; i--)
-				if (dbCommand.Parameters[i].Direction == ParameterDirection.Input)
-					dbCommand.Parameters.RemoveAt(i);
-				else
-					break;
+			OmitUnspecifiedInputParameters(dbCommand);	// Remove unspecified optional parameters
 		}
 
 		static private DbParameter Clone(this DbParameter source)

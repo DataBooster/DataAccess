@@ -7,6 +7,8 @@ namespace DbParallel.DataAccess
 {
 	public partial class DbParameterBuilder
 	{
+		public const string ReturnParameterName = "RETURN_VALUE";
+
 		private readonly DbCommand _DbCommand;
 		public DbCommand Command { get { return _DbCommand; } }
 
@@ -32,7 +34,7 @@ namespace DbParallel.DataAccess
 			get { return _DbCommand.Parameters.Count; }
 		}
 
-		public DbParameter AddReturn(string parameterName = "RETURN_VALUE", DbType dbType = DbType.Int32, int nSize = 0)
+		public DbParameter AddReturn(string parameterName = ReturnParameterName, DbType dbType = DbType.Int32, int nSize = 0)
 		{
 			DbParameter parameter = _DbCommand.CreateParameter();
 			parameter.ParameterName = parameterName;
