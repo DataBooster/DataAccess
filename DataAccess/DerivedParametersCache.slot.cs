@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Data;
+using System.Data.Common;
 
 namespace DbParallel.DataAccess
 {
@@ -10,6 +11,18 @@ namespace DbParallel.DataAccess
 		{
 			OracleDeriveParameters(dbCmd);
 			SqlDeriveParameters(dbCmd);
+
+			foreach (DbParameter p in dbCmd.Parameters)
+				if (string.IsNullOrEmpty(p.ParameterName) && p.Direction == ParameterDirection.ReturnValue)
+					p.ParameterName = DbParameterBuilder.ReturnParameterName;
+		}
+
+		static partial void OracleOmitUnspecifiedInputParameters(DbCommand dbCmd);
+		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd);
+		static private void OmitUnspecifiedInputParameters(DbCommand dbCmd)
+		{
+			OracleOmitUnspecifiedInputParameters(dbCmd);
+			SqlOmitUnspecifiedInputParameters(dbCmd);
 		}
 	}
 }
