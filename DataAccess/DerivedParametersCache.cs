@@ -18,6 +18,7 @@ namespace DbParallel.DataAccess
 		}
 
 		private static readonly object _DerivedParametersCacheLock = new object();
+		private static readonly HashSet<string> _NonCopyProperties = new HashSet<string>(new string[] { "Value" });
 		private static Dictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionString
 
 		static DerivedParametersCache()
@@ -109,15 +110,15 @@ namespace DbParallel.DataAccess
 				return;
 
 			Dictionary<string, DbParameter> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
-				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimStart('@').Length > 0)
-				.ToDictionary(p => p.ParameterName.TrimStart('@'), StringComparer.OrdinalIgnoreCase);
+				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimPrefix().Length > 0)
+				.ToDictionary(p => p.ParameterName.TrimPrefix(), StringComparer.OrdinalIgnoreCase);
 
 			DbParameter dbParameter;
 			string explicitName;
 
 			foreach (var p in explicitParameters)
 			{
-				explicitName = p.Key.TrimStart('@');
+				explicitName = p.Key.TrimPrefix();
 
 				if (explicitName.Length > 0)
 					if (specifiedParameters.TryGetValue(explicitName, out dbParameter))
@@ -135,8 +136,8 @@ namespace DbParallel.DataAccess
 		static private void TransferParameters(DbCommand dbCommand, DbParameterCollection derivedParameters, IDictionary<string, IConvertible> explicitParameters)
 		{
 			Dictionary<string, IConvertible> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
-				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimStart('@').Length > 0)
-				.ToDictionary(p => p.ParameterName.TrimStart('@'), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
+				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimPrefix().Length > 0)
+				.ToDictionary(p => p.ParameterName.TrimPrefix(), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
 
 			if (explicitParameters != null)
 			{
@@ -144,7 +145,7 @@ namespace DbParallel.DataAccess
 
 				foreach (var p in explicitParameters)
 				{
-					explicitName = p.Key.TrimStart('@');
+					explicitName = p.Key.TrimPrefix();
 
 					if (explicitName.Length > 0)
 						specifiedParameters[p.Key] = p.Value;
@@ -152,64 +153,94 @@ namespace DbParallel.DataAccess
 			}
 
 			DbParameter dbParameter;
-			IConvertible specifiedParameter;
+			IConvertible specifiedParameterValue;
 			int specifiedPosition = 0;
 
 			dbCommand.Parameters.Clear();
 
 			for (int i = 0; i < derivedParameters.Count; i++)
 			{
-				dbParameter = dbCommand.CreateParameter();
-				MemberwiseCopy(derivedParameters[i], dbParameter);
-				dbCommand.Parameters.Add(dbParameter);
-
-				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimStart('@'), out specifiedParameter))
+				dbParameter = derivedParameters[i].Clone();
+				if (dbParameter == null)
 				{
-					dbParameter.Value = specifiedParameter;
+					dbParameter = dbCommand.CreateParameter();
+					MemberwiseCopy(derivedParameters[i], dbParameter, _NonCopyProperties);
+				}
+
+				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimPrefix(), out specifiedParameterValue))
+				{
+					if (specifiedParameterValue != null && Convert.IsDBNull(specifiedParameterValue) == false && dbParameter.IsUnpreciseDecimal())
+						dbParameter.ResetDbType();
+
+					dbParameter.Value = specifiedParameterValue;
+
 					specifiedPosition = i;
 				}
+
+				dbCommand.Parameters.Add(dbParameter);
 			}
 
 			// Remove all trailing unspecified optional parameters
-			for (int i = derivedParameters.Count - 1; i > specifiedPosition; i--)
+			for (int i = dbCommand.Parameters.Count - 1; i > specifiedPosition; i--)
 				if (dbCommand.Parameters[i].Direction == ParameterDirection.Input)
 					dbCommand.Parameters.RemoveAt(i);
 				else
 					break;
 		}
 
-		static internal void MemberwiseCopy<T>(T source, T target)
+		static private DbParameter Clone(this DbParameter source)
+		{
+			ICloneable sourceParameter = source as ICloneable;
+
+			return (sourceParameter == null) ? null : sourceParameter.Clone() as DbParameter;
+		}
+
+		static internal void MemberwiseCopy<T>(T source, T target, ICollection<string> excludeMembers)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
 			if (target == null)
 				throw new ArgumentNullException("target");
+			if (excludeMembers == null)
+				excludeMembers = new HashSet<string>();
 
 			Type tp = source.GetType();
-			var fields = tp.GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => !f.IsInitOnly);
-			var properties = tp.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanRead && p.CanWrite);
+			var fields = tp.GetFields(BindingFlags.Public | BindingFlags.Instance);
+			var properties = tp.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
 			foreach (FieldInfo fi in fields)
-			{
-				try
+				if (!fi.IsInitOnly && !excludeMembers.Contains(fi.Name))
 				{
-					fi.SetValue(target, fi.GetValue(source));
+					try
+					{
+						fi.SetValue(target, fi.GetValue(source));
+					}
+					catch
+					{
+					}
 				}
-				catch
-				{
-				}
-			}
 
 			foreach (PropertyInfo pi in properties)
-			{
-				try
+				if (pi.CanRead && pi.CanWrite && !excludeMembers.Contains(pi.Name))
 				{
-					pi.SetValue(target, pi.GetValue(source, null), null);
+					try
+					{
+						pi.SetValue(target, pi.GetValue(source, null), null);
+					}
+					catch
+					{
+					}
 				}
-				catch
-				{
-				}
-			}
+		}
+
+		static private string TrimPrefix(this string ParameterName)
+		{
+			return ParameterName.TrimStart('@', ':');
+		}
+
+		static private bool IsUnpreciseDecimal(this DbParameter dbParameter)
+		{
+			return (dbParameter.DbType == DbType.Decimal && (dbParameter as IDbDataParameter).Precision == 0);
 		}
 	}
 }
