@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
-using System.Linq.Expressions;
 
 namespace DbParallel.DataAccess
 {
@@ -102,6 +101,20 @@ namespace DbParallel.DataAccess
 		public static DbParameter SetValue(this DbParameter dbParameter, IConvertible oValue)
 		{
 			dbParameter.Value = (oValue == null) ? DBNull.Value : oValue;
+			return dbParameter;
+		}
+
+		public static DbParameter SetPrecision(this DbParameter dbParameter, byte nPrecision)
+		{
+			IDbDataParameter iDbDataParameter = dbParameter as IDbDataParameter;
+			iDbDataParameter.Precision = nPrecision;
+			return dbParameter;
+		}
+
+		public static DbParameter SetScale(this DbParameter dbParameter, byte nScale)
+		{
+			IDbDataParameter iDbDataParameter = dbParameter as IDbDataParameter;
+			iDbDataParameter.Scale = nScale;
 			return dbParameter;
 		}
 	}
