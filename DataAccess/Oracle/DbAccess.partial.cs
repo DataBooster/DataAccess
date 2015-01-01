@@ -35,7 +35,19 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		// DataDirect Oracle Data Provider Connection String Options support: [ParameterMode = ANSI | BindByOrdinal | BindByName]
+
 #if (ODP_NET || ODP_NET_MANAGED)		// ODP.NET
+		/*
+		partial void OnOracleCommandCreating(DbCommand dbCmd)
+		{
+			OracleCommand oraCmd = dbCmd as OracleCommand;
+
+			if (oraCmd != null)
+				oraCmd.BindByName = true;
+		}
+		*/
+
 		partial void OnOracleReaderExecuting(DbCommand dbCmd, int resultSetCnt/* = 1 */)
 		{
 			OracleCommand oraCmd = dbCmd as OracleCommand;
