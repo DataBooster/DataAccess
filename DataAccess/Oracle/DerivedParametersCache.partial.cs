@@ -26,11 +26,9 @@ namespace DbParallel.DataAccess
 		{
 			OracleCommand oraCmd = dbCmd as OracleCommand;
 
-			if (oraCmd != null)
+			if (oraCmd != null && oraCmd.CommandType == CommandType.StoredProcedure)
 			{
-				if (oraCmd.CommandType == CommandType.StoredProcedure && oraCmd.BindByName == false)
-					oraCmd.BindByName = true;
-
+				int cntOmitted = 0;
 				OracleParameter oraParameter;
 
 				for (int i = oraCmd.Parameters.Count - 1; i >= 0; i--)
@@ -38,8 +36,14 @@ namespace DbParallel.DataAccess
 					oraParameter = oraCmd.Parameters[i];
 
 					if (oraParameter.Value == null && oraParameter.Direction == ParameterDirection.Input)
+					{
 						oraCmd.Parameters.RemoveAt(i);
+						cntOmitted++;
+					}
 				}
+
+				if (cntOmitted > 0 && oraCmd.BindByName == false)
+					oraCmd.BindByName = true;
 			}
 		}
 	}
