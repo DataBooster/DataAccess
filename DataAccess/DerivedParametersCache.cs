@@ -18,7 +18,6 @@ namespace DbParallel.DataAccess
 		}
 
 		private static readonly object _DerivedParametersCacheLock = new object();
-		private static readonly HashSet<string> _NonCopyProperties = new HashSet<string>(/*new string[] { "Value" }*/);
 		private static Dictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionString
 
 		static DerivedParametersCache()
@@ -56,20 +55,6 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		static private DbParameterCollection RefreshParameters(DbCommand spCmd)
-		{
-			using (DbCommand cmd = spCmd.Connection.CreateCommand())
-			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.CommandText = spCmd.CommandText;
-				cmd.Transaction = spCmd.Transaction;
-
-				DbDeriveParameters(cmd);
-
-				return cmd.Parameters;
-			}
-		}
-
 		static public bool DeriveParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters, bool refresh)
 		{
 			if (dbCommand == null)
@@ -88,7 +73,12 @@ namespace DbParallel.DataAccess
 			if (dbCommand.CommandType == CommandType.StoredProcedure)
 				if (refresh || (derivedParameters = GetCache(connectionString, storedProcedure)) == null)
 				{
-					derivedParameters = RefreshParameters(dbCommand);
+					using (DbCommand cmd = dbCommand.Clone())
+					{
+						DbDeriveParameters(cmd);
+						derivedParameters = cmd.Parameters;
+					}
+
 					SetCache(connectionString, storedProcedure, derivedParameters);
 				}
 
@@ -163,7 +153,7 @@ namespace DbParallel.DataAccess
 				if (dbParameter == null)
 				{
 					dbParameter = dbCommand.CreateParameter();
-					MemberwiseCopy(derivedParameters[i], dbParameter, _NonCopyProperties);
+					MemberwiseCopy(derivedParameters[i], dbParameter, null);
 				}
 
 				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimPrefix(), out specifiedParameterValue))
@@ -180,11 +170,27 @@ namespace DbParallel.DataAccess
 			OmitUnspecifiedInputParameters(dbCommand);	// Remove unspecified optional parameters
 		}
 
-		static private DbParameter Clone(this DbParameter source)
+		static internal DbCommand Clone(this DbCommand sourceCommand)
 		{
-			ICloneable sourceParameter = source as ICloneable;
+			ICloneable source = sourceCommand as ICloneable;
 
-			return (sourceParameter == null) ? null : sourceParameter.Clone() as DbParameter;
+			if (source == null)
+			{
+				DbCommand cmd = sourceCommand.Connection.CreateCommand();
+
+				MemberwiseCopy(sourceCommand, cmd, new HashSet<string>(new string[] { "Connection" }));
+
+				return cmd;
+			}
+			else
+				return source.Clone() as DbCommand;
+		}
+
+		static internal DbParameter Clone(this DbParameter sourceParameter)
+		{
+			ICloneable source = sourceParameter as ICloneable;
+
+			return (source == null) ? null : source.Clone() as DbParameter;
 		}
 
 		static internal void MemberwiseCopy<T>(T source, T target, ICollection<string> excludeMembers = null)
