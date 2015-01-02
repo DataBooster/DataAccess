@@ -63,10 +63,18 @@ namespace DbParallel.DataAccess
 						returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
 					}, 0))
 				{
+					bool isFirstResultSetVoid = false;
+
 					do
 					{
 						result.ResultSets.Add(LoadDynamicData(reader).ToList());
+
+						if (result.ResultSets.Count == 1 && reader.FieldCount == 0)
+							isFirstResultSetVoid = true;
 					} while (reader.NextResult());
+
+					if (result.ResultSets.Count == 1 && result.ResultSets[0].Count == 0 && isFirstResultSetVoid)
+						result.ResultSets.Clear();
 				}
 
 				if (outputParameters != null)
