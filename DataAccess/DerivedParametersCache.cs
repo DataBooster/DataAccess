@@ -100,15 +100,15 @@ namespace DbParallel.DataAccess
 				return;
 
 			Dictionary<string, DbParameter> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
-				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimPrefix().Length > 0)
-				.ToDictionary(p => p.ParameterName.TrimPrefix(), StringComparer.OrdinalIgnoreCase);
+				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimParameterPrefix().Length > 0)
+				.ToDictionary(p => p.ParameterName.TrimParameterPrefix(), StringComparer.OrdinalIgnoreCase);
 
 			DbParameter dbParameter;
 			string explicitName;
 
 			foreach (var p in explicitParameters)
 			{
-				explicitName = p.Key.TrimPrefix();
+				explicitName = p.Key.TrimParameterPrefix();
 
 				if (explicitName.Length > 0)
 					if (specifiedParameters.TryGetValue(explicitName, out dbParameter))
@@ -126,8 +126,8 @@ namespace DbParallel.DataAccess
 		static private void TransferParameters(DbCommand dbCommand, DbParameterCollection derivedParameters, IDictionary<string, IConvertible> explicitParameters)
 		{
 			Dictionary<string, IConvertible> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
-				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimPrefix().Length > 0)
-				.ToDictionary(p => p.ParameterName.TrimPrefix(), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
+				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimParameterPrefix().Length > 0)
+				.ToDictionary(p => p.ParameterName.TrimParameterPrefix(), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
 
 			if (explicitParameters != null)
 			{
@@ -135,10 +135,10 @@ namespace DbParallel.DataAccess
 
 				foreach (var p in explicitParameters)
 				{
-					explicitName = p.Key.TrimPrefix();
+					explicitName = p.Key.TrimParameterPrefix();
 
 					if (explicitName.Length > 0)
-						specifiedParameters[p.Key] = p.Value;
+						specifiedParameters[explicitName] = p.Value;
 				}
 			}
 
@@ -156,7 +156,7 @@ namespace DbParallel.DataAccess
 					MemberwiseCopy(derivedParameters[i], dbParameter, null);
 				}
 
-				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimPrefix(), out specifiedParameterValue))
+				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimParameterPrefix(), out specifiedParameterValue))
 				{
 					if (dbParameter.IsUnpreciseDecimal())
 						dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
@@ -229,7 +229,7 @@ namespace DbParallel.DataAccess
 				}
 		}
 
-		static private string TrimPrefix(this string ParameterName)
+		static internal string TrimParameterPrefix(this string ParameterName)
 		{
 			return ParameterName.TrimStart('@', ':');
 		}

@@ -81,7 +81,7 @@ namespace DbParallel.DataAccess
 				{
 					IDictionary<string, object> expandoDictionary = result.OutputParameters = new ExpandoObject();
 					foreach (DbParameter op in outputParameters)
-						expandoDictionary.Add(op.ParameterName, op.Value);
+						expandoDictionary.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
 				}
 
 				if (returnParameter != null)
@@ -94,6 +94,28 @@ namespace DbParallel.DataAccess
 			}
 
 			return result;
+		}
+
+		public bool RefreshStoredProcedureParameters(string storedProcedureName)
+		{
+			if (string.IsNullOrWhiteSpace(storedProcedureName))
+				throw new ArgumentNullException("storedProcedureName");
+
+			using (DbCommand dbCmd = CreateCommand(storedProcedureName, 0, CommandType.StoredProcedure, null))
+			{
+				return DerivedParametersCache.DeriveParameters(dbCmd, null, true);
+			}
+		}
+
+		public int RefreshStoredProcedureParameters(IEnumerable<string> storedProcedureNames)
+		{
+			int cnt = 0;
+
+			foreach (string spName in storedProcedureNames)
+				if (RefreshStoredProcedureParameters(spName))
+					cnt++;
+
+			return cnt;
 		}
 
 		#endregion
