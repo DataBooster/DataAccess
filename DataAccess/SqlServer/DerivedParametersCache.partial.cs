@@ -1,4 +1,6 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace DbParallel.DataAccess
@@ -7,10 +9,22 @@ namespace DbParallel.DataAccess
 	{
 		static partial void SqlDeriveParameters(DbCommand dbCmd)
 		{
-			SqlCommand cmd = dbCmd as SqlCommand;
+			SqlCommand sqlCmd = dbCmd as SqlCommand;
 
-			if (cmd != null)
-				SqlCommandBuilder.DeriveParameters(cmd);
+			if (sqlCmd != null)
+				SqlCommandBuilder.DeriveParameters(sqlCmd);
+		}
+
+		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd)
+		{
+			SqlCommand sqlCmd = dbCmd as SqlCommand;
+
+			if (sqlCmd != null && sqlCmd.CommandType == CommandType.StoredProcedure)
+			{
+				foreach (SqlParameter sqlParameter in sqlCmd.Parameters)
+					if (sqlParameter.Value == null && (sqlParameter.Direction == ParameterDirection.InputOutput || sqlParameter.Direction == ParameterDirection.Output))
+						sqlParameter.Value = DBNull.Value;
+			}
 		}
 	}
 }

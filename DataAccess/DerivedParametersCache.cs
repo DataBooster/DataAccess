@@ -18,37 +18,37 @@ namespace DbParallel.DataAccess
 		}
 
 		private static readonly object _DerivedParametersCacheLock = new object();
-		private static Dictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionString
+		private static Dictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionDataSource/ConnectionString
 
 		static DerivedParametersCache()
 		{
 			_CacheRoot = new Dictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
 		}
 
-		private static DbParameterCollection GetCache(string connectionString, string storedProcedure)
+		private static DbParameterCollection GetCache(string connectionDataSource, string storedProcedure)
 		{
 			StoredProcedureDictionary spDictionary;
 			DbParameterCollection dbParameters = null;
 
 			lock (_DerivedParametersCacheLock)
 			{
-				if (_CacheRoot.TryGetValue(connectionString, out spDictionary))
+				if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
 					spDictionary.TryGetValue(storedProcedure, out dbParameters);
 			}
 
 			return dbParameters;
 		}
 
-		private static void SetCache(string connectionString, string storedProcedure, DbParameterCollection parameters)
+		private static void SetCache(string connectionDataSource, string storedProcedure, DbParameterCollection parameters)
 		{
 			StoredProcedureDictionary spDictionary;
 
 			lock (_DerivedParametersCacheLock)
 			{
-				if (_CacheRoot.TryGetValue(connectionString, out spDictionary) == false)
+				if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary) == false)
 				{
 					spDictionary = new StoredProcedureDictionary();
-					_CacheRoot.Add(connectionString, spDictionary);
+					_CacheRoot.Add(connectionDataSource, spDictionary);
 				}
 
 				spDictionary[storedProcedure] = parameters;
@@ -62,16 +62,18 @@ namespace DbParallel.DataAccess
 			if (dbCommand.Connection == null)
 				throw new ArgumentNullException("dbCommand.Connection");
 
-			string connectionString = dbCommand.Connection.ConnectionString;
-			string storedProcedure = dbCommand.CommandText;
+			string connectionDataSource = dbCommand.Connection.DataSource;
+			if (string.IsNullOrEmpty(connectionDataSource))
+				connectionDataSource = dbCommand.Connection.ConnectionString;
 
+			string storedProcedure = dbCommand.CommandText;
 			if (string.IsNullOrWhiteSpace(storedProcedure))
 				throw new ArgumentNullException("dbCommand.CommandText");
 
 			DbParameterCollection derivedParameters = null;
 
 			if (dbCommand.CommandType == CommandType.StoredProcedure)
-				if (refresh || (derivedParameters = GetCache(connectionString, storedProcedure)) == null)
+				if (refresh || (derivedParameters = GetCache(connectionDataSource, storedProcedure)) == null)
 				{
 					using (DbCommand cmd = dbCommand.Clone())
 					{
@@ -79,7 +81,7 @@ namespace DbParallel.DataAccess
 						derivedParameters = cmd.Parameters;
 					}
 
-					SetCache(connectionString, storedProcedure, derivedParameters);
+					SetCache(connectionDataSource, storedProcedure, derivedParameters);
 				}
 
 			if (derivedParameters == null)
