@@ -4,16 +4,17 @@ using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
+	[Serializable()]
 	public class StoredProcedureResponse
 	{
-		public List<IList<ExpandoObject>> ResultSets { get; set; }
+		public List<List<ExpandoObject>> ResultSets { get; set; }
 		public ExpandoObject OutputParameters { get; set; }
 		public object ReturnValue { get; set; }
 		public Exception Error { get; set; }
 
 		public StoredProcedureResponse()
 		{
-			ResultSets = new List<IList<ExpandoObject>>();
+			ResultSets = new List<List<ExpandoObject>>();
 		}
 	}
 }
