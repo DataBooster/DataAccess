@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
-	public class StoredProcedureRequest
+	[Serializable()]
+	public class StoredProcedureRequest : ICloneable
 	{
 		public string CommandText { get; set; }
 		public CommandType CommandType { get; set; }
@@ -15,6 +16,18 @@ namespace DbParallel.DataAccess
 		{
 			CommandType = CommandType.StoredProcedure;
 			CommandTimeout = 0;
+		}
+
+		object ICloneable.Clone()
+		{
+			StoredProcedureRequest cloneRequest = new StoredProcedureRequest();
+
+			cloneRequest.CommandText = this.CommandText;
+			cloneRequest.CommandType = this.CommandType;
+			cloneRequest.CommandTimeout = this.CommandTimeout;
+			cloneRequest.InputParameters = new Dictionary<string, IConvertible>(this.InputParameters, StringComparer.OrdinalIgnoreCase);
+
+			return cloneRequest;
 		}
 	}
 }
