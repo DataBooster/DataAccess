@@ -11,7 +11,7 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
 		<releaseNotes>http://databooster.codeplex.com/releases</releaseNotes>
-		<copyright>Copyright 2013 Abel Cheng</copyright>
+		<copyright>Copyright 2015 Abel Cheng</copyright>
 		<tags>DbParallel DataAccess ADO.NET Booster Launcher Throughput Oracle ODP.NET</tags>
 		<frameworkAssemblies>
 			<frameworkAssembly assemblyName="System.Configuration" />
