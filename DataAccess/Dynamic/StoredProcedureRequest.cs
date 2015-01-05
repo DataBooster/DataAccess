@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
-	[Serializable()]
 	public class StoredProcedureRequest : ICloneable
 	{
 		public string CommandText { get; set; }

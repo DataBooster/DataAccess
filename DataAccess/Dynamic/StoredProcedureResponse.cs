@@ -4,7 +4,6 @@ using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
-	[Serializable()]
 	public class StoredProcedureResponse
 	{
 		public List<List<ExpandoObject>> ResultSets { get; set; }
