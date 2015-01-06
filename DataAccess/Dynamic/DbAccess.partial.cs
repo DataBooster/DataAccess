@@ -49,49 +49,41 @@ namespace DbParallel.DataAccess
 			List<DbParameter> outputParameters = null;
 			DbParameter returnParameter = null;
 
-			try
-			{
-				if (string.IsNullOrWhiteSpace(request.CommandText))
-					throw new ArgumentNullException("request.CommandText");
+			if (string.IsNullOrWhiteSpace(request.CommandText))
+				throw new ArgumentNullException("request.CommandText");
 
-				using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType, parameters =>
-					{
-						parameters.Derive(request.InputParameters);
-
-						var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
-						outputParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
-						returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
-					}, 0))
+			using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType, parameters =>
 				{
-					bool isFirstResultSetVoid = false;
+					parameters.Derive(request.InputParameters);
 
-					do
-					{
-						result.ResultSets.Add(LoadDynamicData(reader).ToList());
-
-						if (result.ResultSets.Count == 1 && reader.FieldCount == 0)
-							isFirstResultSetVoid = true;
-					} while (reader.NextResult());
-
-					if (result.ResultSets.Count == 1 && result.ResultSets[0].Count == 0 && isFirstResultSetVoid)
-						result.ResultSets.Clear();
-				}
-
-				if (outputParameters != null)
-				{
-					IDictionary<string, object> expandoDictionary = result.OutputParameters = new ExpandoObject();
-					foreach (DbParameter op in outputParameters)
-						expandoDictionary.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
-				}
-
-				if (returnParameter != null)
-					result.ReturnValue = returnParameter.Value;
-			}
-			catch (Exception e)
+					var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
+					outputParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
+					returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
+				}, 0))
 			{
-				result.Error = e;
-				throw;
+				bool isFirstResultSetVoid = false;
+
+				do
+				{
+					result.ResultSets.Add(LoadDynamicData(reader).ToList());
+
+					if (result.ResultSets.Count == 1 && reader.FieldCount == 0)
+						isFirstResultSetVoid = true;
+				} while (reader.NextResult());
+
+				if (result.ResultSets.Count == 1 && result.ResultSets[0].Count == 0 && isFirstResultSetVoid)
+					result.ResultSets.Clear();
 			}
+
+			if (outputParameters != null)
+			{
+				IDictionary<string, object> expandoDictionary = result.OutputParameters = new ExpandoObject();
+				foreach (DbParameter op in outputParameters)
+					expandoDictionary.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
+			}
+
+			if (returnParameter != null)
+				result.ReturnValue = returnParameter.Value;
 
 			return result;
 		}

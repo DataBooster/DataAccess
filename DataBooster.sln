@@ -56,7 +56,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{7FE548
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataDirect", "DataDirect", "{FED4E547-7355-46F3-8231-8B12822CDF68}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\Oracle\DataDirect\DataAccess.nuspec = NuGet\Oracle\DataDirect\DataAccess.nuspec
 		NuGet\Oracle\DataDirect\Readme.txt = NuGet\Oracle\DataDirect\Readme.txt
 		NuGet\Oracle\DataDirect\web.config.transform = NuGet\Oracle\DataDirect\web.config.transform
 	EndProjectSection

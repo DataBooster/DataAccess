@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 
 namespace DbParallel.DataAccess
@@ -9,7 +8,6 @@ namespace DbParallel.DataAccess
 		public List<List<ExpandoObject>> ResultSets { get; set; }
 		public ExpandoObject OutputParameters { get; set; }
 		public object ReturnValue { get; set; }
-		public Exception Error { get; set; }
 
 		public StoredProcedureResponse()
 		{
