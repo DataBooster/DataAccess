@@ -5,13 +5,13 @@ namespace DbParallel.DataAccess
 {
 	public class StoredProcedureResponse
 	{
-		public List<List<ExpandoObject>> ResultSets { get; set; }
-		public ExpandoObject OutputParameters { get; set; }
+		public List<List<BindableDynamicObject>> ResultSets { get; set; }
+		public BindableDynamicObject OutputParameters { get; set; }
 		public object ReturnValue { get; set; }
 
 		public StoredProcedureResponse()
 		{
-			ResultSets = new List<List<ExpandoObject>>();
+			ResultSets = new List<List<BindableDynamicObject>>();
 		}
 	}
 }

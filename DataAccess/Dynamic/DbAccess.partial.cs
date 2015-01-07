@@ -9,7 +9,7 @@ namespace DbParallel.DataAccess
 {
 	public partial class DbAccess
 	{
-		#region Load result sets into dynamic data (ExpandoObject List)
+		#region Load result sets into dynamic data
 
 		protected string[] GetVisibleFieldNames(DbDataReader reader)
 		{
@@ -35,12 +35,12 @@ namespace DbParallel.DataAccess
 			return expandoObject;
 		}
 
-		private IEnumerable<ExpandoObject> LoadDynamicData(DbDataReader reader)
+		private IEnumerable<BindableDynamicObject> LoadDynamicData(DbDataReader reader)
 		{
 			string[] visibleFieldNames = GetVisibleFieldNames(reader);
 
 			while (reader.Read())
-				yield return CreateExpando(reader, visibleFieldNames);
+				yield return new BindableDynamicObject(CreateExpando(reader, visibleFieldNames));
 		}
 
 		public StoredProcedureResponse ExecuteStoredProcedure(StoredProcedureRequest request)
@@ -77,7 +77,7 @@ namespace DbParallel.DataAccess
 
 			if (outputParameters != null)
 			{
-				IDictionary<string, object> expandoDictionary = result.OutputParameters = new ExpandoObject();
+				IDictionary<string, object> expandoDictionary = result.OutputParameters = new BindableDynamicObject();
 				foreach (DbParameter op in outputParameters)
 					expandoDictionary.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
 			}
