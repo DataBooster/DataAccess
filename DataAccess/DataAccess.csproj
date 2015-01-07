@@ -66,6 +66,7 @@
     <Compile Include="DbTransactionScope.cs" />
     <Compile Include="DerivedParametersCache.cs" />
     <Compile Include="DerivedParametersCache.slot.cs" />
+    <Compile Include="Dynamic\BindableDynamicObject.cs" />
     <Compile Include="Dynamic\DbAccess.partial.cs" />
     <Compile Include="Dynamic\StoredProcedureRequest.cs" />
     <Compile Include="Dynamic\StoredProcedureResponse.cs" />
