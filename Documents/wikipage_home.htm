@@ -7,7 +7,7 @@
 <div><strong>Project Description</strong></div>
 <div>Less Code, Less Configuration, Less Time.<br />The DataBooster library is a high-performance extension to ADO.NET Data Provider, includes two aspects:</div>
 <ul>
-<li>A slimmed down API encapsulation which simplified the most common data access operations (DbConnection -&gt; DbCommand -&gt; DbParameter -&gt; DbDataReader) into a single class <strong><span style="color: #2b91af;">DbAccess</span></strong>, to help application with a clean DAL, avoid over-packing and redundant-copy of data transfer.<br />Please consider using this for your application development if Entity Framework can not meet your performance requirement.</li>
+<li>A slimmed down API encapsulation which simplified the most common data access operations (DbConnection -&gt; DbCommand -&gt; DbParameter -&gt; DbDataReader) into a single class <strong><span style="color: #2b91af;">DbAccess</span></strong>, to help application with a clean DAL, avoid over-packing and redundant-copy of data transfer. DbAccess also provides an object-relational mapping (OR/M) one-way implementation <em>(from database to .NET Framework classes)</em> that maximizes the use of inference approach rather than lots of configurations or mechanical designs for redundant metadata. The whole class library comes as a very lightweight NuGet package. Using the library is seamless with your existing database developments, please consider using this for your application development if Entity Framework can not meet your performance requirement.</li>
 <li>A booster for writing mass data onto database. Base on a rational utilization of database concurrency and a effective utilization of network bandwidth, the booster implements a transmitting pipeline of dataflow like a Multiple Launch Rocket System, The speed of writing data into database can be improved about 5 times faster than an ordinary bulk insert/copy, or up to 700 times faster than a row-by-row insert.<br />The detail implement closely depends on the specific database. For the moment, the class <strong><span style="color: #2b91af;">OracleLauncher</span></strong> and <strong><span style="color: #2b91af;">SqlLauncher</span></strong> are ready for Oracle and SQL Server. They handle the throughput control and other low-level synchronization details. They are thread-safe which avoid locks. By using the Launcher, you can maximize the performance of your code while filling data row-by-row simply.</li>
 </ul>
 <div><img style="vertical-align: middle;" src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=databooster&amp;DownloadId=386321" alt="Data Launcher" width="600" height="336" /></div>
@@ -174,6 +174,43 @@
 <li>If level 1 conversion has not yet reached business target type, an appropriate <a href="http://msdn.microsoft.com/en-us/library/system.iconvertible.aspx" target="_blank">IConvertible</a> method of the inferred .NET Framework type&nbsp;will be called automatically to convert further into the target type.</li>
 </ol></li>
 </ul>
+</div>
+<ul>
+<li>ExecuteStoredProcedure: (available in NuGet)<br />In intranet application area, there are also a large number of scenarios without substantial logic in data access web services, however they wasted a lot of our efforts on very boring data moving coding or configuration. The ExecuteStoredProcedure provides you an accessibility to implement an entirely generic Web API. Please refer to the following example:</li>
+</ul>
+<div style="color: black; background-color: white;">
+<pre><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">class</span> <span style="color: #2b91af;">DynamicController</span> : <span style="color: #2b91af;">ApiController</span>
+{
+    [<span style="color: #2b91af;">HttpGet</span>]
+    [<span style="color: #2b91af;">HttpPost</span>]
+    [<span style="color: #2b91af;">HttpPut</span>]
+    [<span style="color: #2b91af;">HttpDelete</span>]
+    <span style="color: #0000ff;">public</span> <span style="color: #2b91af;">StoredProcedureResponse</span> Execute(<span style="color: #0000ff;">string</span> sp,
+                                           <span style="color: #2b91af;">IDictionary</span>&lt;<span style="color: #0000ff;">string</span>, <span style="color: #0000ff;">object</span>&gt; parameters)
+    {
+        <span style="color: #0000ff;">try</span>
+        {
+            <span style="color: #2b91af;">StoredProcedureRequest</span> spRequest = <span style="color: #0000ff;">new</span> <span style="color: #2b91af;">StoredProcedureRequest</span>()
+                                               { CommandText = sp.Trim() };
+            <span style="color: #0000ff;">if</span> (parameters != <span style="color: #0000ff;">null</span>)
+                spRequest.InputParameters = parameters.ToDictionary(p =&gt; p.Key,
+                    p =&gt; (p.Value == <span style="color: #0000ff;">null</span>) ? <span style="color: #2b91af;">DBNull</span>.Value : p.Value <span style="color: #0000ff;">as</span> <span style="color: #2b91af;">IConvertible</span>);
+
+            <span style="color: #0000ff;">using</span> (<span style="color: #2b91af;">DbAccess</span> dbAccess = <span style="color: #2b91af;">DbPackage</span>.CreateConnection())
+            {
+                <span style="color: #0000ff;">return</span> dbAccess.ExecuteStoredProcedure(spRequest);
+            }
+        }
+        <span style="color: #0000ff;">catch</span> (<span style="color: #2b91af;">Exception</span> e)
+        {
+            <span style="color: #0000ff;">throw</span> <span style="color: #0000ff;">new</span> <span style="color: #2b91af;">HttpResponseException</span>(Request.CreateErrorResponse(
+                                            <span style="color: #2b91af;">HttpStatusCode</span>.InternalServerError, e));
+        }
+    }
+}
+</pre>
+</div>
+<div style="padding-left: 40px;"><br />Http clients can use Stored Procedure Name or Database Function Name as endpoints (e.g. http://BaseURL/YourStoredProcedureName), put required parameters in json format request body (Content-Type: "application/json"). The response json will have all Result Sets, Output Parameters and Return Value.
 </div>
 <ul>
 <li><strong><span style="color: #2b91af;">OracleLauncher</span></strong>:<br />A quick example:</li>
