@@ -2,7 +2,7 @@
 
 namespace DbParallel.DataAccess
 {
-	internal static partial class DerivedParametersCache
+	static partial class DerivedParametersCache
 	{
 		static partial void OracleDeriveParameters(DbCommand dbCmd);
 		static partial void SqlDeriveParameters(DbCommand dbCmd);

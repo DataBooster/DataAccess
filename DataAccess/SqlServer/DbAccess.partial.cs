@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 
 namespace DbParallel.DataAccess
 {
-	public partial class DbAccess
+	partial class DbAccess
 	{
 		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry)
 		{

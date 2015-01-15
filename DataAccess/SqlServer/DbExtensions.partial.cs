@@ -2,7 +2,7 @@
 
 namespace DbParallel.DataAccess
 {
-	public static partial class DbExtensions
+	static partial class DbExtensions
 	{
 		public static SqlBulkCopyColumnMapping Add(this SqlBulkCopyColumnMappingCollection columnMappings, string destinationColumn)
 		{

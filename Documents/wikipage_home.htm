@@ -132,7 +132,7 @@
 }</pre>
 </div>
 <ul>
-<li>ExecuteMultiReader:<br />Multi-ResultSet is a common scenario in package based (Oracle) or stored procedure based (SQL Server) database development, using the ExecuteMultiReader Method can minimize your DAL code to process multiple results.</li>
+<li><span style="color: #2b91af;">ExecuteMultiReader</span>:<br />Multi-ResultSet is a common scenario in package based (Oracle) or stored procedure based (SQL Server) database development, using the ExecuteMultiReader Method can minimize your DAL code to process multiple results.</li>
 </ul>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">internal</span> <span style="color: blue;">static</span> <span style="color: #2b91af;">Tuple</span>&lt;<span style="color: #2b91af;">List</span>&lt;MyBusiness1&gt;, <span style="color: #2b91af;">List</span>&lt;MyBusiness2&gt;, <span style="color: #2b91af;">List</span>&lt;MyBusiness3&gt;&gt; ViewReport(<span style="color: blue;">this</span> <span style="color: #2b91af;">DbAccess</span> dbAccess, <span style="color: #2b91af;">DateTime</span> date, <span style="color: #2b91af;">int</span> sessionId)
@@ -176,7 +176,7 @@
 </ul>
 </div>
 <ul>
-<li>ExecuteStoredProcedure: (available in NuGet)<br />In intranet application area, there are also a large number of scenarios without substantial logic in data access web services, however they wasted a lot of our efforts on very boring data moving coding or configuration. The ExecuteStoredProcedure provides you an accessibility to implement an entirely generic Web API. Please refer to the following example:</li>
+<li><span style="color: #2b91af;">ExecuteStoredProcedure</span>:<br />In intranet application area, there are also a large number of scenarios without substantial logic in data access web services, however they wasted a lot of our efforts on very boring data moving coding or configuration. The <span style="color: #2b91af;">ExecuteStoredProcedure</span> provides you an accessibility to implement an entirely generic Web API. Please refer to the following example:</li>
 </ul>
 <div style="color: black; background-color: white;">
 <pre><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">class</span> <span style="color: #2b91af;">DynamicController</span> : <span style="color: #2b91af;">ApiController</span>
@@ -198,7 +198,7 @@
 
             <span style="color: #0000ff;">using</span> (<span style="color: #2b91af;">DbAccess</span> dbAccess = <span style="color: #2b91af;">DbPackage</span>.CreateConnection())
             {
-                <span style="color: #0000ff;">return</span> dbAccess.ExecuteStoredProcedure(spRequest);
+                <span style="color: #0000ff;">return</span> dbAccess.<strong>ExecuteStoredProcedure</strong>(spRequest);
             }
         }
         <span style="color: #0000ff;">catch</span> (<span style="color: #2b91af;">Exception</span> e)
@@ -210,8 +210,7 @@
 }
 </pre>
 </div>
-<div style="padding-left: 40px;"><br />Http clients can use Stored Procedure Name or Database Function Name as endpoints (e.g. http://BaseURL/YourStoredProcedureName), put required parameters in json format request body (Content-Type: "application/json"). The response json will have all Result Sets, Output Parameters and Return Value.
-</div>
+<div style="padding-left: 40px;"><br />Http clients can use Stored Procedure Name or Database Function Name as endpoint (e.g. http://BaseURL/YourStoredProcedureName), put required parameters in JSON format request body (Content-Type: "application/json"). The response JSON will have all Result Sets, Output Parameters and Return Value.</div>
 <ul>
 <li><strong><span style="color: #2b91af;">OracleLauncher</span></strong>:<br />A quick example:</li>
 </ul>

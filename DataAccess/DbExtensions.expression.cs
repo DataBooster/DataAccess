@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DbParallel.DataAccess
 {
-	public static partial class DbExtensions
+	static partial class DbExtensions
 	{
 		internal static MemberExpression GetMemberExpression(this Expression expression)
 		{

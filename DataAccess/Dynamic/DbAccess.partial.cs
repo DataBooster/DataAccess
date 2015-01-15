@@ -7,7 +7,7 @@ using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
-	public partial class DbAccess
+	partial class DbAccess
 	{
 		#region Load result sets into dynamic data
 
