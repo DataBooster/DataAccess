@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace DbParallel.DataAccess
 {
-	internal static partial class DerivedParametersCache
+	static partial class DerivedParametersCache
 	{
 		static partial void SqlDeriveParameters(DbCommand dbCmd)
 		{

@@ -10,7 +10,7 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace DbParallel.DataAccess
 {
-	public static partial class DbExtensions
+	static partial class DbExtensions
 	{
 		public static OracleParameter AsOracleParameter(this DbParameter oracleParameter)
 		{

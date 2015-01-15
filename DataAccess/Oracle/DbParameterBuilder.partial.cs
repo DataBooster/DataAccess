@@ -9,7 +9,7 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace DbParallel.DataAccess
 {
-	public partial class DbParameterBuilder
+	partial class DbParameterBuilder
 	{
 		public OracleParameter AddAssociativeArray(string parameterName, OracleDbType oraType)
 		{

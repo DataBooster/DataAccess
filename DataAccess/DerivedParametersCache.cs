@@ -7,240 +7,298 @@ using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
-	internal static partial class DerivedParametersCache
-	{
-		class StoredProcedureDictionary : Dictionary<string, DbParameterCollection>
-		{
-			public StoredProcedureDictionary()
-				: base(StringComparer.OrdinalIgnoreCase)
-			{
-			}
-		}
+    public static partial class DerivedParametersCache
+    {
+        private class DerivedParamColl
+        {
+            private DbParameterCollection _ParameterCollection;
+            internal DbParameterCollection ParameterCollection
+            {
+                get
+                {
+                    return _ParameterCollection;
+                }
+                set
+                {
+                    _ParameterCollection = value;
+                    _LastRefreshed = DateTime.Now;
+                }
+            }
 
-		private static readonly object _DerivedParametersCacheLock = new object();
-		private static Dictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionDataSource/ConnectionString
+            private DateTime _LastRefreshed;
+            internal DateTime LastRefreshed
+            {
+                get { return _LastRefreshed; }
+            }
 
-		static DerivedParametersCache()
-		{
-			_CacheRoot = new Dictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
-		}
+            internal DerivedParamColl(DbParameterCollection parameterCollection)
+            {
+                ParameterCollection = parameterCollection;
+            }
+        }
 
-		private static DbParameterCollection GetCache(string connectionDataSource, string storedProcedure)
-		{
-			StoredProcedureDictionary spDictionary;
-			DbParameterCollection dbParameters = null;
+        private class StoredProcedureDictionary : Dictionary<string, DerivedParamColl>
+        {
+            internal StoredProcedureDictionary()
+                : base(StringComparer.OrdinalIgnoreCase)
+            {
+            }
+        }
 
-			lock (_DerivedParametersCacheLock)
-			{
-				if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
-					spDictionary.TryGetValue(storedProcedure, out dbParameters);
-			}
+        private static readonly object _DerivedParametersCacheLock = new object();
+        private static Dictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionDataSource/ConnectionString
+        private static TimeSpan _ExpireInterval;
 
-			return dbParameters;
-		}
+        static DerivedParametersCache()
+        {
+            _CacheRoot = new Dictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
+            _ExpireInterval = new TimeSpan(1, 0, 0);    // Default 1 hour
+        }
 
-		private static void SetCache(string connectionDataSource, string storedProcedure, DbParameterCollection parameters)
-		{
-			StoredProcedureDictionary spDictionary;
+        public static TimeSpan ExpireInterval
+        {
+            get
+            {
+                lock (_DerivedParametersCacheLock)
+                {
+                    return _ExpireInterval;
+                }
+            }
+            set
+            {
+                lock (_DerivedParametersCacheLock)
+                {
+                    _ExpireInterval = value;
+                }
+            }
+        }
 
-			lock (_DerivedParametersCacheLock)
-			{
-				if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary) == false)
-				{
-					spDictionary = new StoredProcedureDictionary();
-					_CacheRoot.Add(connectionDataSource, spDictionary);
-				}
+        private static DbParameterCollection GetCache(string connectionDataSource, string storedProcedure)
+        {
+            StoredProcedureDictionary spDictionary;
+            DerivedParamColl paramColl;
+            DbParameterCollection dbParameters = null;
 
-				spDictionary[storedProcedure] = parameters;
-			}
-		}
+            lock (_DerivedParametersCacheLock)
+            {
+                if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
+                    if (spDictionary.TryGetValue(storedProcedure, out paramColl))
+                        if (_ExpireInterval <= TimeSpan.Zero || DateTime.Now - paramColl.LastRefreshed <= _ExpireInterval)
+                            dbParameters = paramColl.ParameterCollection;
+            }
 
-		static public bool DeriveParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters, bool refresh)
-		{
-			if (dbCommand == null)
-				throw new ArgumentNullException("dbCommand");
-			if (dbCommand.Connection == null)
-				throw new ArgumentNullException("dbCommand.Connection");
+            return dbParameters;
+        }
 
-			string connectionDataSource = dbCommand.Connection.DataSource;
-			if (string.IsNullOrEmpty(connectionDataSource))
-				connectionDataSource = dbCommand.Connection.ConnectionString;
+        private static void SetCache(string connectionDataSource, string storedProcedure, DbParameterCollection parameters)
+        {
+            StoredProcedureDictionary spDictionary;
+            DerivedParamColl paramColl;
 
-			string storedProcedure = dbCommand.CommandText;
-			if (string.IsNullOrWhiteSpace(storedProcedure))
-				throw new ArgumentNullException("dbCommand.CommandText");
+            lock (_DerivedParametersCacheLock)
+            {
+                if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
+                {
+                    if (spDictionary.TryGetValue(storedProcedure, out paramColl))
+                        paramColl.ParameterCollection = parameters;
+                    else
+                        spDictionary.Add(storedProcedure, new DerivedParamColl(parameters));
+                }
+                else
+                {
+                    spDictionary = new StoredProcedureDictionary();
+                    spDictionary.Add(storedProcedure, new DerivedParamColl(parameters));
+                    _CacheRoot.Add(connectionDataSource, spDictionary);
+                }
+            }
+        }
 
-			DbParameterCollection derivedParameters = null;
+        static internal bool DeriveParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters, bool refresh)
+        {
+            if (dbCommand == null)
+                throw new ArgumentNullException("dbCommand");
+            if (dbCommand.Connection == null)
+                throw new ArgumentNullException("dbCommand.Connection");
 
-			if (dbCommand.CommandType == CommandType.StoredProcedure)
-				if (refresh || (derivedParameters = GetCache(connectionDataSource, storedProcedure)) == null)
-				{
-					using (DbCommand cmd = dbCommand.Clone())
-					{
-						DbDeriveParameters(cmd);
-						derivedParameters = cmd.Parameters;
-					}
+            string connectionDataSource = dbCommand.Connection.DataSource;
+            if (string.IsNullOrEmpty(connectionDataSource))
+                connectionDataSource = dbCommand.Connection.ConnectionString;
 
-					SetCache(connectionDataSource, storedProcedure, derivedParameters);
-				}
+            string storedProcedure = dbCommand.CommandText;
+            if (string.IsNullOrWhiteSpace(storedProcedure))
+                throw new ArgumentNullException("dbCommand.CommandText");
 
-			if (derivedParameters == null)
-			{
-				TransferParameters(dbCommand, explicitParameters);
-				return false;
-			}
-			else
-			{
-				TransferParameters(dbCommand, derivedParameters, explicitParameters);
-				return true;
-			}
-		}
+            DbParameterCollection derivedParameters = null;
 
-		static private void TransferParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters)
-		{
-			if (explicitParameters == null)
-				return;
+            if (dbCommand.CommandType == CommandType.StoredProcedure)
+                if (refresh || (derivedParameters = GetCache(connectionDataSource, storedProcedure)) == null)
+                {
+                    using (DbCommand cmd = dbCommand.Clone())
+                    {
+                        DbDeriveParameters(cmd);
+                        derivedParameters = cmd.Parameters;
+                    }
 
-			Dictionary<string, DbParameter> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
-				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimParameterPrefix().Length > 0)
-				.ToDictionary(p => p.ParameterName.TrimParameterPrefix(), StringComparer.OrdinalIgnoreCase);
+                    SetCache(connectionDataSource, storedProcedure, derivedParameters);
+                }
 
-			DbParameter dbParameter;
-			string explicitName;
+            if (derivedParameters == null)
+            {
+                TransferParameters(dbCommand, explicitParameters);
+                return false;
+            }
+            else
+            {
+                TransferParameters(dbCommand, derivedParameters, explicitParameters);
+                return true;
+            }
+        }
 
-			foreach (var p in explicitParameters)
-			{
-				explicitName = p.Key.TrimParameterPrefix();
+        static private void TransferParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters)
+        {
+            if (explicitParameters == null)
+                return;
 
-				if (explicitName.Length > 0)
-					if (specifiedParameters.TryGetValue(explicitName, out dbParameter))
-						dbParameter.Value = p.Value;
-					else
-					{
-						dbParameter = dbCommand.CreateParameter();
-						dbParameter.ParameterName = p.Key;
-						dbParameter.Value = p.Value;
-						dbCommand.Parameters.Add(dbParameter);
-					}
-			}
-		}
+            Dictionary<string, DbParameter> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
+                .Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimParameterPrefix().Length > 0)
+                .ToDictionary(p => p.ParameterName.TrimParameterPrefix(), StringComparer.OrdinalIgnoreCase);
 
-		static private void TransferParameters(DbCommand dbCommand, DbParameterCollection derivedParameters, IDictionary<string, IConvertible> explicitParameters)
-		{
-			Dictionary<string, IConvertible> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
-				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimParameterPrefix().Length > 0)
-				.ToDictionary(p => p.ParameterName.TrimParameterPrefix(), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
+            DbParameter dbParameter;
+            string explicitName;
 
-			if (explicitParameters != null)
-			{
-				string explicitName;
+            foreach (var p in explicitParameters)
+            {
+                explicitName = p.Key.TrimParameterPrefix();
 
-				foreach (var p in explicitParameters)
-				{
-					explicitName = p.Key.TrimParameterPrefix();
+                if (explicitName.Length > 0)
+                    if (specifiedParameters.TryGetValue(explicitName, out dbParameter))
+                        dbParameter.Value = p.Value;
+                    else
+                    {
+                        dbParameter = dbCommand.CreateParameter();
+                        dbParameter.ParameterName = p.Key;
+                        dbParameter.Value = p.Value;
+                        dbCommand.Parameters.Add(dbParameter);
+                    }
+            }
+        }
 
-					if (explicitName.Length > 0)
-						specifiedParameters[explicitName] = p.Value;
-				}
-			}
+        static private void TransferParameters(DbCommand dbCommand, DbParameterCollection derivedParameters, IDictionary<string, IConvertible> explicitParameters)
+        {
+            Dictionary<string, IConvertible> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
+                .Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimParameterPrefix().Length > 0)
+                .ToDictionary(p => p.ParameterName.TrimParameterPrefix(), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
 
-			DbParameter dbParameter;
-			IConvertible specifiedParameterValue;
+            if (explicitParameters != null)
+            {
+                string explicitName;
 
-			dbCommand.Parameters.Clear();
+                foreach (var p in explicitParameters)
+                {
+                    explicitName = p.Key.TrimParameterPrefix();
 
-			for (int i = 0; i < derivedParameters.Count; i++)
-			{
-				dbParameter = derivedParameters[i].Clone();
-				if (dbParameter == null)
-				{
-					dbParameter = dbCommand.CreateParameter();
-					MemberwiseCopy(derivedParameters[i], dbParameter, null);
-				}
+                    if (explicitName.Length > 0)
+                        specifiedParameters[explicitName] = p.Value;
+                }
+            }
 
-				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimParameterPrefix(), out specifiedParameterValue))
-				{
-					if (dbParameter.IsUnpreciseDecimal())
-						dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
+            DbParameter dbParameter;
+            IConvertible specifiedParameterValue;
 
-					dbParameter.Value = specifiedParameterValue;
-				}
+            dbCommand.Parameters.Clear();
 
-				dbCommand.Parameters.Add(dbParameter);
-			}
+            for (int i = 0; i < derivedParameters.Count; i++)
+            {
+                dbParameter = derivedParameters[i].Clone();
+                if (dbParameter == null)
+                {
+                    dbParameter = dbCommand.CreateParameter();
+                    MemberwiseCopy(derivedParameters[i], dbParameter, null);
+                }
 
-			OmitUnspecifiedInputParameters(dbCommand);	// Remove unspecified optional parameters
-		}
+                if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimParameterPrefix(), out specifiedParameterValue))
+                {
+                    if (dbParameter.IsUnpreciseDecimal())
+                        dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
 
-		static internal DbCommand Clone(this DbCommand sourceCommand)
-		{
-			ICloneable source = sourceCommand as ICloneable;
+                    dbParameter.Value = specifiedParameterValue;
+                }
 
-			if (source == null)
-			{
-				DbCommand cmd = sourceCommand.Connection.CreateCommand();
+                dbCommand.Parameters.Add(dbParameter);
+            }
 
-				MemberwiseCopy(sourceCommand, cmd, new HashSet<string>(new string[] { "Connection" }));
+            OmitUnspecifiedInputParameters(dbCommand);	// Remove unspecified optional parameters
+        }
 
-				return cmd;
-			}
-			else
-				return source.Clone() as DbCommand;
-		}
+        static internal DbCommand Clone(this DbCommand sourceCommand)
+        {
+            ICloneable source = sourceCommand as ICloneable;
 
-		static internal DbParameter Clone(this DbParameter sourceParameter)
-		{
-			ICloneable source = sourceParameter as ICloneable;
+            if (source == null)
+            {
+                DbCommand cmd = sourceCommand.Connection.CreateCommand();
 
-			return (source == null) ? null : source.Clone() as DbParameter;
-		}
+                MemberwiseCopy(sourceCommand, cmd, new HashSet<string>(new string[] { "Connection" }));
 
-		static internal void MemberwiseCopy<T>(T source, T target, ICollection<string> excludeMembers = null)
-		{
-			if (source == null)
-				throw new ArgumentNullException("source");
-			if (target == null)
-				throw new ArgumentNullException("target");
+                return cmd;
+            }
+            else
+                return source.Clone() as DbCommand;
+        }
 
-			Type tp = source.GetType();
-			var fields = tp.GetFields(BindingFlags.Public | BindingFlags.Instance);
-			var properties = tp.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        static internal DbParameter Clone(this DbParameter sourceParameter)
+        {
+            ICloneable source = sourceParameter as ICloneable;
 
-			foreach (FieldInfo fi in fields)
-				if (!fi.IsInitOnly && (excludeMembers == null || !excludeMembers.Contains(fi.Name)))
-				{
-					try
-					{
-						fi.SetValue(target, fi.GetValue(source));
-					}
-					catch
-					{
-					}
-				}
+            return (source == null) ? null : source.Clone() as DbParameter;
+        }
 
-			foreach (PropertyInfo pi in properties)
-				if (pi.CanRead && pi.CanWrite && (excludeMembers == null || !excludeMembers.Contains(pi.Name)))
-				{
-					try
-					{
-						pi.SetValue(target, pi.GetValue(source, null), null);
-					}
-					catch
-					{
-					}
-				}
-		}
+        static internal void MemberwiseCopy<T>(T source, T target, ICollection<string> excludeMembers = null)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (target == null)
+                throw new ArgumentNullException("target");
 
-		static internal string TrimParameterPrefix(this string ParameterName)
-		{
-			return ParameterName.TrimStart('@', ':');
-		}
+            Type tp = source.GetType();
+            var fields = tp.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var properties = tp.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-		static private bool IsUnpreciseDecimal(this DbParameter dbParameter)
-		{
-			return (dbParameter.DbType == DbType.Decimal && (dbParameter as IDbDataParameter).Precision == 0);
-		}
-	}
+            foreach (FieldInfo fi in fields)
+                if (!fi.IsInitOnly && (excludeMembers == null || !excludeMembers.Contains(fi.Name)))
+                {
+                    try
+                    {
+                        fi.SetValue(target, fi.GetValue(source));
+                    }
+                    catch
+                    {
+                    }
+                }
+
+            foreach (PropertyInfo pi in properties)
+                if (pi.CanRead && pi.CanWrite && (excludeMembers == null || !excludeMembers.Contains(pi.Name)))
+                {
+                    try
+                    {
+                        pi.SetValue(target, pi.GetValue(source, null), null);
+                    }
+                    catch
+                    {
+                    }
+                }
+        }
+
+        static internal string TrimParameterPrefix(this string ParameterName)
+        {
+            return ParameterName.TrimStart('@', ':');
+        }
+
+        static private bool IsUnpreciseDecimal(this DbParameter dbParameter)
+        {
+            return (dbParameter.DbType == DbType.Decimal && (dbParameter as IDbDataParameter).Precision == 0);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

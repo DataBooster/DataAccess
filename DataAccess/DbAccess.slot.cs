@@ -3,7 +3,7 @@ using System.Data.Common;
 
 namespace DbParallel.DataAccess
 {
-	public partial class DbAccess
+	partial class DbAccess
 	{
 		partial void OnOracleConnectionLost(Exception dbException, ref bool canRetry);
 		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry);
