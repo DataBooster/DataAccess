@@ -3,11 +3,14 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
-	public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, Object>
+	[Serializable]
+	public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, Object>, ISerializable
 	{
 		private IDictionary<string, Object> _data;
 
@@ -239,6 +242,24 @@ namespace DbParallel.DataAccess
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return _data.GetEnumerator();
+		}
+
+		#endregion
+
+		#region ISerializable Members
+
+		public BindableDynamicObject(SerializationInfo info, StreamingContext context)
+			: this()
+		{
+			foreach (var f in info)
+				_data.Add(f.Name, f.Value);
+		}
+
+		[SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			foreach (var p in _data)
+				info.AddValue(p.Key, p.Value);
 		}
 
 		#endregion
