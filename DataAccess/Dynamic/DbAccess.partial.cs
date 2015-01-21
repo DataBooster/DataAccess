@@ -45,8 +45,6 @@ namespace DbParallel.DataAccess
 
 		protected DbParameter ExecuteStoredProcedure(StoredProcedureRequest request, Action<DbDataReader> readAction, out List<DbParameter> outputParameters)
 		{
-			if (readAction == null)
-				throw new ArgumentNullException("resultsReader");
 			if (request == null)
 				throw new ArgumentNullException("request");
 			if (string.IsNullOrWhiteSpace(request.CommandText))
@@ -55,16 +53,18 @@ namespace DbParallel.DataAccess
 			List<DbParameter> outParameters = null;
 			DbParameter returnParameter = null;
 
-			using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType, parameters =>
-			{
-				parameters.Derive(request.InputParameters);
+			using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType,
+				parameters =>
+				{
+					parameters.Derive(request.InputParameters);
 
-				var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
-				outParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
-				returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
-			}, 0))
+					var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
+					outParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
+					returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
+				}, 0))
 			{
-				readAction(reader);
+				if (readAction != null)
+					readAction(reader);
 			}
 
 			outputParameters = outParameters;
