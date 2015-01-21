@@ -43,49 +43,66 @@ namespace DbParallel.DataAccess
 				yield return new BindableDynamicObject(CreateExpando(reader, visibleFieldNames));
 		}
 
-		public StoredProcedureResponse ExecuteStoredProcedure(StoredProcedureRequest request)
+		protected DbParameter ExecuteStoredProcedure(StoredProcedureRequest request, Action<DbDataReader> readAction, out List<DbParameter> outputParameters)
 		{
-			StoredProcedureResponse result = new StoredProcedureResponse();
-			List<DbParameter> outputParameters = null;
-			DbParameter returnParameter = null;
-
+			if (readAction == null)
+				throw new ArgumentNullException("resultsReader");
+			if (request == null)
+				throw new ArgumentNullException("request");
 			if (string.IsNullOrWhiteSpace(request.CommandText))
 				throw new ArgumentNullException("request.CommandText");
 
+			List<DbParameter> outParameters = null;
+			DbParameter returnParameter = null;
+
 			using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType, parameters =>
-				{
-					parameters.Derive(request.InputParameters);
-
-					var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
-					outputParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
-					returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
-				}, 0))
 			{
-				bool isFirstResultSetVoid = false;
+				parameters.Derive(request.InputParameters);
 
-				do
-				{
-					result.ResultSets.Add(LoadDynamicData(reader).ToList());
-
-					if (result.ResultSets.Count == 1 && reader.FieldCount == 0)
-						isFirstResultSetVoid = true;
-				} while (reader.NextResult());
-
-				if (result.ResultSets.Count == 1 && result.ResultSets[0].Count == 0 && isFirstResultSetVoid)
-					result.ResultSets.Clear();
+				var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
+				outParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
+				returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
+			}, 0))
+			{
+				readAction(reader);
 			}
+
+			outputParameters = outParameters;
+
+			return returnParameter;
+		}
+
+		public StoredProcedureResponse ExecuteStoredProcedure(StoredProcedureRequest request)
+		{
+			StoredProcedureResponse spResponse = new StoredProcedureResponse();
+			List<DbParameter> outputParameters;
+			DbParameter returnParameter = ExecuteStoredProcedure(request, reader =>
+				{
+					bool isFirstResultSetVoid = false;
+
+					do
+					{
+						spResponse.ResultSets.Add(LoadDynamicData(reader).ToList());
+
+						if (spResponse.ResultSets.Count == 1 && reader.FieldCount == 0)
+							isFirstResultSetVoid = true;
+					} while (reader.NextResult());
+
+					if (spResponse.ResultSets.Count == 1 && spResponse.ResultSets[0].Count == 0 && isFirstResultSetVoid)
+						spResponse.ResultSets.Clear();
+				}, out outputParameters);
 
 			if (outputParameters != null)
 			{
-				IDictionary<string, object> expandoDictionary = result.OutputParameters = new BindableDynamicObject();
+				IDictionary<string, object> expandoDictionary = spResponse.OutputParameters = new BindableDynamicObject();
 				foreach (DbParameter op in outputParameters)
 					expandoDictionary.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
 			}
 
 			if (returnParameter != null)
-				result.ReturnValue = returnParameter.Value;
+				spResponse.ReturnValue = returnParameter.Value;
 
-			return result;
+			return spResponse;
 		}
 
 		public bool RefreshStoredProcedureParameters(string storedProcedureName)
