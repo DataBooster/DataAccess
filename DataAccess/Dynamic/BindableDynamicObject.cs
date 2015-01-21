@@ -10,11 +10,11 @@ using System.Dynamic;
 namespace DbParallel.DataAccess
 {
     [Serializable]
-    public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, Object>, ISerializable
+    public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, object>, ISerializable
     {
-        private IDictionary<string, Object> _data;
+        private IDictionary<string, object> _data;
 
-        public BindableDynamicObject(IDictionary<string, Object> content = null)
+        public BindableDynamicObject(IDictionary<string, object> content = null)
         {
             _data = content ?? new ExpandoObject();
         }
@@ -137,14 +137,14 @@ namespace DbParallel.DataAccess
 
             public override object GetValue(object component)
             {
-                IDictionary<string, Object> record = component as IDictionary<string, Object>;
+                IDictionary<string, object> record = component as IDictionary<string, object>;
 
                 return (record == null) ? null : record[Name];
             }
 
             public override void ResetValue(object component)
             {
-                IDictionary<string, Object> record = component as IDictionary<string, Object>;
+                IDictionary<string, object> record = component as IDictionary<string, object>;
 
                 if (record != null)
                 {
@@ -159,7 +159,7 @@ namespace DbParallel.DataAccess
 
             public override void SetValue(object component, object value)
             {
-                IDictionary<string, Object> record = component as IDictionary<string, Object>;
+                IDictionary<string, object> record = component as IDictionary<string, object>;
 
                 if (record != null)
                     record[Name] = value;
