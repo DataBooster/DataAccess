@@ -113,6 +113,45 @@ namespace DbParallel.DataAccess
 			return ExecuteStoredProcedure<ExpandoObject>(request);
 		}
 
+		public object ExecuteStoredProcedure(StoredProcedureRequest request, bool exportFirstResultSetOnly,
+			Action<int> exportResultSetStartTag, Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
+			IDictionary<string, object> outputParametersContainer)
+		{
+			if (exportRow == null)
+				throw new ArgumentNullException("writeRow");
+
+			List<DbParameter> outputParameters;
+
+			DbParameter returnParameter = ExecuteStoredProcedure(request, reader =>
+				{
+					int resultSetIndex = 0;
+
+					do
+					{
+						if (exportResultSetStartTag != null)
+							exportResultSetStartTag(resultSetIndex);
+
+						if (exportHeader != null)
+							exportHeader(reader);
+
+						while (reader.Read())
+							exportRow(reader);
+
+						if (exportResultSetEndTag != null)
+							exportResultSetEndTag(resultSetIndex);
+
+						if (exportFirstResultSetOnly)
+							break;
+					} while (reader.NextResult());
+				}, out outputParameters);
+
+			if (outputParameters != null && outputParametersContainer != null)
+				foreach (DbParameter op in outputParameters)
+					outputParametersContainer.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
+
+			return (returnParameter == null) ? null : returnParameter.Value;
+		}
+
 		public bool RefreshStoredProcedureParameters(string storedProcedureName)
 		{
 			if (string.IsNullOrWhiteSpace(storedProcedureName))

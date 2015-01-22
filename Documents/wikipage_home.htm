@@ -190,11 +190,7 @@
     {
         <span style="color: #0000ff;">try</span>
         {
-            <span style="color: #2b91af;">StoredProcedureRequest</span> spRequest = <span style="color: #0000ff;">new</span> <span style="color: #2b91af;">StoredProcedureRequest</span>()
-                                               { CommandText = sp.Trim() };
-            <span style="color: #0000ff;">if</span> (parameters != <span style="color: #0000ff;">null</span>)
-                spRequest.InputParameters = parameters.ToDictionary(p =&gt; p.Key,
-                    p =&gt; (p.Value == <span style="color: #0000ff;">null</span>) ? <span style="color: #2b91af;">DBNull</span>.Value : p.Value <span style="color: #0000ff;">as</span> <span style="color: #2b91af;">IConvertible</span>);
+            <span style="color: #2b91af;">StoredProcedureRequest</span> spRequest = <span style="color: #0000ff;">new</span> <span style="color: #2b91af;">StoredProcedureRequest</span>(sp,parameters);
 
             <span style="color: #0000ff;">using</span> (<span style="color: #2b91af;">DbAccess</span> dbAccess = <span style="color: #2b91af;">DbPackage</span>.CreateConnection())
             {
@@ -210,7 +206,7 @@
 }
 </pre>
 </div>
-<div style="padding-left: 40px;"><br />Http clients can use Stored Procedure Name or Database Function Name as endpoint (e.g. http://BaseURL/YourStoredProcedureName), put required parameters in JSON format request body (Content-Type: "application/json"). The response JSON will have all Result Sets, Output Parameters and Return Value.</div>
+<div style="padding-left: 40px;"><br />Http clients can use Stored Procedure Name or Database Function Name as endpoint (e.g. http://BaseURL/YourStoredProcedureName), put required parameters in JSON format request body (Content-Type: "application/json"). The response JSON (Accept: application/json) or XML (Accept: application/xml) will have all Result Sets, Output Parameters and Return Value.</div>
 <ul>
 <li><strong><span style="color: #2b91af;">OracleLauncher</span></strong>:<br />A quick example:</li>
 </ul>
