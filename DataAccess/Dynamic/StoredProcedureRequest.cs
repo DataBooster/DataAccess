@@ -18,12 +18,13 @@ namespace DbParallel.DataAccess
 			CommandTimeout = 0;
 		}
 
-		public StoredProcedureRequest(string sp, IDictionary<string, object> parameters)
+		public StoredProcedureRequest(string sp, IDictionary<string, object> parameters = null)
 			: this()
 		{
 			CommandText = sp.Trim();
-			InputParameters = parameters.ToDictionary(p => p.Key,
-								p => (p.Value == null) ? DBNull.Value : p.Value as IConvertible);
+
+			if (parameters != null)
+				InputParameters = parameters.ToDictionary(p => p.Key, p => (p.Value == null) ? DBNull.Value : p.Value as IConvertible);
 		}
 
 		object ICloneable.Clone()
