@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
@@ -15,6 +16,14 @@ namespace DbParallel.DataAccess
 		{
 			CommandType = CommandType.StoredProcedure;
 			CommandTimeout = 0;
+		}
+
+		public StoredProcedureRequest(string sp, IDictionary<string, object> parameters)
+			: this()
+		{
+			CommandText = sp.Trim();
+			InputParameters = parameters.ToDictionary(p => p.Key,
+								p => (p.Value == null) ? DBNull.Value : p.Value as IConvertible);
 		}
 
 		object ICloneable.Clone()

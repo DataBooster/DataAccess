@@ -7,156 +7,156 @@ using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
-    partial class DbAccess
-    {
-        #region Load result sets into dynamic data
+	partial class DbAccess
+	{
+		#region Load result sets into dynamic data
 
-        protected string[] GetVisibleFieldNames(DbDataReader reader)
-        {
-            string[] visibleFieldNames = new string[reader.VisibleFieldCount];
+		protected string[] GetVisibleFieldNames(DbDataReader reader)
+		{
+			string[] visibleFieldNames = new string[reader.VisibleFieldCount];
 
-            for (int i = 0; i < reader.VisibleFieldCount; i++)
-                visibleFieldNames[i] = reader.GetName(i);
+			for (int i = 0; i < reader.VisibleFieldCount; i++)
+				visibleFieldNames[i] = reader.GetName(i);
 
-            return visibleFieldNames;
-        }
+			return visibleFieldNames;
+		}
 
-        private T CreateExpando<T>(DbDataReader reader, string[] visibleFieldNames) where T : IDictionary<string, object>, new()
-        {
-            T expandoObject = new T();
+		private T CreateExpando<T>(DbDataReader reader, string[] visibleFieldNames) where T : IDictionary<string, object>, new()
+		{
+			T expandoObject = new T();
 
-            if (visibleFieldNames == null)
-                visibleFieldNames = GetVisibleFieldNames(reader);
+			if (visibleFieldNames == null)
+				visibleFieldNames = GetVisibleFieldNames(reader);
 
-            for (int i = 0; i < visibleFieldNames.Length; i++)
-                expandoObject.Add(visibleFieldNames[i], reader[i]);
+			for (int i = 0; i < visibleFieldNames.Length; i++)
+				expandoObject.Add(visibleFieldNames[i], reader[i]);
 
-            return expandoObject;
-        }
+			return expandoObject;
+		}
 
-        private IEnumerable<BindableDynamicObject> LoadDynamicData<T>(DbDataReader reader) where T : IDictionary<string, object>, new()
-        {
-            string[] visibleFieldNames = GetVisibleFieldNames(reader);
+		private IEnumerable<BindableDynamicObject> LoadDynamicData<T>(DbDataReader reader) where T : IDictionary<string, object>, new()
+		{
+			string[] visibleFieldNames = GetVisibleFieldNames(reader);
 
-            while (reader.Read())
-                yield return new BindableDynamicObject(CreateExpando<T>(reader, visibleFieldNames));
-        }
+			while (reader.Read())
+				yield return new BindableDynamicObject(CreateExpando<T>(reader, visibleFieldNames));
+		}
 
-        protected DbParameter ExecuteStoredProcedure(StoredProcedureRequest request, Action<DbDataReader> readAction, out List<DbParameter> outputParameters)
-        {
-            if (request == null)
-                throw new ArgumentNullException("request");
-            if (string.IsNullOrWhiteSpace(request.CommandText))
-                throw new ArgumentNullException("request.CommandText");
+		protected DbParameter ExecuteStoredProcedure(StoredProcedureRequest request, Action<DbDataReader> readAction, out List<DbParameter> outputParameters)
+		{
+			if (request == null)
+				throw new ArgumentNullException("request");
+			if (string.IsNullOrWhiteSpace(request.CommandText))
+				throw new ArgumentNullException("request.CommandText");
 
-            List<DbParameter> outParameters = null;
-            DbParameter returnParameter = null;
+			List<DbParameter> outParameters = null;
+			DbParameter returnParameter = null;
 
-            using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType,
-                parameters =>
-                {
-                    parameters.Derive(request.InputParameters);
-                    var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
+			using (DbDataReader reader = CreateReader(request.CommandText, request.CommandTimeout, request.CommandType,
+				parameters =>
+				{
+					parameters.Derive(request.InputParameters);
+					var dbParameters = parameters.Command.Parameters.OfType<DbParameter>();
 
-                    outParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
-                    returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
-                }, 0))
-            {
-                if (readAction != null)
-                    readAction(reader);
-            }
+					outParameters = dbParameters.Where(p => (p.Direction == ParameterDirection.InputOutput || p.Direction == ParameterDirection.Output) && !string.IsNullOrEmpty(p.ParameterName)).ToList();
+					returnParameter = dbParameters.Where(p => p.Direction == ParameterDirection.ReturnValue).FirstOrDefault();
+				}, 0))
+			{
+				if (readAction != null)
+					readAction(reader);
+			}
 
-            outputParameters = outParameters;
+			outputParameters = outParameters;
 
-            return returnParameter;
-        }
+			return returnParameter;
+		}
 
-        protected StoredProcedureResponse ExecuteStoredProcedure<T>(StoredProcedureRequest request) where T : IDictionary<string, object>, new()
-        {
-            StoredProcedureResponse spResponse = new StoredProcedureResponse();
-            List<DbParameter> outputParameters;
+		protected StoredProcedureResponse ExecuteStoredProcedure<T>(StoredProcedureRequest request) where T : IDictionary<string, object>, new()
+		{
+			StoredProcedureResponse spResponse = new StoredProcedureResponse();
+			List<DbParameter> outputParameters;
 
-            DbParameter returnParameter = ExecuteStoredProcedure(request, reader =>
-                {
-                    bool isFirstResultSetVoid = false;
+			DbParameter returnParameter = ExecuteStoredProcedure(request, reader =>
+				{
+					bool isFirstResultSetVoid = false;
 
-                    do
-                    {
-                        spResponse.ResultSets.Add(LoadDynamicData<T>(reader).ToList());
+					do
+					{
+						spResponse.ResultSets.Add(LoadDynamicData<T>(reader).ToList());
 
-                        if (spResponse.ResultSets.Count == 1 && reader.FieldCount == 0)
-                            isFirstResultSetVoid = true;
-                    } while (reader.NextResult());
+						if (spResponse.ResultSets.Count == 1 && reader.FieldCount == 0)
+							isFirstResultSetVoid = true;
+					} while (reader.NextResult());
 
-                    if (spResponse.ResultSets.Count == 1 && spResponse.ResultSets[0].Count == 0 && isFirstResultSetVoid)
-                        spResponse.ResultSets.Clear();
-                }, out outputParameters);
+					if (spResponse.ResultSets.Count == 1 && spResponse.ResultSets[0].Count == 0 && isFirstResultSetVoid)
+						spResponse.ResultSets.Clear();
+				}, out outputParameters);
 
-            if (outputParameters != null)
-            {
-                T expandoObject = new T();
+			if (outputParameters != null)
+			{
+				T expandoObject = new T();
 
-                foreach (DbParameter op in outputParameters)
-                    expandoObject.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
+				foreach (DbParameter op in outputParameters)
+					expandoObject.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
 
-                spResponse.OutputParameters = new BindableDynamicObject(expandoObject);
-            }
+				spResponse.OutputParameters = new BindableDynamicObject(expandoObject);
+			}
 
-            if (returnParameter != null)
-                spResponse.ReturnValue = returnParameter.Value;
+			if (returnParameter != null)
+				spResponse.ReturnValue = returnParameter.Value;
 
-            return spResponse;
-        }
+			return spResponse;
+		}
 
-        public StoredProcedureResponse ExecuteStoredProcedure(StoredProcedureRequest request)
-        {
-            return ExecuteStoredProcedure<ExpandoObject>(request);
-        }
+		public StoredProcedureResponse ExecuteStoredProcedure(StoredProcedureRequest request)
+		{
+			return ExecuteStoredProcedure<ExpandoObject>(request);
+		}
 
-        public bool RefreshStoredProcedureParameters(string storedProcedureName)
-        {
-            if (string.IsNullOrWhiteSpace(storedProcedureName))
-                throw new ArgumentNullException("storedProcedureName");
+		public bool RefreshStoredProcedureParameters(string storedProcedureName)
+		{
+			if (string.IsNullOrWhiteSpace(storedProcedureName))
+				throw new ArgumentNullException("storedProcedureName");
 
-            using (DbCommand dbCmd = CreateCommand(storedProcedureName, 0, CommandType.StoredProcedure, null))
-            {
-                return DerivedParametersCache.DeriveParameters(dbCmd, null, true);
-            }
-        }
+			using (DbCommand dbCmd = CreateCommand(storedProcedureName, 0, CommandType.StoredProcedure, null))
+			{
+				return DerivedParametersCache.DeriveParameters(dbCmd, null, true);
+			}
+		}
 
-        public int RefreshStoredProcedureParameters(IEnumerable<string> storedProcedureNames)
-        {
-            int cnt = 0;
+		public int RefreshStoredProcedureParameters(IEnumerable<string> storedProcedureNames)
+		{
+			int cnt = 0;
 
-            foreach (string spName in storedProcedureNames)
-                if (RefreshStoredProcedureParameters(spName))
-                    cnt++;
+			foreach (string spName in storedProcedureNames)
+				if (RefreshStoredProcedureParameters(spName))
+					cnt++;
 
-            return cnt;
-        }
+			return cnt;
+		}
 
-        #endregion
+		#endregion
 
-        #region CreateDataAdapter for backward compatibility with some old applications
+		#region CreateDataAdapter for backward compatibility with some old applications
 
-        public DbDataAdapter CreateDataAdapter(string selectCommandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1)
-        {
-            DbDataAdapter dbDataAdapter = _ProviderFactory.CreateDataAdapter();
+		public DbDataAdapter CreateDataAdapter(string selectCommandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1)
+		{
+			DbDataAdapter dbDataAdapter = _ProviderFactory.CreateDataAdapter();
 
-            dbDataAdapter.SelectCommand = CreateCommand(selectCommandText, commandTimeout, commandType, parametersBuilder);
+			dbDataAdapter.SelectCommand = CreateCommand(selectCommandText, commandTimeout, commandType, parametersBuilder);
 
-            OnReaderExecuting(dbDataAdapter.SelectCommand, oraResultSets);
+			OnReaderExecuting(dbDataAdapter.SelectCommand, oraResultSets);
 
-            return dbDataAdapter;
-        }
+			return dbDataAdapter;
+		}
 
-        public DbDataAdapter CreateDataAdapter(string selectCommandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1)
-        {
-            return CreateDataAdapter(selectCommandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
-        }
+		public DbDataAdapter CreateDataAdapter(string selectCommandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1)
+		{
+			return CreateDataAdapter(selectCommandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

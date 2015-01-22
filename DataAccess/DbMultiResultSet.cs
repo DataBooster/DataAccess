@@ -37,12 +37,12 @@ namespace DbParallel.DataAccess
 			_MultiResultSet = new ArrayList();
 		}
 
-        public void Add<T>(ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : class, new()
-        {
-            _MultiResultSet.Add(new DbResultAdapter<T>(resultSet, resultMap));
-        }
+		public void Add<T>(ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : class, new()
+		{
+			_MultiResultSet.Add(new DbResultAdapter<T>(resultSet, resultMap));
+		}
 
-        public void Add<T>(ref ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : class, new()
+		public void Add<T>(ref ICollection<T> resultSet, Action<DbFieldMap<T>> resultMap = null) where T : class, new()
 		{
 			_MultiResultSet.Add(new DbResultAdapter<T>(resultSet, resultMap));
 		}
