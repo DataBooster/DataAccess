@@ -19,6 +19,8 @@ namespace DbParallel.DataAccess
 			_data = content ?? new ExpandoObject();
 		}
 
+		#region DynamicObject Members
+
 		/// <returns>A sequence that contains dynamic member names.</returns>
 		public override IEnumerable<string> GetDynamicMemberNames()
 		{
@@ -41,6 +43,8 @@ namespace DbParallel.DataAccess
 			_data[binder.Name] = value;
 			return true;
 		}
+
+		#endregion
 
 		#region ICustomTypeDescriptor Members
 
