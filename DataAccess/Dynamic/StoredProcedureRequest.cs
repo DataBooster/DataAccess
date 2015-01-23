@@ -24,7 +24,8 @@ namespace DbParallel.DataAccess
 			CommandText = sp.Trim();
 
 			if (parameters != null)
-				InputParameters = parameters.ToDictionary(p => p.Key, p => (p.Value == null) ? DBNull.Value : p.Value as IConvertible);
+				InputParameters = parameters.ToDictionary(p => p.Key,
+					p => (p.Value == null) ? DBNull.Value : p.Value as IConvertible);
 		}
 
 		object ICloneable.Clone()
@@ -34,7 +35,9 @@ namespace DbParallel.DataAccess
 			cloneRequest.CommandText = this.CommandText;
 			cloneRequest.CommandType = this.CommandType;
 			cloneRequest.CommandTimeout = this.CommandTimeout;
-			cloneRequest.InputParameters = new Dictionary<string, IConvertible>(this.InputParameters, StringComparer.OrdinalIgnoreCase);
+
+			if (this.InputParameters != null)
+				cloneRequest.InputParameters = new Dictionary<string, IConvertible>(this.InputParameters, StringComparer.OrdinalIgnoreCase);
 
 			return cloneRequest;
 		}
