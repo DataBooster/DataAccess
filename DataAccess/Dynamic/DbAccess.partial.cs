@@ -115,7 +115,7 @@ namespace DbParallel.DataAccess
 
 		public object ExecuteStoredProcedure(StoredProcedureRequest request, Func<int, bool> exportResultSetStartTag,
 			Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
-			IDictionary<string, object> outputParametersContainer)
+			IDictionary<string, object> outputParametersContainer, bool exportOnlyOneResultSet = false)
 		{
 			List<DbParameter> outputParameters;
 
@@ -139,6 +139,8 @@ namespace DbParallel.DataAccess
 						if (exportResultSetEndTag != null)
 							exportResultSetEndTag(resultSetIndex);
 
+						if (exportOnlyOneResultSet)
+							break;
 					} while (reader.NextResult());
 				}, out outputParameters);
 
@@ -162,7 +164,7 @@ namespace DbParallel.DataAccess
 						exportResultSetStartTag(i);
 
 					return true;
-				}, exportHeader, exportRow, exportResultSetEndTag, outputParametersContainer);
+				}, exportHeader, exportRow, exportResultSetEndTag, outputParametersContainer, exportFirstResultSetOnly);
 		}
 
 		public bool RefreshStoredProcedureParameters(string storedProcedureName)

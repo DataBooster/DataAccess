@@ -11,7 +11,7 @@ Three setting items have been added into your config file:
 <configuration>
 	<connectionStrings>
 		<add name="$rootnamespace$.MainConnection" providerName="Oracle.DataAccess.Client" connectionString="Data Source=SAMPLEDB;User Id=/"/>
-		<add name="$rootnamespace$.AuxConnection" providerName="System.Data.SqlClient" connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=SAMPLEDB;Integrated Security=True" />
+		<add name="$rootnamespace$.AuxConnection" providerName="System.Data.SqlClient" connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=SAMPLEDB;Integrated Security=SSPI" />
 	</connectionStrings>
 	<appSettings>
 		<add key="$rootnamespace$.MainPackage" value="SCHEMA.PACKAGE." />
