@@ -113,13 +113,10 @@ namespace DbParallel.DataAccess
 			return ExecuteStoredProcedure<ExpandoObject>(request);
 		}
 
-		public object ExecuteStoredProcedure(StoredProcedureRequest request, bool exportFirstResultSetOnly,
-			Action<int> exportResultSetStartTag, Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
+		public object ExecuteStoredProcedure(StoredProcedureRequest request, Func<int, bool> exportResultSetStartTag,
+			Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
 			IDictionary<string, object> outputParametersContainer)
 		{
-			if (exportRow == null)
-				throw new ArgumentNullException("writeRow");
-
 			List<DbParameter> outputParameters;
 
 			DbParameter returnParameter = ExecuteStoredProcedure(request, reader =>
@@ -129,19 +126,19 @@ namespace DbParallel.DataAccess
 					do
 					{
 						if (exportResultSetStartTag != null)
-							exportResultSetStartTag(resultSetIndex);
+							if (exportResultSetStartTag(resultSetIndex) == false)
+								continue;
 
 						if (exportHeader != null)
 							exportHeader(reader);
 
-						while (reader.Read())
-							exportRow(reader);
+						if (exportRow != null)
+							while (reader.Read())
+								exportRow(reader);
 
 						if (exportResultSetEndTag != null)
 							exportResultSetEndTag(resultSetIndex);
 
-						if (exportFirstResultSetOnly)
-							break;
 					} while (reader.NextResult());
 				}, out outputParameters);
 
@@ -150,6 +147,22 @@ namespace DbParallel.DataAccess
 					outputParametersContainer.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
 
 			return (returnParameter == null) ? null : returnParameter.Value;
+		}
+
+		public object ExecuteStoredProcedure(StoredProcedureRequest request, bool exportFirstResultSetOnly,
+			Action<int> exportResultSetStartTag, Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
+			IDictionary<string, object> outputParametersContainer)
+		{
+			return ExecuteStoredProcedure(request, i =>
+				{
+					if (i > 0 && exportFirstResultSetOnly)
+						return false;
+
+					if (exportResultSetStartTag != null)
+						exportResultSetStartTag(i);
+
+					return true;
+				}, exportHeader, exportRow, exportResultSetEndTag, outputParametersContainer);
 		}
 
 		public bool RefreshStoredProcedureParameters(string storedProcedureName)
