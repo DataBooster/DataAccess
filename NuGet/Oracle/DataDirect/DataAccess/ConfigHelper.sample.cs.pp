@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data.Common;
 using System.Configuration;
 
 namespace $rootnamespace$.DataAccess
@@ -15,31 +16,52 @@ namespace $rootnamespace$.DataAccess
 		private static DbProviderFactory _DbProviderFactory;
 		public static DbProviderFactory DbProviderFactory
 		{
-			get { return _DbProviderFactory; }
+			get
+			{
+				return _DbProviderFactory;
+			}
+			set
+			{
+				if (value == null)
+					throw new ArgumentNullException("DbProviderFactory");
+				_DbProviderFactory = value;
+			}
 		}
 
 		private static string _ConnectionString;
 		public static string ConnectionString
 		{
-			get { return _ConnectionString; }
+			get
+			{
+				return _ConnectionString;
+			}
+			set
+			{
+				if (string.IsNullOrWhiteSpace(value))
+					throw new ArgumentNullException("ConnectionString");
+				_ConnectionString = value;
+			}
 		}
 
 		private static string _DatabasePackage;
 		public static string DatabasePackage
 		{
 			get { return _DatabasePackage; }
+			set { _DatabasePackage = value ?? string.Empty; }
 		}
 
 		private static DbProviderFactory _AuxDbProviderFactory;
 		public static DbProviderFactory AuxDbProviderFactory
 		{
 			get { return _AuxDbProviderFactory; }
+			set { _AuxDbProviderFactory = value; }
 		}
 
 		private static string _AuxConnectionString;
 		public static string AuxConnectionString
 		{
 			get { return _AuxConnectionString; }
+			set { _AuxConnectionString = value; }
 		}
 		#endregion
 
