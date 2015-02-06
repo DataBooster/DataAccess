@@ -115,7 +115,7 @@ namespace DbParallel.DataAccess
 
 		public object ExecuteStoredProcedure(StoredProcedureRequest request, Func<int, bool> exportResultSetStartTag,
 			Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
-			IDictionary<string, object> outputParametersContainer, bool exportOnlyOneResultSet = false)
+			IDictionary<string, object> outputParametersContainer, bool exportOnlyOneResultSet = false, bool bulkRead = false)
 		{
 			List<DbParameter> outputParameters;
 
@@ -133,8 +133,11 @@ namespace DbParallel.DataAccess
 							exportHeader(reader);
 
 						if (exportRow != null)
-							while (reader.Read())
+							if (bulkRead)
 								exportRow(reader);
+							else
+								while (reader.Read())
+									exportRow(reader);
 
 						if (exportResultSetEndTag != null)
 							exportResultSetEndTag(resultSetIndex);
@@ -153,7 +156,7 @@ namespace DbParallel.DataAccess
 
 		public object ExecuteStoredProcedure(StoredProcedureRequest request, bool exportFirstResultSetOnly,
 			Action<int> exportResultSetStartTag, Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
-			IDictionary<string, object> outputParametersContainer)
+			IDictionary<string, object> outputParametersContainer, bool bulkRead = false)
 		{
 			return ExecuteStoredProcedure(request, i =>
 				{
@@ -164,7 +167,7 @@ namespace DbParallel.DataAccess
 						exportResultSetStartTag(i);
 
 					return true;
-				}, exportHeader, exportRow, exportResultSetEndTag, outputParametersContainer, exportFirstResultSetOnly);
+				}, exportHeader, exportRow, exportResultSetEndTag, outputParametersContainer, exportFirstResultSetOnly, bulkRead);
 		}
 
 		public bool RefreshStoredProcedureParameters(string storedProcedureName)

@@ -105,22 +105,25 @@ namespace DbParallel.DataAccess
 
 		#region ExecuteReader Overloads
 
-		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader> dataReader)
+		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader> dataReader, bool bulkRead = false)
 		{
 			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder))
 			{
 				if (dataReader != null)
-					while (reader.Read())
+					if (bulkRead)
 						dataReader(reader);
+					else
+						while (reader.Read())
+							dataReader(reader);
 			}
 		}
 
-		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader> dataReader)
+		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader> dataReader, bool bulkRead = false)
 		{
-			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, dataReader);
+			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, dataReader, bulkRead);
 		}
 
-		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader, int> dataReaders)
+		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader, int> dataReaders, bool bulkRead = false)
 		{
 			using (DbDataReader reader = CreateReader(commandText, commandTimeout, commandType, parametersBuilder))
 			{
@@ -130,8 +133,12 @@ namespace DbParallel.DataAccess
 
 					do
 					{
-						while (reader.Read())
-							dataReaders(reader, resultSet);
+						if (dataReaders != null)
+							if (bulkRead)
+								dataReaders(reader, resultSet);
+							else
+								while (reader.Read())
+									dataReaders(reader, resultSet);
 
 						resultSet++;
 					} while (reader.NextResult());
@@ -139,9 +146,9 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader, int> dataReaders)
+		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader, int> dataReaders, bool bulkRead = false)
 		{
-			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, dataReaders);
+			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, dataReaders, bulkRead);
 		}
 
 		public void ExecuteReader<T>(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder,
