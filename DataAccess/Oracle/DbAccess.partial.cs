@@ -57,7 +57,7 @@ namespace DbParallel.DataAccess
 				int cntRefCursorParam = oraCmd.Parameters.OfType<OracleParameter>().Count(p => p.OracleDbType == OracleDbType.RefCursor && p.Direction != ParameterDirection.Input);
 
 				if (cntRefCursorParam < resultSetCnt)
-					if (oraCmd.BindByName)
+					if (oraCmd.BindByName || _AutoDeriveRefCursorParameters)
 						DerivedParametersCache.DeriveParameters(dbCmd, null, false);
 					else
 					{

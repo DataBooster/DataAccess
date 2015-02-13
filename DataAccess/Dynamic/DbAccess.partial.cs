@@ -113,11 +113,13 @@ namespace DbParallel.DataAccess
 			return ExecuteStoredProcedure<ExpandoObject>(request);
 		}
 
-		public object ExecuteStoredProcedure(StoredProcedureRequest request, Func<int, bool> exportResultSetStartTag,
+		public object ExecuteStoredProcedure(StoredProcedureRequest request, Action<int> exportResultSetStartTag,
 			Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
-			IDictionary<string, object> outputParametersContainer, bool exportOnlyOneResultSet = false, bool bulkRead = false)
+			IDictionary<string, object> outputParametersContainer, int[] resultSetChoices = null, bool bulkRead = false)
 		{
 			List<DbParameter> outputParameters;
+			bool chooseSpecificResultSets = (resultSetChoices != null && resultSetChoices.Length > 0);
+			bool chooseOnlyOneResultSet = (resultSetChoices != null && resultSetChoices.Length == 1);
 
 			DbParameter returnParameter = ExecuteStoredProcedure(request, reader =>
 				{
@@ -125,9 +127,11 @@ namespace DbParallel.DataAccess
 
 					do
 					{
+						if (chooseSpecificResultSets && !resultSetChoices.Contains(resultSetIndex))
+							continue;
+
 						if (exportResultSetStartTag != null)
-							if (exportResultSetStartTag(resultSetIndex) == false)
-								continue;
+							exportResultSetStartTag(resultSetIndex);
 
 						if (exportHeader != null)
 							exportHeader(reader);
@@ -142,9 +146,9 @@ namespace DbParallel.DataAccess
 						if (exportResultSetEndTag != null)
 							exportResultSetEndTag(resultSetIndex);
 
-						if (exportOnlyOneResultSet)
+						if (chooseOnlyOneResultSet)
 							break;
-					} while (reader.NextResult());
+					} while (reader.NextResult() && ++resultSetIndex >= 0);
 				}, out outputParameters);
 
 			if (outputParameters != null && outputParametersContainer != null)
@@ -152,22 +156,6 @@ namespace DbParallel.DataAccess
 					outputParametersContainer.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
 
 			return (returnParameter == null) ? null : returnParameter.Value;
-		}
-
-		public object ExecuteStoredProcedure(StoredProcedureRequest request, bool exportFirstResultSetOnly,
-			Action<int> exportResultSetStartTag, Action<DbDataReader> exportHeader, Action<DbDataReader> exportRow, Action<int> exportResultSetEndTag,
-			IDictionary<string, object> outputParametersContainer, bool bulkRead = false)
-		{
-			return ExecuteStoredProcedure(request, i =>
-				{
-					if (i > 0 && exportFirstResultSetOnly)
-						return false;
-
-					if (exportResultSetStartTag != null)
-						exportResultSetStartTag(i);
-
-					return true;
-				}, exportHeader, exportRow, exportResultSetEndTag, outputParametersContainer, exportFirstResultSetOnly, bulkRead);
 		}
 
 		public bool RefreshStoredProcedureParameters(string storedProcedureName)
