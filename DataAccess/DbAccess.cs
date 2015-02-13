@@ -16,6 +16,13 @@ namespace DbParallel.DataAccess
 			set { _DefaultCommandType = value; }
 		}
 
+		private static bool _AutoDeriveRefCursorParameters = true;
+		public static bool AutoDeriveRefCursorParameters
+		{
+			get { return _AutoDeriveRefCursorParameters; }
+			set { AutoDeriveRefCursorParameters = value; }
+		}
+
 		private const int _MaxRetryCount = 2;
 		private const int _IncreasingDelayRetry = 500;		// Increases 500 milliseconds delay time for every retry.
 
