@@ -16,7 +16,7 @@ namespace DbParallel.DataAccess
 			set { _DefaultCommandType = value; }
 		}
 
-		private static bool _AutoDeriveRefCursorParameters = true;
+		private static bool _AutoDeriveRefCursorParameters = false;
 		public static bool AutoDeriveRefCursorParameters
 		{
 			get { return _AutoDeriveRefCursorParameters; }
