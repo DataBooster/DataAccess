@@ -13,21 +13,30 @@ namespace DbParallel.DataAccess
 	{
 		#region Dynamic Property Naming Convention
 
-		private static PropertyNamingConvention _DynamicPropertyNamingConvention = PropertyNamingConvention.None;
-		public static PropertyNamingConvention DynamicPropertyNamingConvention
+		private PropertyNamingConvention _DynamicPropertyNamingConvention = PropertyNamingConvention.None;
+		public PropertyNamingConvention DynamicPropertyNamingConvention
 		{
 			get { return _DynamicPropertyNamingConvention; }
 			set { _DynamicPropertyNamingConvention = value; }
 		}
 
-		private static Func<string, string> _DynamicPropertyNamingResolver = DefaultDynamicPropertyNamingResolver;
-		public static Func<string, string> DynamicPropertyNamingResolver
+		private Func<string, string> _DynamicPropertyNamingResolver = null;
+		public Func<string, string> DynamicPropertyNamingResolver
 		{
-			get { return _DynamicPropertyNamingResolver; }
-			set { _DynamicPropertyNamingResolver = value ?? DefaultDynamicPropertyNamingResolver; }
+			get
+			{
+				if (_DynamicPropertyNamingResolver == null)
+					_DynamicPropertyNamingResolver = DefaultDynamicPropertyNamingResolver;
+
+				return _DynamicPropertyNamingResolver;
+			}
+			set
+			{
+				_DynamicPropertyNamingResolver = value ?? DefaultDynamicPropertyNamingResolver;
+			}
 		}
 
-		private static string DefaultDynamicPropertyNamingResolver(string fieldName)
+		private string DefaultDynamicPropertyNamingResolver(string fieldName)
 		{
 			switch (_DynamicPropertyNamingConvention)
 			{
@@ -47,9 +56,16 @@ namespace DbParallel.DataAccess
 		protected string[] GetVisibleFieldNames(DbDataReader reader)
 		{
 			string[] visibleFieldNames = new string[reader.VisibleFieldCount];
+			string columnName;
 
 			for (int i = 0; i < reader.VisibleFieldCount; i++)
-				visibleFieldNames[i] = DynamicPropertyNamingResolver(reader.GetName(i));
+			{
+				columnName = reader.GetName(i);
+				visibleFieldNames[i] = DynamicPropertyNamingResolver(columnName);
+
+				if (string.IsNullOrWhiteSpace(visibleFieldNames[i]))
+					throw new ArgumentNullException(string.Format("DynamicPropertyNameOfColumn{0} - \"{1}\"", i, columnName));
+			}
 
 			return visibleFieldNames;
 		}
