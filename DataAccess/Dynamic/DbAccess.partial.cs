@@ -7,8 +7,41 @@ using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
+	public enum PropertyNamingConvention { None, PascalCase, CamelCase }
+
 	partial class DbAccess
 	{
+		#region Dynamic Property Naming Convention
+
+		private static PropertyNamingConvention _DynamicPropertyNamingConvention = PropertyNamingConvention.None;
+		public static PropertyNamingConvention DynamicPropertyNamingConvention
+		{
+			get { return _DynamicPropertyNamingConvention; }
+			set { _DynamicPropertyNamingConvention = value; }
+		}
+
+		private static Func<string, string> _DynamicPropertyNamingResolver = DefaultDynamicPropertyNamingResolver;
+		public static Func<string, string> DynamicPropertyNamingResolver
+		{
+			get { return _DynamicPropertyNamingResolver; }
+			set { _DynamicPropertyNamingResolver = value ?? DefaultDynamicPropertyNamingResolver; }
+		}
+
+		private static string DefaultDynamicPropertyNamingResolver(string fieldName)
+		{
+			switch (_DynamicPropertyNamingConvention)
+			{
+				case PropertyNamingConvention.PascalCase:
+					return StringUtils.DeunderscoreFieldName(fieldName, false);
+				case PropertyNamingConvention.CamelCase:
+					return StringUtils.DeunderscoreFieldName(fieldName, true);
+				default:
+					return fieldName;
+			}
+		}
+
+		#endregion
+
 		#region Load result sets into dynamic data
 
 		protected string[] GetVisibleFieldNames(DbDataReader reader)
@@ -16,7 +49,7 @@ namespace DbParallel.DataAccess
 			string[] visibleFieldNames = new string[reader.VisibleFieldCount];
 
 			for (int i = 0; i < reader.VisibleFieldCount; i++)
-				visibleFieldNames[i] = reader.GetName(i);
+				visibleFieldNames[i] = DynamicPropertyNamingResolver(reader.GetName(i));
 
 			return visibleFieldNames;
 		}
