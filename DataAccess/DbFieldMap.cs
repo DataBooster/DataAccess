@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Data.Common;
 using System.Linq.Expressions;
+using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
@@ -13,6 +13,7 @@ namespace DbParallel.DataAccess
 
 		private Action<T> _CustomInitAction = null;
 		private Action<T, DbDataReader> _CustomReaderAction = null;
+		private bool _AutoMatchAllPropertiesOrFields = false;
 		private bool _AllowAutoMatch = true;
 
 		public DbFieldMap()
@@ -29,19 +30,79 @@ namespace DbParallel.DataAccess
 			for (int i = 0; i < columnCount; i++)
 				columnOrdinals.Add(dataReader.GetName(i), i);
 
+			SortedList<int, ColumnMemberInfo> restMembers = new SortedList<int, ColumnMemberInfo>(_FieldList.Count);
 			ColumnMemberInfo field;
+			int columnOrdinal;
 
-			for (int i = _FieldList.Count - 1; i >= 0; i--)
+			// 1. Case-sensitive Matching
+			for (int i = 0; i < _FieldList.Count; i++)
 			{
 				field = _FieldList[i];
 
-				try
+				if (columnOrdinals.TryGetValue(field.ColumnName, out columnOrdinal))
 				{
-					field.ColumnOrdinal = dataReader.GetOrdinal(field.ColumnName);
+					field.ColumnOrdinal = columnOrdinal;
+					columnOrdinals.Remove(field.ColumnName);
 				}
-				catch (IndexOutOfRangeException)
+				else
+					restMembers.Add(i, field);
+			}
+
+			if (columnOrdinals.Count > 0 && restMembers.Count > 0)
+			{
+				// 2. Case-insensitive Matching
+				columnOrdinals = RestColumnOrdinalDictionary(columnOrdinals);
+
+				if (columnOrdinals.Count > 0)
 				{
-					_FieldList.RemoveAt(i);
+					RetryMatchColumnWithPropertiesOrFields(columnOrdinals, restMembers);
+
+					if (_AutoMatchAllPropertiesOrFields && columnOrdinals.Count > 0 && restMembers.Count > 0)
+					{
+						// 3. Compact (De-underscore) column names and then Case-insensitive Matching
+						columnOrdinals = RestColumnOrdinalDictionary(columnOrdinals, colName => colName.CompactFieldName());
+
+						if (columnOrdinals.Count > 0)
+							RetryMatchColumnWithPropertiesOrFields(columnOrdinals, restMembers);
+					}
+				}
+			}
+
+			// 4. Discard(Ignore) Unmatched PropertiesOrFields
+			for (int i = restMembers.Count - 1; i >= 0; i--)
+				_FieldList.RemoveAt(restMembers.Keys[i]);
+		}
+
+		private Dictionary<string, int> RestColumnOrdinalDictionary(Dictionary<string, int> columnOrdinals, Func<string, string> nameResolver = null)
+		{
+			Dictionary<string, int> restColumnOrdinals = new Dictionary<string, int>(columnOrdinals.Count, StringComparer.OrdinalIgnoreCase);
+			string resolvedName;
+
+			foreach (var pair in columnOrdinals)
+			{
+				resolvedName = (nameResolver == null) ? pair.Key : nameResolver(pair.Key);
+
+				if (!string.IsNullOrEmpty(resolvedName) && !restColumnOrdinals.ContainsKey(resolvedName))
+					restColumnOrdinals.Add(resolvedName, pair.Value);
+			}
+
+			return restColumnOrdinals;
+		}
+
+		private void RetryMatchColumnWithPropertiesOrFields(Dictionary<string, int> columnOrdinals, SortedList<int, ColumnMemberInfo> restMembers)
+		{
+			ColumnMemberInfo field;
+			int columnOrdinal;
+
+			for (int i = restMembers.Count - 1; i >= 0; i--)
+			{
+				field = restMembers.Values[i];
+
+				if (columnOrdinals.TryGetValue(field.ColumnName, out columnOrdinal))
+				{
+					field.ColumnOrdinal = columnOrdinal;
+					columnOrdinals.Remove(field.ColumnName);
+					restMembers.RemoveAt(i);
 				}
 			}
 		}
@@ -74,6 +135,8 @@ namespace DbParallel.DataAccess
 			foreach (PropertyInfo p in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
 				if (p.CanWrite && p.CanRead && p.PropertyType.TryUnderlyingType().CanMapToDbType())
 					_FieldList.Add(new ColumnMemberInfo(p.Name, p));
+
+			_AutoMatchAllPropertiesOrFields = true;
 		}
 
 		internal void PrepareResultMap(Action<DbFieldMap<T>> resultMap = null)
