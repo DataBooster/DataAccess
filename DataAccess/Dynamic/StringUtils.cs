@@ -59,6 +59,24 @@ namespace DbParallel.DataAccess
 				else
 					return (cntUpper > 0 && cntLower > 0) ? fieldName : new string(pascalChars, 0, lenPascal);
 		}
+
+		internal static string CompactFieldName(this string fieldName)
+		{
+			if (string.IsNullOrEmpty(fieldName))
+				return fieldName;
+
+			char[] compactedChars = new char[fieldName.Length];
+			int compactedLength = 0;
+
+			foreach (char c in fieldName)
+				if (!char.IsPunctuation(c) && !char.IsWhiteSpace(c))
+				{
+					compactedChars[compactedLength] = c;
+					compactedLength++;
+				}
+
+			return (compactedLength == 0) ? string.Empty : new string(compactedChars, 0, compactedLength);
+		}
 	}
 }
 

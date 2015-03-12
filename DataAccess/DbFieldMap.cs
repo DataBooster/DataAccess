@@ -23,6 +23,12 @@ namespace DbParallel.DataAccess
 
 		private void MapColumns(DbDataReader dataReader)
 		{
+			int columnCount = dataReader.FieldCount;
+			Dictionary<string, int> columnOrdinals = new Dictionary<string, int>(columnCount);
+
+			for (int i = 0; i < columnCount; i++)
+				columnOrdinals.Add(dataReader.GetName(i), i);
+
 			ColumnMemberInfo field;
 
 			for (int i = _FieldList.Count - 1; i >= 0; i--)
