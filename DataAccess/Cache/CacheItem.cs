@@ -1,44 +1,55 @@
 ﻿using System;
-using System.Data;
-using System.Data.Common;
-using System.Data.SqlClient;
 
 namespace DbParallel.DataAccess
 {
-	static partial class DerivedParametersCache
+	public class CacheItem<TValue> : IEquatable<CacheItem<TValue>>
 	{
-		static partial void SqlDeriveParameters(DbCommand dbCmd)
+		private DateTime _LastRefreshed;
+		public DateTime LastRefreshed
 		{
-			SqlCommand sqlCmd = dbCmd as SqlCommand;
-
-			if (sqlCmd != null)
-				SqlCommandBuilder.DeriveParameters(sqlCmd);
+			get { return _LastRefreshed; }
 		}
 
-		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd)
+		private TValue _Value;
+		public TValue Value
 		{
-			SqlCommand sqlCmd = dbCmd as SqlCommand;
-
-			if (sqlCmd != null && sqlCmd.CommandType == CommandType.StoredProcedure)
+			get
 			{
-				foreach (SqlParameter sqlParameter in sqlCmd.Parameters)
-					if (sqlParameter.Value == null && (sqlParameter.Direction == ParameterDirection.InputOutput || sqlParameter.Direction == ParameterDirection.Output))
-						sqlParameter.Value = DBNull.Value;
+				return _Value;
 			}
+			set
+			{
+				_Value = value;
+				_LastRefreshed = DateTime.Now;
+			}
+		}
+
+		public CacheItem(TValue value)
+		{
+			Value = value;
+		}
+
+		public CacheItem()
+		{
+		}
+
+		public bool Equals(CacheItem<TValue> other)
+		{
+			return _Value.Equals(other.Value);
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//	Copyright 2014 Abel Cheng
+//	Copyright 2015 Abel Cheng
 //	This source code is subject to terms and conditions of the Apache License, Version 2.0.
 //	See http://www.apache.org/licenses/LICENSE-2.0.
 //	All other rights reserved.
 //	You must not remove this notice, or any other, from this software.
 //
 //	Original Author:	Abel Cheng <abelcys@gmail.com>
-//	Created Date:		2014-12-23
+//	Created Date:		2015-03-31
 //	Original Host:		http://dbParallel.codeplex.com
 //	Primary Host:		http://DataBooster.codeplex.com
 //	Change Log:

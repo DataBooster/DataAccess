@@ -62,6 +62,6 @@ namespace DbParallel.DataAccess
 //
 //
 //
-//	(Keep clean code rather than complicated code plus long comments.)
+//	(Keep code clean rather than complicated code plus long comments.)
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////

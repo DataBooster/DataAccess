@@ -38,6 +38,6 @@ namespace DbParallel.DataAccess.Booster
 //
 //
 //
-//	(Keep clean code rather than complicated code plus long comments.)
+//	(Keep code clean rather than complicated code plus long comments.)
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -4,40 +4,13 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace DbParallel.DataAccess
 {
 	public static partial class DerivedParametersCache
 	{
-		private class DerivedParamColl
-		{
-			private DbParameterCollection _ParameterCollection;
-			internal DbParameterCollection ParameterCollection
-			{
-				get
-				{
-					return _ParameterCollection;
-				}
-				set
-				{
-					_ParameterCollection = value;
-					_LastRefreshed = DateTime.Now;
-				}
-			}
-
-			private DateTime _LastRefreshed;
-			internal DateTime LastRefreshed
-			{
-				get { return _LastRefreshed; }
-			}
-
-			internal DerivedParamColl(DbParameterCollection parameterCollection)
-			{
-				ParameterCollection = parameterCollection;
-			}
-		}
-
-		private class StoredProcedureDictionary : Dictionary<string, DerivedParamColl>
+		private class StoredProcedureDictionary : CacheDictionary<string, DbParameterCollection>
 		{
 			internal StoredProcedureDictionary()
 				: base(StringComparer.OrdinalIgnoreCase)
@@ -45,71 +18,43 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		private static readonly object _DerivedParametersCacheLock = new object();
-		private static Dictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionDataSource/ConnectionString
+		private static ConcurrentDictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionDataSource/ConnectionString
 		private static TimeSpan _ExpireInterval;
+		public static TimeSpan ExpireInterval
+		{
+			get { return _ExpireInterval; }
+			set { _ExpireInterval = value; }
+		}
 
 		static DerivedParametersCache()
 		{
-			_CacheRoot = new Dictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
+			_CacheRoot = new ConcurrentDictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
 			_ExpireInterval = new TimeSpan(1, 0, 0);	// Default 1 hour
-		}
-
-		public static TimeSpan ExpireInterval
-		{
-			get
-			{
-				lock (_DerivedParametersCacheLock)
-				{
-					return _ExpireInterval;
-				}
-			}
-			set
-			{
-				lock (_DerivedParametersCacheLock)
-				{
-					_ExpireInterval = value;
-				}
-			}
 		}
 
 		private static DbParameterCollection GetCache(string connectionDataSource, string storedProcedure)
 		{
 			StoredProcedureDictionary spDictionary;
-			DerivedParamColl paramColl;
-			DbParameterCollection dbParameters = null;
+			DbParameterCollection paramColl;
 
-			lock (_DerivedParametersCacheLock)
-			{
-				if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
-					if (spDictionary.TryGetValue(storedProcedure, out paramColl))
-						if (_ExpireInterval <= TimeSpan.Zero || DateTime.Now - paramColl.LastRefreshed <= _ExpireInterval)
-							dbParameters = paramColl.ParameterCollection;
-			}
+			if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
+				if (spDictionary.TryGetValue(storedProcedure, _ExpireInterval, out paramColl))
+					return paramColl;
 
-			return dbParameters;
+			return null;
 		}
 
 		private static void SetCache(string connectionDataSource, string storedProcedure, DbParameterCollection parameters)
 		{
 			StoredProcedureDictionary spDictionary;
-			DerivedParamColl paramColl;
 
-			lock (_DerivedParametersCacheLock)
+			if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
+				spDictionary.AddOrUpdate(storedProcedure, parameters);
+			else
 			{
-				if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
-				{
-					if (spDictionary.TryGetValue(storedProcedure, out paramColl))
-						paramColl.ParameterCollection = parameters;
-					else
-						spDictionary.Add(storedProcedure, new DerivedParamColl(parameters));
-				}
-				else
-				{
-					spDictionary = new StoredProcedureDictionary();
-					spDictionary.Add(storedProcedure, new DerivedParamColl(parameters));
-					_CacheRoot.Add(connectionDataSource, spDictionary);
-				}
+				spDictionary = new StoredProcedureDictionary();
+				spDictionary.TryAdd(storedProcedure, parameters);
+				_CacheRoot.TryAdd(connectionDataSource, spDictionary);
 			}
 		}
 
@@ -319,6 +264,6 @@ namespace DbParallel.DataAccess
 //
 //
 //
-//	(Keep clean code rather than complicated code plus long comments.)
+//	(Keep code clean rather than complicated code plus long comments.)
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
