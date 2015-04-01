@@ -17,7 +17,7 @@ CREATE OR REPLACE PACKAGE XYZ.UTL_CS IS
 --
 --
 --
---	(Keep clean code rather than complicated code plus long comments.)
+--	(Keep code clean rather than complicated code plus long comments.)
 --
 ----------------------------------------------------------------------------------------------------
 

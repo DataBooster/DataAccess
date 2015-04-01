@@ -54,6 +54,8 @@
   <ItemGroup>
     <Compile Include="Booster\DbLauncher.cs" />
     <Compile Include="Booster\DbRocket.cs" />
+    <Compile Include="Cache\CacheDictionary.cs" />
+    <Compile Include="Cache\CacheItem.cs" />
     <Compile Include="ColumnMemberInfo.cs" />
     <Compile Include="DbAccess.cs" />
     <Compile Include="DbAccess.slot.cs" />
@@ -64,8 +66,8 @@
     <Compile Include="DbParameterBuilder.cs" />
     <Compile Include="DbTransactionManager.cs" />
     <Compile Include="DbTransactionScope.cs" />
-    <Compile Include="DerivedParametersCache.cs" />
-    <Compile Include="DerivedParametersCache.slot.cs" />
+    <Compile Include="Cache\DerivedParametersCache.cs" />
+    <Compile Include="Cache\DerivedParametersCache.slot.cs" />
     <Compile Include="Dynamic\BindableDynamicObject.cs" />
     <Compile Include="Dynamic\DbAccess.partial.cs" />
     <Compile Include="Dynamic\StoredProcedureRequest.cs" />
