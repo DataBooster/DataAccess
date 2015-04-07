@@ -81,6 +81,9 @@ namespace DbParallel.DataAccess
 
 		static private string GetConnectionDataSource(this DbConnection dbConnection)
 		{
+			if (dbConnection == null)
+				throw new ArgumentNullException("dbConnection");
+
 			string connectionDataSource = dbConnection.DataSource;
 
 			if (string.IsNullOrEmpty(connectionDataSource))
@@ -103,8 +106,6 @@ namespace DbParallel.DataAccess
 		{
 			if (dbCommand == null)
 				throw new ArgumentNullException("dbCommand");
-			if (dbCommand.Connection == null)
-				throw new ArgumentNullException("dbCommand.Connection");
 
 			string connectionDataSource = dbCommand.Connection.GetConnectionDataSource();
 			string storedProcedure = dbCommand.CommandText;
