@@ -207,6 +207,16 @@ namespace DbParallel.DataAccess
 			return (returnParameter == null) ? null : returnParameter.Value;
 		}
 
+		public ICollection<string> ListCachedStoredProcedures()
+		{
+			return DerivedParametersCache.ListStoredProcedures(_Connection);
+		}
+
+		public void RemoveCachedStoredProcedures(IEnumerable<string> storedProcedures)
+		{
+			DerivedParametersCache.RemoveStoredProcedures(_Connection, storedProcedures);
+		}
+
 		public bool RefreshStoredProcedureParameters(string storedProcedureName)
 		{
 			if (string.IsNullOrWhiteSpace(storedProcedureName))
