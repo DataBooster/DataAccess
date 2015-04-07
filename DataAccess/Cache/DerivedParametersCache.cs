@@ -32,6 +32,7 @@ namespace DbParallel.DataAccess
 			_ExpireInterval = new TimeSpan(1, 0, 0);	// Default 1 hour
 		}
 
+		#region Private Basic Operations
 		private static DbParameterCollection GetCache(string connectionDataSource, string storedProcedure)
 		{
 			StoredProcedureDictionary spDictionary;
@@ -58,6 +59,46 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		private static ICollection<string> ListCache(string connectionDataSource)
+		{
+			StoredProcedureDictionary spDictionary;
+
+			if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
+				return spDictionary.Keys;
+			else
+				return new List<string>();
+		}
+
+		private static void RemoveCache(string connectionDataSource, IEnumerable<string> storedProcedures)
+		{
+			StoredProcedureDictionary spDictionary;
+
+			if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
+				if (storedProcedures != null)
+					spDictionary.TryRemove(storedProcedures);
+		}
+		#endregion
+
+		static private string GetConnectionDataSource(this DbConnection dbConnection)
+		{
+			string connectionDataSource = dbConnection.DataSource;
+
+			if (string.IsNullOrEmpty(connectionDataSource))
+				return dbConnection.ConnectionString;
+			else
+				return connectionDataSource;
+		}
+
+		static internal ICollection<string> ListStoredProcedures(DbConnection dbConnection)
+		{
+			return ListCache(dbConnection.GetConnectionDataSource());
+		}
+
+		static internal void RemoveStoredProcedures(DbConnection dbConnection, IEnumerable<string> storedProcedures)
+		{
+			RemoveCache(dbConnection.GetConnectionDataSource(), storedProcedures);
+		}
+
 		static internal bool DeriveParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters, bool refresh)
 		{
 			if (dbCommand == null)
@@ -65,10 +106,7 @@ namespace DbParallel.DataAccess
 			if (dbCommand.Connection == null)
 				throw new ArgumentNullException("dbCommand.Connection");
 
-			string connectionDataSource = dbCommand.Connection.DataSource;
-			if (string.IsNullOrEmpty(connectionDataSource))
-				connectionDataSource = dbCommand.Connection.ConnectionString;
-
+			string connectionDataSource = dbCommand.Connection.GetConnectionDataSource();
 			string storedProcedure = dbCommand.CommandText;
 			if (string.IsNullOrWhiteSpace(storedProcedure))
 				throw new ArgumentNullException("dbCommand.CommandText");
