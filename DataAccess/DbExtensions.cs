@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
@@ -42,14 +43,66 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		public static object GetColumnValue(this DbDataReader dataRecord, int ordinal)
+		{
+			try
+			{
+				return dataRecord.GetValue(ordinal);
+			}
+			catch (OverflowException)
+			{
+				string dataTypeName = dataRecord.GetDataTypeName(ordinal);
+
+				if (dataTypeName.Equals("Decimal", StringComparison.OrdinalIgnoreCase))
+				{
+					decimal decimalValue;
+					string strValue = dataRecord.GetProviderSpecificValue(ordinal).ToString();
+
+					if (decimal.TryParse(strValue, out decimalValue))
+						return decimalValue;
+				}
+
+				throw;
+			}
+		}
+
+		public static object GetColumnValue(this DbDataReader dataRecord, string columnName)
+		{
+			return GetColumnValue(dataRecord, dataRecord.GetOrdinal(columnName));
+		}
+
+		public static IEnumerable<object> GetColumnValues(this DbDataReader dataRecord, int maxColumns = -1)
+		{
+			if (maxColumns == 0)
+				maxColumns = dataRecord.VisibleFieldCount;
+			else if (maxColumns < 0)
+				maxColumns = dataRecord.FieldCount;
+
+			for (int i = 0; i < maxColumns; i++)
+				yield return GetColumnValue(dataRecord, i);
+		}
+
+		public static int GetColumnValues(this DbDataReader dataRecord, object[] values)
+		{
+			if (values == null)
+				throw new ArgumentNullException("values");
+
+			int copy = Math.Min(values.Length, dataRecord.FieldCount);
+
+			for (int i = 0; i < copy; i++)
+				values[i] = GetColumnValue(dataRecord, i);
+
+			return copy;
+		}
+
 		public static T Field<T>(this DbDataReader reader, string columnName)
 		{
-			return TryConvert<T>(reader[columnName]);
+			return TryConvert<T>(reader.GetColumnValue(columnName));
 		}
 
 		public static T Field<T>(this DbDataReader reader, int ordinal)
 		{
-			return TryConvert<T>(reader[ordinal]);
+			return TryConvert<T>(reader.GetColumnValue(ordinal));
 		}
 
 		public static T Parameter<T>(this DbCommand cmd, string parameterName)
