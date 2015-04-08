@@ -159,7 +159,7 @@ namespace DbParallel.DataAccess
 				MapColumns(dataReader);
 
 			foreach (ColumnMemberInfo field in _FieldList)
-				field.SetValue(entity, dataReader[field.ColumnOrdinal]);
+				field.SetValue(entity, dataReader.GetColumnValue(field.ColumnOrdinal));
 
 			if (_CustomReaderAction != null)
 				_CustomReaderAction(entity, dataReader);

@@ -78,7 +78,7 @@ namespace DbParallel.DataAccess
 				visibleFieldNames = GetVisibleFieldNames(reader);
 
 			for (int i = 0; i < visibleFieldNames.Length; i++)
-				expandoObject.Add(visibleFieldNames[i], reader[i]);
+				expandoObject.Add(visibleFieldNames[i], reader.GetColumnValue(i));
 
 			return expandoObject;
 		}
