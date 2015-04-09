@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
-using System.Collections.Generic;
+using System.Collections;
 
 namespace DbParallel.DataAccess
 {
@@ -71,7 +71,7 @@ namespace DbParallel.DataAccess
 			return GetColumnValue(dataRecord, dataRecord.GetOrdinal(columnName));
 		}
 
-		public static IEnumerable<object> GetColumnValues(this DbDataReader dataRecord, int maxColumns = -1)
+		public static IEnumerable GetColumnValues(this DbDataReader dataRecord, int maxColumns = -1)
 		{
 			if (maxColumns == 0)
 				maxColumns = dataRecord.VisibleFieldCount;
