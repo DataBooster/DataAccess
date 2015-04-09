@@ -58,6 +58,29 @@ namespace DbParallel.DataAccess
 			return cntRemoved;
 		}
 
+		public bool TryRemove(TKey key)
+		{
+			CacheItem<TValue> existingItem;
+
+			return TryRemove(key, out existingItem);
+		}
+
+		public bool TryGetValue(TKey key, out TValue value)
+		{
+			CacheItem<TValue> existingItem;
+
+			if (TryGetValue(key, out existingItem))
+			{
+				value = existingItem.Value;
+				return true;
+			}
+			else
+			{
+				value = default(TValue);
+				return false;
+			}
+		}
+
 		public bool TryGetValue(TKey key, TimeSpan validityPeriod, out TValue value)
 		{
 			CacheItem<TValue> existingItem;
@@ -71,6 +94,26 @@ namespace DbParallel.DataAccess
 
 			value = default(TValue);
 			return false;
+		}
+
+		public TValue GetOrAdd(TKey key, TValue value)
+		{
+			CacheItem<TValue> existingItem;
+
+			if (TryGetValue(key, out existingItem))
+				return existingItem.Value;
+			else
+			{
+				if (value != null)
+					TryAdd(key, value);
+
+				return value;
+			}
+		}
+
+		public int RemoveExpiredKeys(TimeSpan validityPeriod)
+		{
+			return TryRemove(GetExpiredKeys(validityPeriod).ToList());
 		}
 
 		public IEnumerable<TKey> GetExpiredKeys(TimeSpan validityPeriod)
