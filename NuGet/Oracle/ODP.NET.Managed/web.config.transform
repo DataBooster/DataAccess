@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-	<configSections>
-		<section name="oracle.manageddataaccess.client"	type="OracleInternal.Common.ODPMSectionHandler, Oracle.ManagedDataAccess" />
-	</configSections>
 	<connectionStrings>
 		<add name="$rootnamespace$.MainConnection" providerName="Oracle.ManagedDataAccess.Client"
 				 connectionString="Data Source=SAMPLEDB;User Id=/"/>
@@ -12,15 +9,6 @@
 	<appSettings>
 		<add key="$rootnamespace$.MainPackage" value="SCHEMA.PACKAGE." />
 	</appSettings>
-	<system.data>
-		<DbProviderFactories>
-			<!-- Remove in case this is already defined in machine.config -->
-			<remove invariant="Oracle.ManagedDataAccess.Client" />
-			<add name="ODP.NET, Managed Driver" invariant="Oracle.ManagedDataAccess.Client"
-					 description="Oracle Data Provider for .NET, Managed Driver"
-					 type="Oracle.ManagedDataAccess.Client.OracleClientFactory, Oracle.ManagedDataAccess" />
-		</DbProviderFactories>
-	</system.data>
 	<oracle.manageddataaccess.client>
 		<version number="*">
 			<settings>

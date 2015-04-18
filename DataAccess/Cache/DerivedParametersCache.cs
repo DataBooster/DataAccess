@@ -29,7 +29,7 @@ namespace DbParallel.DataAccess
 		static DerivedParametersCache()
 		{
 			_CacheRoot = new ConcurrentDictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
-			_ExpireInterval = new TimeSpan(1, 0, 0);	// Default 1 hour
+			_ExpireInterval = TimeSpan.FromHours(1);	// Default 1 hour
 		}
 
 		#region Private Basic Operations
@@ -69,13 +69,15 @@ namespace DbParallel.DataAccess
 				return new List<string>();
 		}
 
-		private static void RemoveCache(string connectionDataSource, IEnumerable<string> storedProcedures)
+		private static int RemoveCache(string connectionDataSource, IEnumerable<string> storedProcedures)
 		{
 			StoredProcedureDictionary spDictionary;
 
 			if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
 				if (storedProcedures != null)
-					spDictionary.TryRemove(storedProcedures);
+					return spDictionary.TryRemove(storedProcedures);
+
+			return 0;
 		}
 		#endregion
 
@@ -97,9 +99,9 @@ namespace DbParallel.DataAccess
 			return ListCache(dbConnection.GetConnectionDataSource());
 		}
 
-		static internal void RemoveStoredProcedures(DbConnection dbConnection, IEnumerable<string> storedProcedures)
+		static internal int RemoveStoredProcedures(DbConnection dbConnection, IEnumerable<string> storedProcedures)
 		{
-			RemoveCache(dbConnection.GetConnectionDataSource(), storedProcedures);
+			return RemoveCache(dbConnection.GetConnectionDataSource(), storedProcedures);
 		}
 
 		static internal bool DeriveParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters, bool refresh)
