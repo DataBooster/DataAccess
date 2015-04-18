@@ -212,9 +212,9 @@ namespace DbParallel.DataAccess
 			return DerivedParametersCache.ListStoredProcedures(_Connection);
 		}
 
-		public void RemoveCachedStoredProcedures(IEnumerable<string> storedProcedures)
+		public int RemoveCachedStoredProcedures(IEnumerable<string> storedProcedures)
 		{
-			DerivedParametersCache.RemoveStoredProcedures(_Connection, storedProcedures);
+			return DerivedParametersCache.RemoveStoredProcedures(_Connection, storedProcedures);
 		}
 
 		public bool RefreshStoredProcedureParameters(string storedProcedureName)
