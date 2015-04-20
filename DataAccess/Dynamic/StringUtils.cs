@@ -1,9 +1,19 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 
 namespace DbParallel.DataAccess
 {
 	public static class StringUtils
 	{
+		private static Random _RandomNumber;
+		private static object _RandomLock;
+
+		static StringUtils()
+		{
+			_RandomNumber = new Random();
+			_RandomLock = new object();
+		}
+
 		public static string DeunderscoreFieldName(this string fieldName, bool camelCase = false)
 		{
 			if (string.IsNullOrEmpty(fieldName))
@@ -84,6 +94,66 @@ namespace DbParallel.DataAccess
 				}
 
 			return (compactedLength == 0) ? string.Empty : new string(compactedChars, 0, compactedLength);
+		}
+
+		private static bool[] GetRandomBools(int len)
+		{
+			byte[] rndBuffer = new byte[(len + 7) / 8];
+
+			lock (_RandomLock)
+			{
+				_RandomNumber.NextBytes(rndBuffer);
+			}
+
+			bool[] bits = new bool[len];
+			int rb;
+
+			for (int i = 0; i < len; i++)
+			{
+				rb = (i + 8) / 8 - 1;
+				bits[i] = (rndBuffer[rb] & 0x01) == 0x01;
+				rndBuffer[rb] >>= 1;
+			}
+
+			return bits;
+		}
+
+		internal static string ShuffleCase(this string originalString, bool selfInverse = false)
+		{
+			if (string.IsNullOrWhiteSpace(originalString))
+				return originalString;
+
+			bool[] shufflingCases = GetRandomBools(originalString.Length);
+			char[] shuffledChars = new char[originalString.Length];
+
+			if (selfInverse)
+			{
+				char c;
+
+				for (int i = 0; i < shuffledChars.Length; i++)
+				{
+					c = originalString[i];
+
+					if (shufflingCases[i])
+					{
+						if (char.IsLower(c))
+							shuffledChars[i] = char.ToUpper(c, CultureInfo.InvariantCulture);
+						else if (char.IsUpper(c))
+							shuffledChars[i] = char.ToLower(c, CultureInfo.InvariantCulture);
+						else
+							shuffledChars[i] = c;
+					}
+					else
+						shuffledChars[i] = c;
+				}
+			}
+			else
+				for (int i = 0; i < shuffledChars.Length; i++)
+					shuffledChars[i] = shufflingCases[i] ?
+						char.ToUpper(originalString[i], CultureInfo.InvariantCulture) :
+						char.ToLower(originalString[i], CultureInfo.InvariantCulture);
+
+			return new string(shuffledChars);
 		}
 	}
 }
