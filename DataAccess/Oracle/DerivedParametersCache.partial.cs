@@ -19,7 +19,23 @@ namespace DbParallel.DataAccess
 			OracleCommand oraCmd = dbCmd as OracleCommand;
 
 			if (oraCmd != null)
+			{
+				ShuffleCommandTextCase(oraCmd);
 				OracleCommandBuilder.DeriveParameters(oraCmd);
+			}
+		}
+
+		// Resolve ODP.NET caching issue (ODP.NET's DeriveParameters keeps used stored procedures' parameters descriptions in its internal Hashtable without any evict policy)
+		static private void ShuffleCommandTextCase(OracleCommand oraCmd)
+		{
+#if !DATADIRECT		// DataDirect can be resolved by adding "Procedure Description Cache=false" in the ConnectionString
+			string commandText = oraCmd.CommandText;
+
+			if (string.IsNullOrEmpty(commandText) || commandText.StartsWith("\"") || commandText.EndsWith("\""))
+				return;
+
+			oraCmd.CommandText = commandText.ShuffleCase();
+#endif
 		}
 
 		static partial void OracleOmitUnspecifiedInputParameters(DbCommand dbCmd)

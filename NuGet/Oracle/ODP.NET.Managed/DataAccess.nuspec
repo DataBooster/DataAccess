@@ -3,7 +3,7 @@
 	<metadata>
 		<id>DataBooster.Oracle.Managed</id>
 		<version>$version$</version>
-		<title>$title$ for SQL Server + Oracle (use ODP.NET Managed Driver)</title>
+		<title>$title$ for SQL Server + Oracle (using ODP.NET Managed Driver)</title>
 		<authors>$author$</authors>
 		<owners>http://databooster.codeplex.com</owners>
 		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
@@ -17,7 +17,7 @@
 			<frameworkAssembly assemblyName="System.Configuration" />
 		</frameworkAssemblies>
 		<dependencies>
-			<dependency id="odp.net.managed"/>
+			<dependency id="Oracle.ManagedDataAccess"/>
 		</dependencies>
 		</metadata>
 	<files>

@@ -1,7 +1,7 @@
 ﻿Installation Notes:
 
-A dependency NuGet package "odp.net.managed" - Oracle Data Provider for .NET (ODP.NET) Managed Driver
-http://www.nuget.org/packages/odp.net.managed is also installed automatically.
+A dependency NuGet package "Oracle.ManagedDataAccess" - Official Oracle ODP.NET, Managed Driver
+http://www.nuget.org/packages/Oracle.ManagedDataAccess is also installed automatically.
 
 
 Four setting items have been added into your config file:
