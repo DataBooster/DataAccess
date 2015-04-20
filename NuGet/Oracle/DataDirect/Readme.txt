@@ -9,7 +9,7 @@ Three setting items have been added into your config file:
 
 <configuration>
 	<connectionStrings>
-		<add name="$rootnamespace$.MainConnection" providerName="DDTek.Oracle" connectionString="Data Source=SAMPLEDB;Authentication Method=Client"/>
+		<add name="$rootnamespace$.MainConnection" providerName="DDTek.Oracle" connectionString="Data Source=SAMPLEDB;Procedure Description Cache=false;Authentication Method=Client"/>
 		<add name="$rootnamespace$.AuxConnection" providerName="System.Data.SqlClient" connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=SAMPLEDB;Integrated Security=SSPI" />
 	</connectionStrings>
 	<appSettings>

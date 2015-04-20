@@ -3,7 +3,7 @@
 	<metadata>
 		<id>DataBooster.Oracle.DataDirect</id>
 		<version>$version$</version>
-		<title>$title$ for SQL Server + Oracle (use DataDirect Provider)</title>
+		<title>$title$ for SQL Server + Oracle (using DataDirect Provider)</title>
 		<authors>$author$</authors>
 		<owners>http://databooster.codeplex.com</owners>
 		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
