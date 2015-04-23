@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Threading;
 
 namespace DbParallel.DataAccess
 {
 	public class CacheItem<TValue> : IEquatable<CacheItem<TValue>>
 	{
-		private DateTime _LastRefreshed;
+		private long _LastRefreshedBinary;
 		public DateTime LastRefreshed
 		{
-			get { return _LastRefreshed; }
+			get { return DateTime.FromBinary(Interlocked.Read(ref _LastRefreshedBinary)); }
+			private set { Interlocked.Exchange(ref _LastRefreshedBinary, value.ToBinary()); }
 		}
 
 		private TValue _Value;
@@ -20,7 +22,7 @@ namespace DbParallel.DataAccess
 			set
 			{
 				_Value = value;
-				_LastRefreshed = DateTime.Now;
+				LastRefreshed = DateTime.Now;
 			}
 		}
 
