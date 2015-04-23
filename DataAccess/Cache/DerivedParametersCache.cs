@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Data;
 using System.Data.Common;
+using System.Threading;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -19,17 +20,17 @@ namespace DbParallel.DataAccess
 		}
 
 		private static ConcurrentDictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionDataSource/ConnectionString
-		private static TimeSpan _ExpireInterval;
+		private static long _ExpireIntervalTicks;
 		public static TimeSpan ExpireInterval
 		{
-			get { return _ExpireInterval; }
-			set { _ExpireInterval = value; }
+			get { return new TimeSpan(Interlocked.Read(ref _ExpireIntervalTicks)); }
+			set { Interlocked.Exchange(ref _ExpireIntervalTicks, value.Ticks); }
 		}
 
 		static DerivedParametersCache()
 		{
 			_CacheRoot = new ConcurrentDictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
-			_ExpireInterval = TimeSpan.FromHours(1);	// Default 1 hour
+			ExpireInterval = TimeSpan.FromHours(1);	// Default 1 hour
 		}
 
 		#region Private Basic Operations
@@ -39,7 +40,7 @@ namespace DbParallel.DataAccess
 			DbParameterCollection paramColl;
 
 			if (_CacheRoot.TryGetValue(connectionDataSource, out spDictionary))
-				if (spDictionary.TryGetValue(storedProcedure, _ExpireInterval, out paramColl))
+				if (spDictionary.TryGetValue(storedProcedure, ExpireInterval, out paramColl))
 					return paramColl;
 
 			return null;
