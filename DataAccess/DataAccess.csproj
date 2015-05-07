@@ -28,7 +28,7 @@
     <DefineConstants>TRACE;DEBUG;ORACLE;DATADIRECT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\DbParallel.DataAccess.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\DbParallel.DataAccess.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,7 +37,7 @@
     <DefineConstants>TRACE;ORACLE;ODP_NET_MANAGED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\DbParallel.DataAccess.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DbParallel.DataAccess.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DDTek.Oracle, Version=3.5.0.0, Culture=neutral, PublicKeyToken=c84cd5c63851e072, processorArchitecture=MSIL">

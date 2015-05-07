@@ -12,7 +12,65 @@ namespace DbParallel.DataAccess
 			SqlCommand sqlCmd = dbCmd as SqlCommand;
 
 			if (sqlCmd != null)
+			{
 				SqlCommandBuilder.DeriveParameters(sqlCmd);
+
+				int cntParams = sqlCmd.Parameters.Count;
+
+				for (int i = 0; i < cntParams; i++)
+					ResolveSqlTypeName(sqlCmd.Parameters[i]);
+			}
+		}
+
+		static private void ResolveSqlTypeName(SqlParameter sqlParameter)
+		{
+			string typeName = sqlParameter.TypeName;
+
+			if (string.IsNullOrEmpty(typeName) || sqlParameter.SqlDbType != SqlDbType.Structured)
+				return;
+
+			int countParts = 0, inBrackets = 0;
+			bool inQuotations = false, inEscape = false;
+			char lastChar = char.MinValue;
+
+			for (int i = typeName.Length - 1; i >= 0; i--)
+			{
+				switch (typeName[i])
+				{
+					case ']':
+						if (lastChar == ']')
+							inEscape = !inEscape;
+
+						if (inEscape)
+							inBrackets--;
+						else
+							inBrackets++;
+						break;
+					case '[':
+						inBrackets--;
+						break;
+					case '"':
+						inQuotations = !inQuotations;
+						break;
+					case '.':
+						if (inBrackets <= 0 && inQuotations == false)
+						{
+							countParts++;
+
+							if (countParts == 2)	// DatabaseName.SchemaName.TypeName
+							{
+								sqlParameter.TypeName = typeName.Substring(i + 1);
+								return;
+							}
+						}
+						break;
+				}
+
+				lastChar = typeName[i];
+
+				if (lastChar != ']' && inEscape)
+					inEscape = false;
+			}
 		}
 
 		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd)
