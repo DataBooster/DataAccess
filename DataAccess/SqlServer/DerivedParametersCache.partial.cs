@@ -29,48 +29,13 @@ namespace DbParallel.DataAccess
 			if (string.IsNullOrEmpty(typeName) || sqlParameter.SqlDbType != SqlDbType.Structured)
 				return;
 
-			int countParts = 0, inBrackets = 0;
-			bool inQuotations = false, inEscape = false;
-			char lastChar = char.MinValue;
-
-			for (int i = typeName.Length - 1; i >= 0; i--)
-			{
-				switch (typeName[i])
-				{
-					case ']':
-						if (lastChar == ']')
-							inEscape = !inEscape;
-
-						if (inEscape)
-							inBrackets--;
-						else
-							inBrackets++;
+			for (int dots = 0, i = typeName.Length - 1; i >= 0; i--)
+				if (typeName[i] == '.')
+					if (++dots > 1)		// DatabaseName.SchemaName.TypeName
+					{
+						sqlParameter.TypeName = string.Empty;
 						break;
-					case '[':
-						inBrackets--;
-						break;
-					case '"':
-						inQuotations = !inQuotations;
-						break;
-					case '.':
-						if (inBrackets <= 0 && inQuotations == false)
-						{
-							countParts++;
-
-							if (countParts == 2)	// DatabaseName.SchemaName.TypeName
-							{
-								sqlParameter.TypeName = typeName.Substring(i + 1);
-								return;
-							}
-						}
-						break;
-				}
-
-				lastChar = typeName[i];
-
-				if (lastChar != ']' && inEscape)
-					inEscape = false;
-			}
+					}
 		}
 
 		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd)
