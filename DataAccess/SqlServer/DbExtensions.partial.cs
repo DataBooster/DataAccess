@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data.Common;
+using System.Data.SqlClient;
 
 namespace DbParallel.DataAccess
 {
@@ -7,6 +8,11 @@ namespace DbParallel.DataAccess
 		public static SqlBulkCopyColumnMapping Add(this SqlBulkCopyColumnMappingCollection columnMappings, string destinationColumn)
 		{
 			return columnMappings.Add(columnMappings.Count, destinationColumn);
+		}
+
+		public static SqlParameter AsSqlParameter(this DbParameter sqlParameter)
+		{
+			return sqlParameter as SqlParameter;
 		}
 	}
 }

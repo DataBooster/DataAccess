@@ -19,6 +19,8 @@ namespace DbParallel.DataAccess
 
 		internal static bool CanMapToDbType(this Type type)
 		{
+			if (typeof(IConvertible).IsAssignableFrom(type))
+				return true;
 			if (type.IsValueType)
 				return true;
 			if (type == typeof(string))
