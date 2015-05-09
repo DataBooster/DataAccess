@@ -129,11 +129,11 @@ namespace DbParallel.DataAccess
 			Type type = typeof(T);
 
 			foreach (FieldInfo f in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
-				if (f.IsInitOnly == false && f.FieldType.TryUnderlyingType().CanMapToDbType())
+				if (f.IsInitOnly == false && f.FieldType.GetNonNullableType().CanMapToDbType())
 					_FieldList.Add(new ColumnMemberInfo(f.Name, f));
 
 			foreach (PropertyInfo p in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
-				if (p.CanWrite && p.CanRead && p.PropertyType.TryUnderlyingType().CanMapToDbType())
+				if (p.CanWrite && p.CanRead && p.PropertyType.GetNonNullableType().CanMapToDbType())
 					_FieldList.Add(new ColumnMemberInfo(p.Name, p));
 
 			_AutoMatchAllPropertiesOrFields = true;

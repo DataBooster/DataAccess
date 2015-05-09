@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.Linq;
 using System.Data.Common;
 using System.Collections;
 
@@ -9,10 +10,10 @@ namespace DbParallel.DataAccess
 	{
 		internal static bool IsNullable(this Type type)
 		{
-			return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+			return (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
 		}
 
-		internal static Type TryUnderlyingType(this Type type)
+		internal static Type GetNonNullableType(this Type type)
 		{
 			return type.IsNullable() ? Nullable.GetUnderlyingType(type) : type;
 		}
@@ -40,7 +41,7 @@ namespace DbParallel.DataAccess
 				}
 				catch (InvalidCastException)
 				{
-					return (T)Convert.ChangeType(dbValue, typeof(T).TryUnderlyingType());
+					return DBConvert.ChangeType<T>(dbValue);	//	(T)Convert.ChangeType(dbValue, typeof(T).TryUnderlyingType());
 				}
 			}
 		}

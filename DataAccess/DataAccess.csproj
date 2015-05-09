@@ -52,6 +52,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +84,7 @@
     <Compile Include="Oracle\DbParameterBuilder.partial.cs" />
     <Compile Include="Oracle\DerivedParametersCache.partial.cs" />
     <Compile Include="ParallelExecuteWaitHandle.cs" />
+    <Compile Include="ParameterConvert.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyOrField.cs" />
     <Compile Include="SqlServer\Booster\SqlLauncher.cs" />

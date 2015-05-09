@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Linq;
 using System.Reflection;
 
 namespace DbParallel.DataAccess
@@ -17,7 +18,7 @@ namespace DbParallel.DataAccess
 				throw new ArgumentNullException("propertyInfo");
 
 			_PropertyInfo = propertyInfo;
-			_DataType = _PropertyInfo.PropertyType.TryUnderlyingType();
+			_DataType = _PropertyInfo.PropertyType.GetNonNullableType();
 		}
 
 		public PropertyOrField(FieldInfo fieldInfo)
@@ -26,7 +27,7 @@ namespace DbParallel.DataAccess
 				throw new ArgumentNullException("fieldInfo");
 
 			_FieldInfo = fieldInfo;
-			_DataType = _FieldInfo.FieldType.TryUnderlyingType();
+			_DataType = _FieldInfo.FieldType.GetNonNullableType();
 		}
 
 		public static PropertyOrField CreateFromMember(MemberInfo memberInfo)
@@ -50,9 +51,9 @@ namespace DbParallel.DataAccess
 				return;
 
 			if (_PropertyInfo != null)
-				_PropertyInfo.SetValue(objEntity, Convert.ChangeType(dbValue, _DataType), null);
+				_PropertyInfo.SetValue(objEntity, /* Convert.ChangeType */ DBConvert.ChangeType(dbValue, _DataType), null);
 			else if (_FieldInfo != null)
-				_FieldInfo.SetValue(objEntity, Convert.ChangeType(dbValue, _DataType));
+				_FieldInfo.SetValue(objEntity, /* Convert.ChangeType */ DBConvert.ChangeType(dbValue, _DataType));
 		}
 
 		public object GetValue(object objEntity)
