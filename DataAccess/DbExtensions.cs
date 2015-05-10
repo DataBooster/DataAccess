@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Data;
 using System.Data.Linq;
 using System.Data.Common;
 using System.Collections;
+using System.Collections.Generic;
+using Microsoft.SqlServer.Server;
 
 namespace DbParallel.DataAccess
 {
@@ -154,11 +157,78 @@ namespace DbParallel.DataAccess
 			return dbParameter;
 		}
 
-		public static DbParameter SetValue(this DbParameter dbParameter, IConvertible oValue)
+		#region Set Parameter Value overloads
+		public static DbParameter SetValue(this DbParameter dbParameter, IConvertible simpleValue)
 		{
-			dbParameter.Value = (oValue == null) ? DBNull.Value : oValue;
+			dbParameter.Value = (simpleValue == null) ? DBNull.Value : simpleValue;
 			return dbParameter;
 		}
+
+		/// <summary>
+		/// Set Value of Table-Valued Parameter (SQL Server 2008+)
+		/// </summary>
+		/// <param name="dbParameter"></param>
+		/// <param name="dynObjects"></param>
+		/// <returns></returns>
+		public static DbParameter SetValue(this DbParameter dbParameter, IEnumerable<IDictionary<string, object>> dynObjects)
+		{
+			dbParameter.Value = ParameterConvert.ToDataTable(dynObjects);
+			return dbParameter;
+		}
+
+		/// <summary>
+		/// Set Value of Table-Valued Parameter (SQL Server 2008+)
+		/// </summary>
+		/// <param name="dbParameter"></param>
+		/// <param name="tableValue"></param>
+		/// <returns></returns>
+		public static DbParameter SetValue(this DbParameter dbParameter, DataTable tableValue)
+		{
+			dbParameter.Value = tableValue;
+			return dbParameter;
+		}
+
+		/// <summary>
+		/// Set Value of Table-Valued Parameter (SQL Server 2008+)
+		/// </summary>
+		/// <param name="dbParameter"></param>
+		/// <param name="readerValue"></param>
+		/// <returns></returns>
+		public static DbParameter SetValue(this DbParameter dbParameter, DbDataReader readerValue)
+		{
+			dbParameter.Value = readerValue;
+			return dbParameter;
+		}
+
+		/// <summary>
+		/// Set Value of Table-Valued Parameter (SQL Server 2008+) or Associative Array Parameter (Oracle)
+		/// </summary>
+		/// <param name="dbParameter"></param>
+		/// <param name="sqlDataRecords"></param>
+		/// <returns></returns>
+		public static DbParameter SetValue<T>(this DbParameter dbParameter, IEnumerable<T> enumerableData)
+		{
+			if (enumerableData == null || enumerableData.GetType().IsArray || typeof(SqlDataRecord).IsAssignableFrom(typeof(T)))
+				dbParameter.Value = enumerableData;
+			else
+				dbParameter.Value = enumerableData.ToArray();
+
+			return dbParameter;
+		}
+
+		/// <summary>
+		/// Set Value of Associative Array Parameter (Oracle)
+		/// </summary>
+		/// <param name="dbParameter"></param>
+		/// <param name="associativeArray"></param>
+		/// <returns></returns>
+		public static DbParameter SetValue(this DbParameter dbParameter, IConvertible[] associativeArray)
+		{
+			dbParameter.Value = associativeArray;
+			return dbParameter;
+		}
+
+		#endregion
 
 		public static DbParameter SetPrecision(this DbParameter dbParameter, byte nPrecision)
 		{
