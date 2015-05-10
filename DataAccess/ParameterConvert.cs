@@ -4,10 +4,13 @@ using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
-	public static class ParameterConvert
+	internal static class ParameterConvert
 	{
 		public static DataTable ToDataTable(this IEnumerable<IDictionary<string, object>> dynObjects)
 		{
+			if (dynObjects == null)
+				return null;
+
 			DataTable dataTable = PrepareDataColumns(dynObjects);
 
 			dataTable.BeginLoadData();
