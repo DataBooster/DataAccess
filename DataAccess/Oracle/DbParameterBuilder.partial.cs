@@ -1,4 +1,5 @@
 ﻿#if ORACLE
+using System;
 #if DATADIRECT
 using DDTek.Oracle;
 #elif ODP_NET	// ODP.NET
@@ -11,6 +12,12 @@ namespace DbParallel.DataAccess
 {
 	partial class DbParameterBuilder
 	{
+		/// <summary>
+		/// Add an Associative Array Parameter (Oracle)
+		/// </summary>
+		/// <param name="parameterName">The name of the parameter</param>
+		/// <param name="oraType">The OracleDbType of the parameter</param>
+		/// <returns>An OracleParameter object</returns>
 		public OracleParameter AddAssociativeArray(string parameterName, OracleDbType oraType)
 		{
 			OracleCommand oraCommand = _DbCommand as OracleCommand;
@@ -24,6 +31,28 @@ namespace DbParallel.DataAccess
 			return parameter;
 		}
 
+		/// <summary>
+		/// Add an Associative Array Parameter (Oracle) with an Array value
+		/// </summary>
+		/// <typeparam name="T">A type implements IConvertible</typeparam>
+		/// <param name="parameterName">The name of the parameter</param>
+		/// <param name="oraType">The OracleDbType of the parameter</param>
+		/// <param name="associativeArray">An Array value</param>
+		/// <returns>An OracleParameter object</returns>
+		public OracleParameter AddAssociativeArray<T>(string parameterName, OracleDbType oraType, T[] associativeArray) where T : IConvertible
+		{
+			OracleParameter oracleParameter = AddAssociativeArray(parameterName, oraType);
+			oracleParameter.Value = associativeArray;
+
+			return oracleParameter;
+		}
+
+		/// <summary>
+		/// <para>Add a PL/SQL REF CURSOR (SYS_REFCURSOR) Parameter (Oracle).</para>
+		/// <para>Notes: The ParameterDirection defaults to Output.</para>
+		/// </summary>
+		/// <param name="parameterName">The name of the parameter</param>
+		/// <returns>An OracleParameter object</returns>
 		public OracleParameter AddRefCursor(string parameterName)
 		{
 			OracleParameter oraParam = AddOutput(parameterName) as OracleParameter;
