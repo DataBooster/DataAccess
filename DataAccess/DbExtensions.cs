@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Data;
 using System.Data.Linq;
 using System.Data.Common;
@@ -10,6 +9,7 @@ namespace DbParallel.DataAccess
 {
 	public static partial class DbExtensions
 	{
+		#region Type helper
 		internal static bool IsNullable(this Type type)
 		{
 			return (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
@@ -30,6 +30,7 @@ namespace DbParallel.DataAccess
 				return true;
 			return false;
 		}
+		#endregion
 
 		private static T TryConvert<T>(object dbValue)
 		{
@@ -157,9 +158,16 @@ namespace DbParallel.DataAccess
 		}
 
 		#region Set Parameter Value overloads
+
+		/// <summary>
+		/// Set Value of Simple Parameter
+		/// </summary>
+		/// <param name="dbParameter"></param>
+		/// <param name="simpleValue"></param>
+		/// <returns></returns>
 		public static DbParameter SetValue(this DbParameter dbParameter, IConvertible simpleValue)
 		{
-			dbParameter.Value = (simpleValue == null) ? DBNull.Value : simpleValue;
+			dbParameter.Value = simpleValue.AsParameterValue();
 			return dbParameter;
 		}
 
@@ -171,7 +179,7 @@ namespace DbParallel.DataAccess
 		/// <returns></returns>
 		public static DbParameter SetValue<T>(this DbParameter dbParameter, T[] associativeArray) where T : IConvertible
 		{
-			dbParameter.Value = associativeArray;
+			dbParameter.Value = associativeArray.AsParameterValue();
 			return dbParameter;
 		}
 
@@ -183,7 +191,7 @@ namespace DbParallel.DataAccess
 		/// <returns></returns>
 		public static DbParameter SetValue(this DbParameter dbParameter, DataTable tableValue)
 		{
-			dbParameter.Value = tableValue;
+			dbParameter.Value = tableValue.AsParameterValue();
 			return dbParameter;
 		}
 
@@ -195,7 +203,7 @@ namespace DbParallel.DataAccess
 		/// <returns></returns>
 		public static DbParameter SetValue(this DbParameter dbParameter, DbDataReader readerValue)
 		{
-			dbParameter.Value = readerValue;
+			dbParameter.Value = readerValue.AsParameterValue();
 			return dbParameter;
 		}
 
@@ -208,29 +216,10 @@ namespace DbParallel.DataAccess
 		/// <returns></returns>
 		public static DbParameter SetValue<T>(this DbParameter dbParameter, IEnumerable<T> enumerableData)
 		{
-			if (enumerableData == null)
-				dbParameter.Value = null;
-			else
-			{
-				Type t = typeof(T);
-
-				if (typeof(IConvertible).IsAssignableFrom(t))						// Oracle Associative Array Parameter
-					dbParameter.Value = enumerableData.ToArray();
-				else if (typeof(IDictionary<string, object>).IsAssignableFrom(t))	// Table-Valued Parameter (SQL Server 2008+)
-				{
-					var dynObjects = enumerableData as IEnumerable<IDictionary<string, object>>;
-
-					if (dynObjects == null)
-						dynObjects = enumerableData.OfType<IDictionary<string, object>>();
-
-					dbParameter.Value = ParameterConvert.ToDataTable(dynObjects);
-				}
-				else
-					dbParameter.Value = enumerableData;
-			}
-
+			dbParameter.Value = enumerableData.AsParameterValue();
 			return dbParameter;
 		}
+
 		#endregion
 
 		public static DbParameter SetPrecision(this DbParameter dbParameter, byte nPrecision)

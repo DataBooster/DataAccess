@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Linq;
 using System.ComponentModel;
 using System.Collections.Generic;
 
@@ -11,24 +10,12 @@ namespace DbParallel.DataAccess
 		public string CommandText { get; set; }
 		public CommandType CommandType { get; set; }
 		public int CommandTimeout { get; set; }
-		public IDictionary<string, IConvertible> InputParameters { get; set; }
+		public IDictionary<string, object> InputParameters { get; set; }
 
 		public StoredProcedureRequest()
 		{
 			CommandType = CommandType.StoredProcedure;
 			CommandTimeout = 0;
-		}
-
-		public StoredProcedureRequest(string sp, IDictionary<string, IConvertible> parameters)
-			: this()
-		{
-			Init(sp, parameters);
-		}
-
-		private void Init(string sp, IDictionary<string, IConvertible> parameters)
-		{
-			CommandText = sp.Trim();
-			InputParameters = parameters;
 		}
 
 		public StoredProcedureRequest(string sp, IDictionary<string, object> parameters = null)
@@ -40,16 +27,13 @@ namespace DbParallel.DataAccess
 		private void Init(string sp, IDictionary<string, object> parameters)
 		{
 			CommandText = sp.Trim();
-
-			if (parameters != null)
-				InputParameters = parameters.ToDictionary(p => p.Key,
-					p => (p.Value == null) ? DBNull.Value : p.Value as IConvertible);
+			InputParameters = parameters;
 		}
 
 		public StoredProcedureRequest(string sp, object anonymousTypeInstanceAsParameters)
 			: this()
 		{
-			IDictionary<string, IConvertible> inputParameters = anonymousTypeInstanceAsParameters as IDictionary<string, IConvertible>;
+			IDictionary<string, object> inputParameters = anonymousTypeInstanceAsParameters as IDictionary<string, object>;
 
 			if (inputParameters != null)
 			{
@@ -71,14 +55,10 @@ namespace DbParallel.DataAccess
 				return;
 
 			PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(anonymousTypeInstanceAsParameters);
-			InputParameters = new Dictionary<string, IConvertible>(properties.Count, StringComparer.OrdinalIgnoreCase);
-			object oValue;
+			InputParameters = new Dictionary<string, object>(properties.Count, StringComparer.OrdinalIgnoreCase);
 
 			foreach (PropertyDescriptor prop in properties)
-			{
-				oValue = prop.GetValue(anonymousTypeInstanceAsParameters);
-				InputParameters.Add(prop.Name, (oValue == null) ? DBNull.Value : oValue as IConvertible);
-			}
+				InputParameters.Add(prop.Name, prop.GetValue(anonymousTypeInstanceAsParameters));
 		}
 
 		object ICloneable.Clone()
@@ -90,7 +70,7 @@ namespace DbParallel.DataAccess
 			cloneRequest.CommandTimeout = this.CommandTimeout;
 
 			if (this.InputParameters != null)
-				cloneRequest.InputParameters = new Dictionary<string, IConvertible>(this.InputParameters, StringComparer.OrdinalIgnoreCase);
+				cloneRequest.InputParameters = new Dictionary<string, object>(this.InputParameters, StringComparer.OrdinalIgnoreCase);
 
 			return cloneRequest;
 		}
