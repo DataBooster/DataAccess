@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Dynamic;
 
 namespace DbParallel.DataAccess
 {
 	public class StoredProcedureResponse
 	{
-		public List<List<BindableDynamicObject>> ResultSets { get; set; }
+		public IList<IList<BindableDynamicObject>> ResultSets { get; set; }
 		public BindableDynamicObject OutputParameters { get; set; }
 		public object ReturnValue { get; set; }
 
 		public StoredProcedureResponse()
 		{
-			ResultSets = new List<List<BindableDynamicObject>>();
+			ResultSets = new List<IList<BindableDynamicObject>>();
 		}
 	}
 }
