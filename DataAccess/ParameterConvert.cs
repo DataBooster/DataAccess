@@ -6,7 +6,7 @@ namespace DbParallel.DataAccess
 {
 	internal static class ParameterConvert
 	{
-		public static DataTable ToDataTable(this IEnumerable<IDictionary<string, object>> dynObjects)
+		public static DataTable ToDataTable<T>(this IEnumerable<T> dynObjects) where T : IDictionary<string, object>
 		{
 			if (dynObjects == null)
 				return null;
@@ -20,7 +20,7 @@ namespace DbParallel.DataAccess
 			return dataTable;
 		}
 
-		private static DataTable PrepareDataColumns(IEnumerable<IDictionary<string, object>> dynObjects)
+		private static DataTable PrepareDataColumns<T>(IEnumerable<T> dynObjects) where T : IDictionary<string, object>
 		{
 			DataTable dataTable = new DataTable();
 			DataColumnCollection tableColumns = dataTable.Columns;
@@ -57,7 +57,7 @@ namespace DbParallel.DataAccess
 			return dataTable;
 		}
 
-		private static void LoadDataRows(DataTable dataTable, IEnumerable<IDictionary<string, object>> dynObjects)
+		private static void LoadDataRows<T>(DataTable dataTable, IEnumerable<T> dynObjects) where T : IDictionary<string, object>
 		{
 			DataRow row;
 
@@ -71,7 +71,6 @@ namespace DbParallel.DataAccess
 				dataTable.Rows.Add(row);
 			}
 		}
-
 	}
 }
 

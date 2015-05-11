@@ -5,7 +5,6 @@ using System.Data.Linq;
 using System.Data.Common;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.SqlServer.Server;
 
 namespace DbParallel.DataAccess
 {
@@ -165,14 +164,14 @@ namespace DbParallel.DataAccess
 		}
 
 		/// <summary>
-		/// Set Value of Table-Valued Parameter (SQL Server 2008+)
+		/// Set Value of Associative Array Parameter (Oracle)
 		/// </summary>
 		/// <param name="dbParameter"></param>
-		/// <param name="dynObjects"></param>
+		/// <param name="associativeArray"></param>
 		/// <returns></returns>
-		public static DbParameter SetValue(this DbParameter dbParameter, IEnumerable<IDictionary<string, object>> dynObjects)
+		public static DbParameter SetValue<T>(this DbParameter dbParameter, T[] associativeArray) where T : IConvertible
 		{
-			dbParameter.Value = ParameterConvert.ToDataTable(dynObjects);
+			dbParameter.Value = associativeArray;
 			return dbParameter;
 		}
 
@@ -203,31 +202,35 @@ namespace DbParallel.DataAccess
 		/// <summary>
 		/// Set Value of Table-Valued Parameter (SQL Server 2008+) or Associative Array Parameter (Oracle)
 		/// </summary>
+		/// <typeparam name="T"></typeparam>
 		/// <param name="dbParameter"></param>
-		/// <param name="sqlDataRecords"></param>
+		/// <param name="enumerableData"></param>
 		/// <returns></returns>
 		public static DbParameter SetValue<T>(this DbParameter dbParameter, IEnumerable<T> enumerableData)
 		{
-			if (enumerableData == null || enumerableData.GetType().IsArray || typeof(SqlDataRecord).IsAssignableFrom(typeof(T)))
-				dbParameter.Value = enumerableData;
+			if (enumerableData == null)
+				dbParameter.Value = null;
 			else
-				dbParameter.Value = enumerableData.ToArray();
+			{
+				Type t = typeof(T);
+
+				if (typeof(IConvertible).IsAssignableFrom(t))						// Oracle Associative Array Parameter
+					dbParameter.Value = enumerableData.ToArray();
+				else if (typeof(IDictionary<string, object>).IsAssignableFrom(t))	// Table-Valued Parameter (SQL Server 2008+)
+				{
+					var dynObjects = enumerableData as IEnumerable<IDictionary<string, object>>;
+
+					if (dynObjects == null)
+						dynObjects = enumerableData.OfType<IDictionary<string, object>>();
+
+					dbParameter.Value = ParameterConvert.ToDataTable(dynObjects);
+				}
+				else
+					dbParameter.Value = enumerableData;
+			}
 
 			return dbParameter;
 		}
-
-		/// <summary>
-		/// Set Value of Associative Array Parameter (Oracle)
-		/// </summary>
-		/// <param name="dbParameter"></param>
-		/// <param name="associativeArray"></param>
-		/// <returns></returns>
-		public static DbParameter SetValue(this DbParameter dbParameter, IConvertible[] associativeArray)
-		{
-			dbParameter.Value = associativeArray;
-			return dbParameter;
-		}
-
 		#endregion
 
 		public static DbParameter SetPrecision(this DbParameter dbParameter, byte nPrecision)
