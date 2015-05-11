@@ -41,14 +41,6 @@ namespace DbParallel.DataAccess
 				return;
 			}
 
-			IDictionary<string, object> parameters = anonymousTypeInstanceAsParameters as IDictionary<string, object>;
-
-			if (parameters != null)
-			{
-				Init(sp, parameters);
-				return;
-			}
-
 			CommandText = sp.Trim();
 
 			if (anonymousTypeInstanceAsParameters == null)
