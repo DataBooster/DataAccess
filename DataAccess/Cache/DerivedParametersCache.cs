@@ -105,7 +105,7 @@ namespace DbParallel.DataAccess
 			return RemoveCache(dbConnection.GetConnectionDataSource(), storedProcedures);
 		}
 
-		static internal bool DeriveParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters, bool refresh)
+		static internal bool DeriveParameters(DbCommand dbCommand, IDictionary<string, object> explicitParameters, bool refresh)
 		{
 			if (dbCommand == null)
 				throw new ArgumentNullException("dbCommand");
@@ -141,7 +141,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		static private void TransferParameters(DbCommand dbCommand, IDictionary<string, IConvertible> explicitParameters)
+		static private void TransferParameters(DbCommand dbCommand, IDictionary<string, object> explicitParameters)
 		{
 			if (explicitParameters == null)
 				return;
@@ -170,11 +170,11 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		static private void TransferParameters(DbCommand dbCommand, DbParameterCollection derivedParameters, IDictionary<string, IConvertible> explicitParameters)
+		static private void TransferParameters(DbCommand dbCommand, DbParameterCollection derivedParameters, IDictionary<string, object> explicitParameters)
 		{
-			Dictionary<string, IConvertible> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
+			Dictionary<string, object> specifiedParameters = dbCommand.Parameters.OfType<DbParameter>()
 				.Where(p => !string.IsNullOrEmpty(p.ParameterName) && p.ParameterName.TrimParameterPrefix().Length > 0)
-				.ToDictionary(p => p.ParameterName.TrimParameterPrefix(), v => v.Value as IConvertible, StringComparer.OrdinalIgnoreCase);
+				.ToDictionary(p => p.ParameterName.TrimParameterPrefix(), v => v.Value, StringComparer.OrdinalIgnoreCase);
 
 			if (explicitParameters != null)
 			{
@@ -190,7 +190,7 @@ namespace DbParallel.DataAccess
 			}
 
 			DbParameter dbParameter;
-			IConvertible specifiedParameterValue;
+			object specifiedParameterValue;
 
 			dbCommand.Parameters.Clear();
 

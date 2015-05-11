@@ -100,7 +100,7 @@ namespace DbParallel.DataAccess
 			return parameter;
 		}
 
-		internal bool Derive(IDictionary<string, IConvertible> explicitParameters = null, bool refresh = false)
+		internal bool Derive(IDictionary<string, object> explicitParameters = null, bool refresh = false)
 		{
 			return DerivedParametersCache.DeriveParameters(_DbCommand, explicitParameters, refresh);
 		}
