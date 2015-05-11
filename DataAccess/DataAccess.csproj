@@ -91,6 +91,7 @@
     <Compile Include="SqlServer\Booster\SqlRocket.cs" />
     <Compile Include="SqlServer\DbAccess.partial.cs" />
     <Compile Include="SqlServer\DbExtensions.partial.cs" />
+    <Compile Include="SqlServer\DbParameterBuilder.partial.cs" />
     <Compile Include="SqlServer\DerivedParametersCache.partial.cs" />
   </ItemGroup>
   <ItemGroup />
