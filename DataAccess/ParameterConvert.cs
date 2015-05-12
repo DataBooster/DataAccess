@@ -11,6 +11,8 @@ namespace DbParallel.DataAccess
 {
 	public static class ParameterConvert
 	{
+		#region Convert IEnumerable<IDictionary<string, object>> to DataTable
+
 		/// <summary>
 		/// Creates a DataTable from an IEnumerable&lt;IDictionary&lt;string, object&gt;&gt; (collection of dynamic objects)
 		/// </summary>
@@ -83,6 +85,10 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		#endregion
+
+		#region Convert IEnumerable<object> (anonymous objects) to DataTable
+
 		/// <summary>
 		/// Creates a DataTable from an IEnumerable&lt;anonymousObjects&gt; (collection of anonymous or named type instances)
 		/// </summary>
@@ -130,6 +136,8 @@ namespace DbParallel.DataAccess
 
 			return dataTable;
 		}
+
+		#endregion
 
 		#region AsParameterValue overloads
 
@@ -194,10 +202,15 @@ namespace DbParallel.DataAccess
 					return enumerableData;
 				else if (typeof(IDictionary<string, object>).IsAssignableFrom(t))	// Table-Valued Parameter (SQL Server 2008+) - IDictionary<string, object>
 					return enumerableData.IEnumerableOfType<IDictionary<string, object>>().ToDataTable();
-				else if (TypeDescriptor.GetProperties(t).Count > 0)					// Table-Valued Parameter (SQL Server 2008+) - Anonymous or named type instances
-					return enumerableData.IEnumerableOfType<object>().ToDataTable();
-				else
-					return enumerableData;
+				else																// Table-Valued Parameter (SQL Server 2008+) - Anonymous or named type instances
+				{
+					DataTable tvp = enumerableData.IEnumerableOfType<object>().ToDataTable();
+
+					if (tvp.Columns.Count > 0)
+						return tvp;
+					else
+						return enumerableData;
+				}
 			}
 		}
 
