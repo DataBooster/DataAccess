@@ -146,7 +146,7 @@ namespace DbParallel.DataAccess
 					if (dynObjects == null)
 						dynObjects = enumerableData.OfType<IDictionary<string, object>>();
 
-					return ParameterConvert.ToDataTable(dynObjects);
+					return dynObjects.ToDataTable();
 				}
 				else
 					return enumerableData;
