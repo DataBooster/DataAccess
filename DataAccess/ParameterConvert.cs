@@ -2,7 +2,10 @@
 using System.Linq;
 using System.Data;
 using System.Data.Common;
+using System.Collections;
+using System.ComponentModel;
 using System.Collections.Generic;
+using Microsoft.SqlServer.Server;
 
 namespace DbParallel.DataAccess
 {
@@ -13,7 +16,7 @@ namespace DbParallel.DataAccess
 		/// </summary>
 		/// <typeparam name="T">Dynamic object type (IDictionary&lt;string, object&gt;)</typeparam>
 		/// <param name="dynObjects">A collection of dynamic objects</param>
-		/// <returns>A DataTable that contains the data from the input dynamic object properties</returns>
+		/// <returns>A DataTable that contains the data from the input dynamic objects' properties</returns>
 		public static DataTable ToDataTable<T>(this IEnumerable<T> dynObjects) where T : IDictionary<string, object>
 		{
 			if (dynObjects == null)
@@ -80,6 +83,54 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		/// <summary>
+		/// Creates a DataTable from an IEnumerable&lt;anonymousObjects&gt; (collection of anonymous or named type instances)
+		/// </summary>
+		/// <param name="anonymousObjects">A collection of anonymous or named type instances</param>
+		/// <returns>A DataTable that contains the data from the input objects' properties</returns>
+		public static DataTable ToDataTable(this IEnumerable<object> anonymousObjects)
+		{
+			if (anonymousObjects == null)
+				return null;
+
+			DataTable dataTable = new DataTable();
+			PropertyDescriptorCollection properties = null;
+			int countColumns = 0;
+			DataRow row;
+			object cellValue;
+
+			dataTable.BeginLoadData();
+
+			foreach (object obj in anonymousObjects)
+			{
+				if (properties == null)
+				{
+					properties = TypeDescriptor.GetProperties(obj);
+					countColumns = properties.Count;
+
+					if (countColumns == 0)
+						break;
+
+					foreach (PropertyDescriptor prop in properties)
+						dataTable.Columns.Add(prop.Name, prop.PropertyType);
+				}
+
+				row = dataTable.NewRow();
+
+				for (int i = 0; i < countColumns; i++)
+				{
+					cellValue = properties[i].GetValue(obj);
+					row[i] = (cellValue == null) ? DBNull.Value : cellValue;
+				}
+
+				dataTable.Rows.Add(row);
+			}
+
+			dataTable.EndLoadData();
+
+			return dataTable;
+		}
+
 		#region AsParameterValue overloads
 
 		/// <summary>
@@ -139,18 +190,20 @@ namespace DbParallel.DataAccess
 
 				if (typeof(IConvertible).IsAssignableFrom(t))						// Oracle Associative Array Parameter
 					return enumerableData.ToArray();
-				else if (typeof(IDictionary<string, object>).IsAssignableFrom(t))	// Table-Valued Parameter (SQL Server 2008+)
-				{
-					var dynObjects = enumerableData as IEnumerable<IDictionary<string, object>>;
-
-					if (dynObjects == null)
-						dynObjects = enumerableData.OfType<IDictionary<string, object>>();
-
-					return dynObjects.ToDataTable();
-				}
+				else if (typeof(SqlDataRecord).IsAssignableFrom(t))					// Table-Valued Parameter (SQL Server 2008+) - SqlDataRecord
+					return enumerableData;
+				else if (typeof(IDictionary<string, object>).IsAssignableFrom(t))	// Table-Valued Parameter (SQL Server 2008+) - IDictionary<string, object>
+					return enumerableData.IEnumerableOfType<IDictionary<string, object>>().ToDataTable();
+				else if (TypeDescriptor.GetProperties(t).Count > 0)					// Table-Valued Parameter (SQL Server 2008+) - Anonymous or named type instances
+					return enumerableData.IEnumerableOfType<object>().ToDataTable();
 				else
 					return enumerableData;
 			}
+		}
+
+		private static IEnumerable<T> IEnumerableOfType<T>(this IEnumerable source)
+		{
+			return (source as IEnumerable<T>) ?? source.OfType<T>();
 		}
 
 		#endregion
