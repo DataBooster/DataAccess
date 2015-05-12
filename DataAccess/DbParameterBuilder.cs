@@ -57,11 +57,11 @@ namespace DbParallel.DataAccess
 			return parameter;
 		}
 
-		public DbParameter Add(string parameterName, IConvertible oValue, int nSize = 0)
+		public DbParameter Add(string parameterName, IConvertible simpleValue, int nSize = 0)
 		{
 			DbParameter parameter = _DbCommand.CreateParameter();
 			parameter.ParameterName = parameterName;
-			parameter.Value = (oValue == null) ? DBNull.Value : oValue;
+			parameter.Value = simpleValue ?? DBNull.Value;
 
 			if (nSize > 0)
 				parameter.Size = nSize;
