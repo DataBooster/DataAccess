@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.ComponentModel;
 using System.Collections.Generic;
 
@@ -22,6 +23,13 @@ namespace DbParallel.DataAccess
 			: this()
 		{
 			Init(sp, parameters);
+		}
+
+		[Obsolete("This constructor is deprecated and will be removed in the next major release. Use StoredProcedureRequest(string sp, IDictionary<string, object> parameters) instead.", false)]
+		public StoredProcedureRequest(string sp, IDictionary<string, IConvertible> parameters)
+			: this()
+		{
+			Init(sp, parameters.ToDictionary(p => p.Key, p => (p.Value ?? DBNull.Value) as object, StringComparer.OrdinalIgnoreCase));
 		}
 
 		private void Init(string sp, IDictionary<string, object> parameters)
