@@ -87,7 +87,7 @@ namespace DbParallel.DataAccess
 
 		#endregion
 
-		#region Convert IEnumerable<object> (anonymous objects) to DataTable
+		#region Convert IEnumerable<object> (anonymous type instances) to DataTable
 
 		/// <summary>
 		/// Creates a DataTable from an IEnumerable&lt;anonymousObjects&gt; (collection of anonymous or named type instances)

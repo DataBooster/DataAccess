@@ -40,7 +40,7 @@ namespace DbParallel.DataAccess
 		{
 			SqlParameter sqlParameter = AddTableValue(parameterName);
 
-			sqlParameter.Value = dataTable;
+			sqlParameter.Value = dataTable.AsParameterValue();
 
 			return sqlParameter;
 		}
@@ -55,22 +55,22 @@ namespace DbParallel.DataAccess
 		{
 			SqlParameter sqlParameter = AddTableValue(parameterName);
 
-			sqlParameter.Value = dataReader;
+			sqlParameter.Value = dataReader.AsParameterValue();
 
 			return sqlParameter;
 		}
 
 		/// <summary>
-		/// Add a Table-Valued Parameter (SQL Server 2008+) with an IEnumerable&lt;SqlDataRecord&gt; value
+		/// Add a Table-Valued Parameter (SQL Server 2008+) with a collection value
 		/// </summary>
 		/// <param name="parameterName">The name of the parameter</param>
-		/// <param name="sqlDataRecords">An object derived from IEnumerable&lt;SqlDataRecord&gt; to stream rows of data to the table-valued parameter</param>
+		/// <param name="records">An object derived from IEnumerable&lt;SqlDataRecord&gt;, IEnumerable&lt;IDictionary&lt;string, object&gt;&gt; or IEnumerable&lt;object&gt; (a collection of anonymous or named type instances) </param>
 		/// <returns>A SqlParameter object</returns>
-		public SqlParameter AddTableValue<T>(string parameterName, IEnumerable<T> sqlDataRecords) where T : SqlDataRecord
+		public SqlParameter AddTableValue<T>(string parameterName, IEnumerable<T> records)
 		{
 			SqlParameter sqlParameter = AddTableValue(parameterName);
 
-			sqlParameter.Value = sqlDataRecords;
+			sqlParameter.Value = records.AsParameterValue();
 
 			return sqlParameter;
 		}

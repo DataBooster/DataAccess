@@ -29,7 +29,7 @@ namespace DbParallel.DataAccess
 		public StoredProcedureRequest(string sp, IDictionary<string, IConvertible> parameters)
 			: this()
 		{
-			Init(sp, parameters.ToDictionary(p => p.Key, p => (p.Value ?? DBNull.Value) as object, StringComparer.OrdinalIgnoreCase));
+			Init(sp, parameters.ToDictionary(p => p.Key, p => p.Value.AsParameterValue() as object, StringComparer.OrdinalIgnoreCase));
 		}
 
 		private void Init(string sp, IDictionary<string, object> parameters)

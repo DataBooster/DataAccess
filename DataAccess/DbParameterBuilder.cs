@@ -61,7 +61,7 @@ namespace DbParallel.DataAccess
 		{
 			DbParameter parameter = _DbCommand.CreateParameter();
 			parameter.ParameterName = parameterName;
-			parameter.Value = simpleValue ?? DBNull.Value;
+			parameter.Value = simpleValue.AsParameterValue();
 
 			if (nSize > 0)
 				parameter.Size = nSize;
