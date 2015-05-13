@@ -1,5 +1,6 @@
 ﻿#if ORACLE
 using System;
+using System.Collections.Generic;
 #if DATADIRECT
 using DDTek.Oracle;
 #elif ODP_NET	// ODP.NET
@@ -42,7 +43,25 @@ namespace DbParallel.DataAccess
 		public OracleParameter AddAssociativeArray<T>(string parameterName, OracleDbType oraType, T[] associativeArray) where T : IConvertible
 		{
 			OracleParameter oracleParameter = AddAssociativeArray(parameterName, oraType);
-			oracleParameter.Value = associativeArray;
+
+			oracleParameter.Value = associativeArray.AsParameterValue();
+
+			return oracleParameter;
+		}
+
+		/// <summary>
+		/// Add an Associative Array Parameter (Oracle) with an Array value
+		/// </summary>
+		/// <typeparam name="T">A type implements IConvertible</typeparam>
+		/// <param name="parameterName">The name of the parameter</param>
+		/// <param name="oraType">The OracleDbType of the parameter</param>
+		/// <param name="associativeArray">A collection of simple values (implements IConvertible)</param>
+		/// <returns>An OracleParameter object</returns>
+		public OracleParameter AddAssociativeArray<T>(string parameterName, OracleDbType oraType, IEnumerable<T> associativeArray) where T : IConvertible
+		{
+			OracleParameter oracleParameter = AddAssociativeArray(parameterName, oraType);
+
+			oracleParameter.Value = associativeArray.AsParameterValue();
 
 			return oracleParameter;
 		}

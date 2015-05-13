@@ -54,7 +54,7 @@ namespace DbParallel.DataAccess.Booster.Oracle
 			Debug.Assert(values.Length == _AssociativeArrayParameterIds.Length, "The number of input parameters does not match with Associative Array Parameters!");
 
 			for (int i = 0; i < _AssociativeArrayParameterIds.Length; i++)
-				_AssociativeArrayValues[i].SetValue(values[i] ?? DBNull.Value, _FillingCount);
+				_AssociativeArrayValues[i].SetValue(values[i].AsParameterValue(), _FillingCount);
 
 			return (++_FillingCount == _BulkSize);
 		}
