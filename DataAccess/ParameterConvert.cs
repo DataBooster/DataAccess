@@ -217,6 +217,8 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		#endregion
+
 		/// <summary>
 		/// Try cast an IEnumerable as the specified type; If not, filters the elements of an IEnumerable based on a specified type.
 		/// </summary>
@@ -228,7 +230,97 @@ namespace DbParallel.DataAccess
 			return (source as IEnumerable<T>) ?? source.OfType<T>();
 		}
 
-		#endregion
+		/// <summary>
+		/// <para>Normalize an object[] (promiscuous element numeric types) to a most compatible primitive type</para>
+		/// <para>For example, object[] {0, 10000L, 3.14, 0.618m} ==> decimal[] {0m, 10000m, 3.14m, 0.618m}</para>
+		/// </summary>
+		/// <param name="rawArray">A promiscuous types' numeric array</param>
+		/// <returns>A normalized new array if all elements are numeric, or just the rawArray itself if contains any non-numeric element.</returns>
+		public static Array NormalizeNumericArray(this object[] rawArray)
+		{
+			Type compatibleType = GetNumericElementType(rawArray);
+
+			if (compatibleType != null && compatibleType != typeof(object))
+			{
+				Array newArray = Array.CreateInstance(compatibleType, rawArray.Length);
+
+				for (int i = 0; i < rawArray.Length; i++)
+					newArray.SetValue(Convert.ChangeType(rawArray[i], compatibleType), i);
+
+				return newArray;
+			}
+
+			return rawArray;
+		}
+
+		private static Type GetNumericElementType(Array arrayValue)
+		{
+			int weight, maxWeight = 0;
+			Type mostCompatibleType = null;
+
+			foreach (object element in arrayValue)
+			{
+				weight = WeighNumericType(element);
+
+				if (weight < 0)		// Non-numeric
+					return null;
+
+				if (weight > maxWeight)
+				{
+					mostCompatibleType = element.GetType();
+					maxWeight = weight;
+				}
+			}
+
+			return mostCompatibleType;
+		}
+
+		private static int WeighNumericType(object numericObject)
+		{
+			if (numericObject == null || Convert.IsDBNull(numericObject))
+				return 0;
+
+			//	if (numericObject is bool)
+			//		return 1;
+
+			if (numericObject is sbyte)
+				return 2;
+
+			if (numericObject is byte)
+				return 3;
+
+			//	if (numericObject is char)
+			//		return 4;
+
+			if (numericObject is short)
+				return 5;
+
+			if (numericObject is ushort)
+				return 6;
+
+			if (numericObject is int)
+				return 7;
+
+			if (numericObject is uint)
+				return 8;
+
+			if (numericObject is long)
+				return 9;
+
+			if (numericObject is ulong)
+				return 10;
+
+			if (numericObject is float)
+				return 11;
+
+			if (numericObject is double)
+				return 12;
+
+			if (numericObject is decimal)
+				return 13;
+
+			return -1;
+		}
 	}
 }
 
