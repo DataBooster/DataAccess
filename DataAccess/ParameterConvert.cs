@@ -9,6 +9,9 @@ using Microsoft.SqlServer.Server;
 
 namespace DbParallel.DataAccess
 {
+	/// <summary>
+	/// For supporting Table-Valued Parameter (SQL Server 2008+) and Oracle Associative Array Parameter
+	/// </summary>
 	public static class ParameterConvert
 	{
 		#region Convert IEnumerable<IDictionary<string, object>> to DataTable
@@ -201,10 +204,10 @@ namespace DbParallel.DataAccess
 				else if (typeof(SqlDataRecord).IsAssignableFrom(t))					// Table-Valued Parameter (SQL Server 2008+) - SqlDataRecord
 					return enumerableData;
 				else if (typeof(IDictionary<string, object>).IsAssignableFrom(t))	// Table-Valued Parameter (SQL Server 2008+) - IDictionary<string, object>
-					return enumerableData.IEnumerableOfType<IDictionary<string, object>>().ToDataTable();
+					return enumerableData.AsOfType<IDictionary<string, object>>().ToDataTable();
 				else																// Table-Valued Parameter (SQL Server 2008+) - Anonymous or named type instances
 				{
-					DataTable tvp = enumerableData.IEnumerableOfType<object>().ToDataTable();
+					DataTable tvp = enumerableData.AsOfType<object>().ToDataTable();
 
 					if (tvp.Columns.Count > 0)
 						return tvp;
@@ -214,7 +217,13 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		private static IEnumerable<T> IEnumerableOfType<T>(this IEnumerable source)
+		/// <summary>
+		/// Try cast an IEnumerable as the specified type; If not, filters the elements of an IEnumerable based on a specified type.
+		/// </summary>
+		/// <typeparam name="T">The type to cast/filter the elements of source to</typeparam>
+		/// <param name="source">The IEnumerable that contains the elements to be cast to type T</param>
+		/// <returns>An IEnumerable&lt;T&gt; that contains each element of the source sequence cast/filter to the specified type.</returns>
+		public static IEnumerable<T> AsOfType<T>(this IEnumerable source)
 		{
 			return (source as IEnumerable<T>) ?? source.OfType<T>();
 		}
