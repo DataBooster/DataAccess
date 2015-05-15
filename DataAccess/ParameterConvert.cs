@@ -40,15 +40,23 @@ namespace DbParallel.DataAccess
 		{
 			DataTable dataTable = new DataTable();
 			DataColumnCollection tableColumns = dataTable.Columns;
-			HashSet<string> pendingColumns = new HashSet<string>();
+			Dictionary<string, int> pendingColumns = new Dictionary<string, int>();
+			int newWeight, oldWeight;
 
 			foreach (var dynObj in dynObjects)
 			{
 				foreach (var p in dynObj)
 				{
-					if (pendingColumns.Contains(p.Key))
+					if (pendingColumns.TryGetValue(p.Key, out oldWeight))
 					{
-						if (p.Value != null && !Convert.IsDBNull(p.Value))
+						newWeight = WeighNumericType(p.Value);
+
+						if (newWeight > oldWeight)	// More compatible numeric type
+						{
+							tableColumns[p.Key].DataType = p.Value.GetType().GetNonNullableType();
+							pendingColumns[p.Key] = newWeight;
+						}
+						else if (newWeight < 0)		// Non-numeric
 						{
 							tableColumns[p.Key].DataType = p.Value.GetType().GetNonNullableType();
 							pendingColumns.Remove(p.Key);
@@ -56,13 +64,15 @@ namespace DbParallel.DataAccess
 					}
 					else if (!tableColumns.Contains(p.Key))
 					{
-						if (p.Value == null || Convert.IsDBNull(p.Value))
-						{
+						newWeight = WeighNumericType(p.Value);
+
+						if (newWeight == 0)			// Null
 							tableColumns.Add(p.Key);
-							pendingColumns.Add(p.Key);
-						}
 						else
 							tableColumns.Add(p.Key, p.Value.GetType().GetNonNullableType());
+
+						if (newWeight >= 0)			// Null or numeric, need to be determined by more iteration
+							pendingColumns.Add(p.Key, newWeight);
 					}
 				}
 
@@ -262,10 +272,10 @@ namespace DbParallel.DataAccess
 			{
 				weight = WeighNumericType(element);
 
-				if (weight < 0)		// Non-numeric
+				if (weight < 0)			// Non-numeric
 					return null;
 
-				if (weight > maxWeight)
+				if (weight > maxWeight)	// More compatible numeric type
 				{
 					mostCompatibleType = element.GetType();
 					maxWeight = weight;
@@ -277,49 +287,29 @@ namespace DbParallel.DataAccess
 
 		private static int WeighNumericType(object numericObject)
 		{
-			if (numericObject == null || Convert.IsDBNull(numericObject))
-				return 0;
+			return (numericObject == null) ? 0 : WeighNumericType(numericObject.GetType());
+		}
 
-			//	if (numericObject is bool)
-			//		return 1;
-
-			if (numericObject is sbyte)
-				return 2;
-
-			if (numericObject is byte)
-				return 3;
-
-			//	if (numericObject is char)
-			//		return 4;
-
-			if (numericObject is short)
-				return 5;
-
-			if (numericObject is ushort)
-				return 6;
-
-			if (numericObject is int)
-				return 7;
-
-			if (numericObject is uint)
-				return 8;
-
-			if (numericObject is long)
-				return 9;
-
-			if (numericObject is ulong)
-				return 10;
-
-			if (numericObject is float)
-				return 11;
-
-			if (numericObject is double)
-				return 12;
-
-			if (numericObject is decimal)
-				return 13;
-
-			return -1;
+		private static int WeighNumericType(Type numericType)
+		{
+			switch (Type.GetTypeCode(numericType))
+			{
+				case TypeCode.DBNull: return 0;
+				//case TypeCode.Boolean: return 1;
+				case TypeCode.SByte: return 2;
+				case TypeCode.Byte: return 3;
+				//case TypeCode.Char: return 4;
+				case TypeCode.Int16: return 5;
+				case TypeCode.UInt16: return 6;
+				case TypeCode.Int32: return 7;
+				case TypeCode.UInt32: return 8;
+				case TypeCode.Int64: return 9;
+				case TypeCode.UInt64: return 10;
+				case TypeCode.Single: return 11;
+				case TypeCode.Double: return 12;
+				case TypeCode.Decimal: return 13;
+				default: return -1;
+			}
 		}
 	}
 }
