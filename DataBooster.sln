@@ -107,8 +107,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", 
 		NuGet\Oracle\ODP.NET.Managed\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\ODP.NET.Managed\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "packages", "packages", "{A5FE571E-22FD-4AFA-B061-A14EA9E5DECE}"
-EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 2
@@ -144,6 +142,5 @@ Global
 		{2B813FDC-3A12-4A85-8DA4-211704F8EEE3} = {FED4E547-7355-46F3-8231-8B12822CDF68}
 		{59B02269-C7CB-461A-8DC4-9FB2C127551F} = {77AE95F8-47AF-4900-830C-602A6F852173}
 		{7867C9DB-860B-43F1-81DF-24E2A9BDE700} = {06929EA1-5BE3-4C90-A0A8-AA7A70E85740}
-		{A5FE571E-22FD-4AFA-B061-A14EA9E5DECE} = {3C05CBB9-43F8-49D8-B416-8FA49AB41F6D}
 	EndGlobalSection
 EndGlobal
