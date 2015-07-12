@@ -17,7 +17,9 @@ Four setting items have been added into your config file:
 	<oracle.manageddataaccess.client>
 		<version number="*">
 			<settings>
-				<setting name="TNS_ADMIN" value="C:\oracle\product\11.2.0\client_1\network\admin"/>
+				<!-- Set this path if you are using TNS aliases as connection strings -->
+				<setting name="TNS_ADMIN" value="(ORACLE_HOME)\network\admin"/>	<!-- E.g. "c:\oracle\product\11.2.0\client_1\network\admin" -->
+				<!-- Instead you can use "SERVER_NAME:PORT/SERVICE_NAME" as your data source -->
 			</settings>
 		</version>
 	</oracle.manageddataaccess.client>
