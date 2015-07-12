@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{0BD1299C-6AE3-407C-844D-F69B90037846}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{3FEA62E2-7223-4577-809D-D5561B6299C8}"
@@ -42,7 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlServer", "SqlServer", "{
 	ProjectSection(SolutionItems) = preProject
 		NuGet\SqlServer\DataAccess.nuspec = NuGet\SqlServer\DataAccess.nuspec
 		NuGet\SqlServer\Readme.txt = NuGet\SqlServer\Readme.txt
-		NuGet\SqlServer\web.config.transform = NuGet\SqlServer\web.config.transform
+		NuGet\SqlServer\Web.config.install.xdt = NuGet\SqlServer\Web.config.install.xdt
+		NuGet\SqlServer\Web.config.uninstall.xdt = NuGet\SqlServer\Web.config.uninstall.xdt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{F6C0BDD7-66FC-4267-A168-1977E56DFA24}"
@@ -59,21 +62,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataDirect", "DataDirect", 
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Oracle\DataDirect\DataAccess.nuspec = NuGet\Oracle\DataDirect\DataAccess.nuspec
 		NuGet\Oracle\DataDirect\Readme.txt = NuGet\Oracle\DataDirect\Readme.txt
-		NuGet\Oracle\DataDirect\web.config.transform = NuGet\Oracle\DataDirect\web.config.transform
+		NuGet\Oracle\DataDirect\Web.config.install.xdt = NuGet\Oracle\DataDirect\Web.config.install.xdt
+		NuGet\Oracle\DataDirect\Web.config.uninstall.xdt = NuGet\Oracle\DataDirect\Web.config.uninstall.xdt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODP.NET", "ODP.NET", "{77AE95F8-47AF-4900-830C-602A6F852173}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Oracle\ODP.NET\DataAccess.nuspec = NuGet\Oracle\ODP.NET\DataAccess.nuspec
 		NuGet\Oracle\ODP.NET\Readme.txt = NuGet\Oracle\ODP.NET\Readme.txt
-		NuGet\Oracle\ODP.NET\web.config.transform = NuGet\Oracle\ODP.NET\web.config.transform
+		NuGet\Oracle\ODP.NET\Web.config.install.xdt = NuGet\Oracle\ODP.NET\Web.config.install.xdt
+		NuGet\Oracle\ODP.NET\Web.config.uninstall.xdt = NuGet\Oracle\ODP.NET\Web.config.uninstall.xdt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODP.NET.Managed", "ODP.NET.Managed", "{06929EA1-5BE3-4C90-A0A8-AA7A70E85740}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Oracle\ODP.NET.Managed\DataAccess.nuspec = NuGet\Oracle\ODP.NET.Managed\DataAccess.nuspec
 		NuGet\Oracle\ODP.NET.Managed\Readme.txt = NuGet\Oracle\ODP.NET.Managed\Readme.txt
-		NuGet\Oracle\ODP.NET.Managed\web.config.transform = NuGet\Oracle\ODP.NET.Managed\web.config.transform
+		NuGet\Oracle\ODP.NET.Managed\Web.config.install.xdt = NuGet\Oracle\ODP.NET.Managed\Web.config.install.xdt
+		NuGet\Oracle\ODP.NET.Managed\Web.config.uninstall.xdt = NuGet\Oracle\ODP.NET.Managed\Web.config.uninstall.xdt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{2B813FDC-3A12-4A85-8DA4-211704F8EEE3}"
@@ -127,16 +133,16 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F2F76E08-6590-4F62-A2D3-A72F3A80A780} = {6678001D-3677-4C0C-963B-9B04AE215E8B}
-		{A5FE571E-22FD-4AFA-B061-A14EA9E5DECE} = {3C05CBB9-43F8-49D8-B416-8FA49AB41F6D}
 		{542A26CF-FB3C-4CA7-AF43-F654CEB3C15B} = {ABF94775-7C87-400A-A510-12263969BEDE}
 		{D821CA8D-036D-415B-90F5-11934F003945} = {ABF94775-7C87-400A-A510-12263969BEDE}
-		{7FE54846-FB3A-4B89-B643-0192B578B811} = {ABF94775-7C87-400A-A510-12263969BEDE}
 		{F6C0BDD7-66FC-4267-A168-1977E56DFA24} = {D821CA8D-036D-415B-90F5-11934F003945}
+		{7FE54846-FB3A-4B89-B643-0192B578B811} = {ABF94775-7C87-400A-A510-12263969BEDE}
 		{FED4E547-7355-46F3-8231-8B12822CDF68} = {7FE54846-FB3A-4B89-B643-0192B578B811}
 		{77AE95F8-47AF-4900-830C-602A6F852173} = {7FE54846-FB3A-4B89-B643-0192B578B811}
 		{06929EA1-5BE3-4C90-A0A8-AA7A70E85740} = {7FE54846-FB3A-4B89-B643-0192B578B811}
 		{2B813FDC-3A12-4A85-8DA4-211704F8EEE3} = {FED4E547-7355-46F3-8231-8B12822CDF68}
 		{59B02269-C7CB-461A-8DC4-9FB2C127551F} = {77AE95F8-47AF-4900-830C-602A6F852173}
 		{7867C9DB-860B-43F1-81DF-24E2A9BDE700} = {06929EA1-5BE3-4C90-A0A8-AA7A70E85740}
+		{A5FE571E-22FD-4AFA-B061-A14EA9E5DECE} = {3C05CBB9-43F8-49D8-B416-8FA49AB41F6D}
 	EndGlobalSection
 EndGlobal

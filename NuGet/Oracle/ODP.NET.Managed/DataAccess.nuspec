@@ -16,13 +16,12 @@
 		<frameworkAssemblies>
 			<frameworkAssembly assemblyName="System.Configuration" />
 		</frameworkAssemblies>
-		<dependencies>
-			<dependency id="Oracle.ManagedDataAccess"/>
-		</dependencies>
-		</metadata>
+	</metadata>
 	<files>
-		<file src="..\NuGet\Oracle\ODP.NET.Managed\web.config.transform" target="content" />
-		<file src="..\NuGet\Oracle\ODP.NET.Managed\web.config.transform" target="content\app.config.transform" />
+		<file src="..\NuGet\Oracle\ODP.NET.Managed\Web.config.install.xdt" target="content" />
+		<file src="..\NuGet\Oracle\ODP.NET.Managed\Web.config.install.xdt" target="content\App.config.install.xdt" />
+		<file src="..\NuGet\Oracle\ODP.NET.Managed\Web.config.uninstall.xdt" target="content" />
+		<file src="..\NuGet\Oracle\ODP.NET.Managed\Web.config.uninstall.xdt" target="content\App.config.uninstall.xdt" />
 		<file src="..\NuGet\Oracle\ODP.NET.Managed\Readme.txt" target="" />
 		<file src="..\NuGet\Oracle\ODP.NET.Managed\DataAccess\*.cs.pp" target="content\DataAccess" />
 	</files>
