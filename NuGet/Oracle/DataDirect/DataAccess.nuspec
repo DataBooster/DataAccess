@@ -19,8 +19,10 @@
 		</frameworkAssemblies>
 	</metadata>
 	<files>
-		<file src="..\NuGet\Oracle\DataDirect\web.config.transform" target="content" />
-		<file src="..\NuGet\Oracle\DataDirect\web.config.transform" target="content\app.config.transform" />
+		<file src="..\NuGet\Oracle\DataDirect\Web.config.install.xdt" target="content" />
+		<file src="..\NuGet\Oracle\DataDirect\Web.config.install.xdt" target="content\App.config.install.xdt" />
+		<file src="..\NuGet\Oracle\DataDirect\Web.config.uninstall.xdt" target="content" />
+		<file src="..\NuGet\Oracle\DataDirect\Web.config.uninstall.xdt" target="content\App.config.uninstall.xdt" />
 		<file src="..\NuGet\Oracle\DataDirect\Readme.txt" target="" />
 		<file src="..\NuGet\Oracle\DataDirect\DataAccess\*.cs.pp" target="content\DataAccess" />
 	</files>

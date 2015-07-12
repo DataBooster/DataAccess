@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+
+	<!-- If connectionStrings tag is absent -->
+	<connectionStrings xdt:Transform="InsertIfMissing">
+	</connectionStrings>
+
+	<!-- If connectionStrings tag is present, but entries are absent -->
+	<connectionStrings>
+		<add name="$rootnamespace$.MainConnection" providerName="Oracle.DataAccess.Client" connectionString="Data Source=SAMPLEDB;User Id=/" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name,providerName)"/>
+		<add name="$rootnamespace$.AuxConnection" providerName="System.Data.SqlClient" connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=SAMPLEDB;Integrated Security=SSPI" xdt:Transform="InsertIfMissing" xdt:Locator="Match(name)"/>
+	</connectionStrings>
+
+	<!-- If appSettings tag is absent -->
+	<appSettings xdt:Transform="InsertIfMissing">
+	</appSettings>
+
+	<!-- If appSettings tag is present, but $rootnamespace$.MainPackage entry is absent -->
+	<appSettings>
+		<add key="$rootnamespace$.MainPackage" value="SCHEMA.PACKAGE." xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)"/>
+	</appSettings>
+
+</configuration>

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DataBooster")]
-[assembly: AssemblyDescription("Less Code, Less Configuration, Less Time. DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing mass data to database. Visit http://databooster.codeplex.com")]
+[assembly: AssemblyDescription("DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing mass data to database. Visit http://databooster.codeplex.com")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Abel Cheng")]
 [assembly: AssemblyProduct("dbParallel Database Task Parallel Foundation")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.7.8.2")]
-[assembly: AssemblyFileVersion("1.7.8.2")]
+[assembly: AssemblyVersion("1.7.8.3")]
+[assembly: AssemblyFileVersion("1.7.8.3")]
