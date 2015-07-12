@@ -45,6 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlServer", "SqlServer", "{
 		NuGet\SqlServer\DataAccess.nuspec = NuGet\SqlServer\DataAccess.nuspec
 		NuGet\SqlServer\Readme.txt = NuGet\SqlServer\Readme.txt
 		NuGet\SqlServer\Web.config.install.xdt = NuGet\SqlServer\Web.config.install.xdt
+		NuGet\SqlServer\Web.config.transform = NuGet\SqlServer\Web.config.transform
 		NuGet\SqlServer\Web.config.uninstall.xdt = NuGet\SqlServer\Web.config.uninstall.xdt
 	EndProjectSection
 EndProject

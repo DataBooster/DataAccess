@@ -18,6 +18,8 @@
 		</frameworkAssemblies>
 	</metadata>
 	<files>
+		<file src="..\NuGet\SqlServer\Web.config.transform" target="content" />
+		<file src="..\NuGet\SqlServer\Web.config.transform" target="content\App.config.transform" />
 		<file src="..\NuGet\SqlServer\Web.config.install.xdt" target="content" />
 		<file src="..\NuGet\SqlServer\Web.config.install.xdt" target="content\App.config.install.xdt" />
 		<file src="..\NuGet\SqlServer\Web.config.uninstall.xdt" target="content" />
