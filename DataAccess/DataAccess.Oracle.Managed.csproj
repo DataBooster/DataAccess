@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0BD1299C-6AE3-407C-844D-F69B90037846}</ProjectGuid>
+    <ProjectGuid>{331F1221-2FE8-41BF-B519-118A1C038A50}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DbParallel.DataAccess</RootNamespace>
@@ -24,25 +24,29 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\SqlServer\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\SqlServer\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;SQL_SERVER</DefineConstants>
+    <OutputPath>bin\Debug\Oracle\ODP.NET.Managed\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\Oracle\ODP.NET.Managed\</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;ORACLE;ODP_NET_MANAGED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\SqlServer\DbParallel.DataAccess.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Oracle\ODP.NET.Managed\DbParallel.DataAccess.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\SqlServer\</OutputPath>
-    <IntermediateOutputPath>obj\Release\SqlServer\</IntermediateOutputPath>
-    <DefineConstants>TRACE;SQL_SERVER</DefineConstants>
+    <OutputPath>bin\Release\Oracle\ODP.NET.Managed\</OutputPath>
+    <IntermediateOutputPath>obj\Release\Oracle\ODP.NET.Managed\</IntermediateOutputPath>
+    <DefineConstants>TRACE;ORACLE;ODP_NET_MANAGED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\SqlServer\DbParallel.DataAccess.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Oracle\ODP.NET.Managed\DbParallel.DataAccess.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.121.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.12.1.022\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -92,6 +96,9 @@
   <ItemGroup>
     <None Include="Booster\Booster.cd" />
     <None Include="DataAccess.cd" />
+    <None Include="packages.DataAccess.Oracle.Managed.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
