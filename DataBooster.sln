@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{0BD1299C-6AE3-407C-844D-F69B90037846}"
 EndProject
@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3C05CB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{ABF94775-7C87-400A-A510-12263969BEDE}"
 	ProjectSection(SolutionItems) = preProject
+		NuGet\Pack-All.bat = NuGet\Pack-All.bat
 		NuGet\Pack-Oracle-DataDirect.bat = NuGet\Pack-Oracle-DataDirect.bat
 		NuGet\Pack-Oracle-ODP.NET.bat = NuGet\Pack-Oracle-ODP.NET.bat
 		NuGet\Pack-Oracle-ODP.NET.Managed.bat = NuGet\Pack-Oracle-ODP.NET.Managed.bat
@@ -107,15 +108,46 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", 
 		NuGet\Oracle\ODP.NET.Managed\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\ODP.NET.Managed\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{F1809CCA-CE51-4801-B3B5-344C1B7416EA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{A59DD7D0-9527-42F5-A454-F82CBF0785F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlServer", "SqlServer", "{82E55328-81D8-4B76-86B3-B75DDFA08E65}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODP.NET.Unmanaged", "ODP.NET.Unmanaged", "{64A970A1-C52C-448D-9205-424E4DD3BA6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ODP.NET.Managed", "ODP.NET.Managed", "{5446D679-C08F-4BF9-B4DD-85095B2DF7BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataDirect", "DataDirect", "{CCBC6345-2979-4B63-8628-958B4368C3A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Oracle.Managed", "DataAccess\DataAccess.Oracle.Managed.csproj", "{331F1221-2FE8-41BF-B519-118A1C038A50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Oracle.ODP", "DataAccess\DataAccess.Oracle.ODP.csproj", "{33D30F5A-B793-4195-88FE-DD2F851FD761}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Oracle.DataDirect", "DataAccess\DataAccess.Oracle.DataDirect.csproj", "{C6ED3E18-B88F-41D9-B596-5E6454A5718E}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs23
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = DataAccess\\DataAccess.csproj
+		SccProjectTopLevelParentUniqueName1 = DataBooster.sln
 		SccProjectName1 = DataAccess
 		SccLocalPath1 = DataAccess
+		SccProjectUniqueName2 = DataAccess\\DataAccess.Oracle.Managed.csproj
+		SccProjectTopLevelParentUniqueName2 = DataBooster.sln
+		SccProjectName2 = DataAccess
+		SccLocalPath2 = DataAccess
+		SccProjectUniqueName3 = DataAccess\\DataAccess.Oracle.ODP.csproj
+		SccProjectTopLevelParentUniqueName3 = DataBooster.sln
+		SccProjectName3 = DataAccess
+		SccLocalPath3 = DataAccess
+		SccProjectUniqueName4 = DataAccess\\DataAccess.Oracle.DataDirect.csproj
+		SccProjectTopLevelParentUniqueName4 = DataBooster.sln
+		SccProjectName4 = DataAccess
+		SccLocalPath4 = DataAccess
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,11 +158,24 @@ Global
 		{0BD1299C-6AE3-407C-844D-F69B90037846}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BD1299C-6AE3-407C-844D-F69B90037846}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BD1299C-6AE3-407C-844D-F69B90037846}.Release|Any CPU.Build.0 = Release|Any CPU
+		{331F1221-2FE8-41BF-B519-118A1C038A50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{331F1221-2FE8-41BF-B519-118A1C038A50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{331F1221-2FE8-41BF-B519-118A1C038A50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{331F1221-2FE8-41BF-B519-118A1C038A50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33D30F5A-B793-4195-88FE-DD2F851FD761}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33D30F5A-B793-4195-88FE-DD2F851FD761}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33D30F5A-B793-4195-88FE-DD2F851FD761}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33D30F5A-B793-4195-88FE-DD2F851FD761}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6ED3E18-B88F-41D9-B596-5E6454A5718E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6ED3E18-B88F-41D9-B596-5E6454A5718E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6ED3E18-B88F-41D9-B596-5E6454A5718E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6ED3E18-B88F-41D9-B596-5E6454A5718E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{0BD1299C-6AE3-407C-844D-F69B90037846} = {82E55328-81D8-4B76-86B3-B75DDFA08E65}
 		{F2F76E08-6590-4F62-A2D3-A72F3A80A780} = {6678001D-3677-4C0C-963B-9B04AE215E8B}
 		{542A26CF-FB3C-4CA7-AF43-F654CEB3C15B} = {ABF94775-7C87-400A-A510-12263969BEDE}
 		{D821CA8D-036D-415B-90F5-11934F003945} = {ABF94775-7C87-400A-A510-12263969BEDE}
@@ -142,5 +187,13 @@ Global
 		{2B813FDC-3A12-4A85-8DA4-211704F8EEE3} = {FED4E547-7355-46F3-8231-8B12822CDF68}
 		{59B02269-C7CB-461A-8DC4-9FB2C127551F} = {77AE95F8-47AF-4900-830C-602A6F852173}
 		{7867C9DB-860B-43F1-81DF-24E2A9BDE700} = {06929EA1-5BE3-4C90-A0A8-AA7A70E85740}
+		{A59DD7D0-9527-42F5-A454-F82CBF0785F5} = {F1809CCA-CE51-4801-B3B5-344C1B7416EA}
+		{82E55328-81D8-4B76-86B3-B75DDFA08E65} = {F1809CCA-CE51-4801-B3B5-344C1B7416EA}
+		{64A970A1-C52C-448D-9205-424E4DD3BA6A} = {A59DD7D0-9527-42F5-A454-F82CBF0785F5}
+		{5446D679-C08F-4BF9-B4DD-85095B2DF7BE} = {A59DD7D0-9527-42F5-A454-F82CBF0785F5}
+		{CCBC6345-2979-4B63-8628-958B4368C3A0} = {A59DD7D0-9527-42F5-A454-F82CBF0785F5}
+		{331F1221-2FE8-41BF-B519-118A1C038A50} = {5446D679-C08F-4BF9-B4DD-85095B2DF7BE}
+		{33D30F5A-B793-4195-88FE-DD2F851FD761} = {64A970A1-C52C-448D-9205-424E4DD3BA6A}
+		{C6ED3E18-B88F-41D9-B596-5E6454A5718E} = {CCBC6345-2979-4B63-8628-958B4368C3A0}
 	EndGlobalSection
 EndGlobal

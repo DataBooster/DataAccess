@@ -1,4 +1,8 @@
 @ECHO OFF
 CD /D %~dp0
-COPY Oracle\ODP.NET\DataAccess.nuspec ..\DataAccess\DataAccess.nuspec /Y
-..\.nuget\NuGet.exe pack ..\DataAccess\DataAccess.csproj -IncludeReferencedProjects -Symbols -Properties Configuration=Release;Platform=AnyCPU -OutputDirectory nupkg
+
+IF NOT EXIST nupkg\Oracle.ODP MKDIR nupkg\Oracle.ODP
+
+COPY Oracle\ODP.NET\DataAccess.nuspec ..\DataAccess\DataAccess.Oracle.ODP.nuspec /Y
+
+..\.nuget\NuGet.exe pack ..\DataAccess\DataAccess.Oracle.ODP.csproj -IncludeReferencedProjects -Symbols -Properties Configuration=Release;Platform=AnyCPU -OutputDirectory nupkg\Oracle.ODP
