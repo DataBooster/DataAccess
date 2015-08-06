@@ -1,9 +1,9 @@
-﻿Installation Notes:
+﻿http://www.nuget.org/packages/DataBooster.Oracle.ODP
+Installation Notes:
 
-This edition of library requires "Oracle Data Provider for .NET (ODP.NET)"
-http://www.oracle.com/technetwork/developer-tools/visual-studio/overview/index.html
-or http://www.oracle.com/technetwork/topics/dotnet/index-085163.html on your own license.
-Please note that you must install it manually (in GAC) before installing this edition.
+This edition of library requires "Oracle Data Provider for .NET, Unmanaged Driver (ODP.NET 4 or later)"
+http://www.oracle.com/technetwork/topics/dotnet/downloads/index.html.
+You should install it manually (in GAC) before installing this package.
 
 
 Three setting items have been added into your config file:

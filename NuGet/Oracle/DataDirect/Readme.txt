@@ -1,8 +1,9 @@
-﻿Installation Notes:
+﻿http://www.nuget.org/packages/DataBooster.Oracle.DataDirect
+Installation Notes:
 
 This edition of library requires "Progress DataDirect Connect ADO.NET PROVIDER FOR ORACLE"
-(http://www.datadirect.com/products/net/net-for-oracle/index.html) on your own license.
-Please note that you must install it manually (in GAC) before installing this edition.
+(https://www.progress.com/net/data-sources/oracle) on your own license.
+Please note that you must install it manually (in GAC) before installing this package.
 
 
 Three setting items have been added into your config file:

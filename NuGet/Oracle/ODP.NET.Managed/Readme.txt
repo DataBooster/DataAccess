@@ -1,7 +1,8 @@
-﻿Installation Notes:
+﻿http://www.nuget.org/packages/DataBooster.Oracle.Managed
+Installation Notes:
 
 A dependency NuGet package "Oracle.ManagedDataAccess" - Official Oracle ODP.NET, Managed Driver
-http://www.nuget.org/packages/Oracle.ManagedDataAccess is also installed automatically.
+http://www.nuget.org/packages/Oracle.ManagedDataAccess has also been installed automatically.
 
 
 Four setting items have been added into your config file:
