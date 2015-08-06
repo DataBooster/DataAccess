@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{ABF94775
 		NuGet\Pack-Oracle-ODP.NET.bat = NuGet\Pack-Oracle-ODP.NET.bat
 		NuGet\Pack-Oracle-ODP.NET.Managed.bat = NuGet\Pack-Oracle-ODP.NET.Managed.bat
 		NuGet\Pack-SqlServer.bat = NuGet\Pack-SqlServer.bat
+		NuGet\Push-All.bat = NuGet\Push-All.bat
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nupkg", "nupkg", "{542A26CF-FB3C-4CA7-AF43-F654CEB3C15B}"
