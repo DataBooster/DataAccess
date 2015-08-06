@@ -1,4 +1,5 @@
-﻿Installation Notes:
+﻿http://www.nuget.org/packages/DataBooster.SqlServer
+Installation Notes:
 
 Two setting items have been added into your config file:
 
