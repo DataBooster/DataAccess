@@ -1,4 +1,4 @@
-﻿http://www.nuget.org/packages/DataBooster.Oracle.DataDirect
+﻿http://www.nuget.org/packages/DataBooster.Oracle.DataDirect/
 Installation Notes:
 
 This edition of library requires "Progress DataDirect Connect ADO.NET PROVIDER FOR ORACLE"
