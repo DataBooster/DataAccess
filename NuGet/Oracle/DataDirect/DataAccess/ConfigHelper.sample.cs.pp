@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Common;
 using System.Configuration;
+using System.Collections.Generic;
 
 namespace $rootnamespace$.DataAccess
 {
@@ -33,6 +34,8 @@ namespace $rootnamespace$.DataAccess
 		{
 			get
 			{
+				if (string.IsNullOrWhiteSpace(_ConnectionString))
+					throw new KeyNotFoundException("The connectionString \"" + _ConnectionSettingKey + "\" is missing from config file");
 				return _ConnectionString;
 			}
 			set
@@ -71,8 +74,11 @@ namespace $rootnamespace$.DataAccess
 
 			#region Default Initialization
 			ConnectionStringSettings connSetting = ConfigurationManager.ConnectionStrings[_ConnectionSettingKey];
-			_DbProviderFactory = DbProviderFactories.GetFactory(connSetting.ProviderName);
-			_ConnectionString = connSetting.ConnectionString;
+			if (connSetting != null)
+			{
+				_DbProviderFactory = DbProviderFactories.GetFactory(connSetting.ProviderName);
+				_ConnectionString = connSetting.ConnectionString;
+			}
 
 			_DatabasePackage = ConfigurationManager.AppSettings[_PackageSettingKey];
 			if (_DatabasePackage == null)

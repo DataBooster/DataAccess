@@ -1,4 +1,4 @@
-﻿http://www.nuget.org/packages/DataBooster.Oracle.ODP
+﻿http://www.nuget.org/packages/DataBooster.Oracle.ODP/
 Installation Notes:
 
 This edition of library requires "Oracle Data Provider for .NET, Unmanaged Driver (ODP.NET 4 or later)"

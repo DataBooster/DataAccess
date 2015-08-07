@@ -1,4 +1,4 @@
-﻿http://www.nuget.org/packages/DataBooster.Oracle.Managed
+﻿http://www.nuget.org/packages/DataBooster.Oracle.Managed/
 Installation Notes:
 
 A dependency NuGet package "Oracle.ManagedDataAccess" - Official Oracle ODP.NET, Managed Driver
