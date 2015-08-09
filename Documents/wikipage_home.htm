@@ -18,10 +18,21 @@
 <ul>
 <li><a href="#qs-dbaccess">DbAccess</a>
 <ul>
-<li><a href="#db-bulk">Table-Valued Parameters &amp; PL/SQL Associative Array Parameters</a></li>
+<li><a href="#simple-parameters">Simple Parameters</a></li>
+<li><a href="#db-bulk">Table-Valued Parameters &amp; PL/SQL Associative Array Parameters</a>
+<ul>
+<li><a href="#table-valued-parameters">Table-Valued Parameters (SQL Server 2008+)</a></li>
+<li><a href="#associative-array-parameters">PL/SQL Associative Array Parameters (Oracle)</a></li>
+</ul>
+</li>
 <li><a href="#executemultireader">ExecuteMultiReader</a>
 <ul>
-<li><a href="#column-property-mapping">Column--&gt;Property Mapping</a></li>
+<li><a href="#column-property-mapping">Column--&gt;Property Mapping</a>
+<ul>
+<li><a href="#manual-mapping">Manual Mapping</a></li>
+<li><a href="#automatic-mapping">Automatic Mapping</a></li>
+</ul>
+</li>
 <li><a href="#data-type-mapping">Data Type Mapping</a></li>
 </ul>
 </li>
@@ -33,19 +44,53 @@
 </li>
 <li><a href="#api-reference">API Reference</a>
 <ul>
-<li><a href="#api-dbaccess">DbAccess</a></li>
-<li><a href="#api-oraclelauncher">OracleLauncher</a></li>
-<li><a href="#api-sqllauncher">SqlLauncher</a></li>
+<li><a href="#api-dbaccess">DbAccess</a>
+<ul>
+<li><a href="#api-dbaccess-constructors">Constructors</a></li>
+<li><a href="#api-dbaccess-static-global">Static Global</a></li>
+<li><a href="#api-dbaccess-methods">Methods</a>
+<ul>
+<li><a href="#api-dbaccess-executereader">ExecuteReader</a></li>
+<li><a href="#api-dbaccess-executemultireader">ExecuteMultiReader</a></li>
+<li><a href="#api-dbaccess-executenonquery">ExecuteNonQuery</a></li>
+</ul>
+</li>
+<li><a href="#api-dbaccess-dbparameterbuilder">DbParameterBuilder</a></li>
+<li><a href="#api-dbaccess-dbfieldmap">DbFieldMap</a></li>
+<li><a href="#api-dbaccess-dbmultiresultset">DbMultiResultSet</a></li>
+</ul>
+</li>
+<li><a href="#api-oraclelauncher">OracleLauncher</a>
+<ul>
+<li><a href="#api-oraclelauncher-constructors">Constructors</a></li>
+<li><a href="#api-oraclelauncher-methods">Methods</a>
+<ul>
+<li><a href="#api-oraclelauncher-post">Post</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#api-sqllauncher">SqlLauncher</a>
+<ul>
+<li><a href="#api-sqllauncher-constructors">Constructors</a></li>
+<li><a href="#api-sqllauncher-methods">Methods</a>
+<ul>
+<li><a href="#api-sqllauncher-post">Post</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#nuget-packages">NuGet Packages</a></li>
+<li><a href="#symbolsource">Debugging Symbols/Sources</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#contributions">Contributions</a></li>
 <li><a href="#support">Support</a></li>
 </ul>
 <p><a name="quick-starts"></a><strong>Quick Starts</strong></p>
 <ul>
-<li><a name="qs-dbaccess"></a><strong><span style="color: #2b91af;">DbAccess</span></strong>:<br />The following examples code shows its 4 different fine-grained user control of usages.</li>
+<li><a name="qs-dbaccess"></a><strong><span style="color: #2b91af;">DbAccess</span></strong>:<br /><a name="simple-parameters"></a>The following examples code shows its 4 different fine-grained user control of usages.</li>
 </ul>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">using</span> System;
@@ -166,7 +211,7 @@
 <ul>
 <li><a name="db-bulk"></a><a href="https://msdn.microsoft.com/en-us/library/bb675163.aspx" target="_blank">Table-Valued Parameters</a> &amp; <a href="http://docs.oracle.com/cd/E51173_01/win.122/e17732/featOraCommand.htm#BABBDHBB" target="_blank">PL/SQL Associative Array Parameters</a>
 <ul>
-<li><a href="https://msdn.microsoft.com/en-us/library/bb675163.aspx" target="_blank">Table-Valued Parameters</a> (SQL Server 2008+): <br />The following example demonstrates how to pass table-valued parameter data to a stored procedure, the tvpValue can be a DataTable, a DbDataReader or a IEnumerable&lt;SqlDataRecord&gt;. In addition, the ToDataTable extension method can convert an IEnumerable&lt;IDictionary&lt;string, object&gt;&gt; or a IEnumerable&lt;object&gt; <em>(anonymous type instances or named type instances)</em> into a DataTable.
+<li><a name="table-valued-parameters"></a><a href="https://msdn.microsoft.com/en-us/library/bb675163.aspx" target="_blank">Table-Valued Parameters</a> (SQL Server 2008+): <br />The following example demonstrates how to pass table-valued parameter data to a stored procedure, the tvpValue can be a DataTable, a DbDataReader or a IEnumerable&lt;SqlDataRecord&gt;. In addition, the ToDataTable extension method can convert an IEnumerable&lt;IDictionary&lt;string, object&gt;&gt; or a IEnumerable&lt;object&gt; <em>(anonymous type instances or named type instances)</em> into a DataTable.
 <div style="color: black; background-color: white;">
 <pre>....
 dbAccess.Execute....(GetProcedure(sp), parameters =&gt;
@@ -180,7 +225,7 @@ dbAccess.Execute....(GetProcedure(sp), parameters =&gt;
 </pre>
 </div>
 </li>
-<li><a href="http://docs.oracle.com/cd/E51173_01/win.122/e17732/featOraCommand.htm#BABBDHBB" target="_blank">PL/SQL Associative Array Parameters</a> (Oracle): <br />The following example demonstrates how to pass PL/SQL Associative Array to a stored procedure, the assocArrayValue must be an array simple data (e.g. int[], decimal[], string[], etc) or an IEnumerable&lt;IConvertible&gt;.
+<li><a name="associative-array-parameters"></a><a href="http://docs.oracle.com/cd/E51173_01/win.122/e17732/featOraCommand.htm#BABBDHBB" target="_blank">PL/SQL Associative Array Parameters</a> (Oracle): <br />The following example demonstrates how to pass PL/SQL Associative Array to a stored procedure, the assocArrayValue must be an array simple data (e.g. int[], decimal[], string[], etc) or an IEnumerable&lt;IConvertible&gt;.
 <div style="color: black; background-color: white;">
 <pre>....
 dbAccess.Execute....(GetProcedure(sp), parameters =&gt;
@@ -236,7 +281,7 @@ dbAccess.Execute....(GetProcedure(sp), parameters =&gt;
 <ul>
 <li><a name="column-property-mapping"></a>Column--&gt;Property Mapping
 <ul>
-<li>You can explicitly specify which database column map to which property or field of your strongly typed class. E.g.
+<li><a name="manual-mapping"></a>You can explicitly specify which database column map to which property or field of your strongly typed class. E.g.
 <div style="color: black; background-color: white;">
 <pre>....
 colMap.Add(<span style="color: #a31515;">"BUY_AMOUNT"</span>,  t =&gt; t.Cost);
@@ -260,7 +305,7 @@ To allow map a database column to a deep Properties or Fields in .Net, please ma
 </li>
 <li>There is no limit to the number of how many levels through the path from the root class object to the end property or field.</li>
 </ol></li>
-<li>If you don't explicitly specify mapping (omit the whole parameter at all), the full-auto-mapping mechanism will be activated to match database columns with .Net one level properties/fields as more as possible. Following is the matching precedence:<ol>
+<li><a name="automatic-mapping"></a>If you don't explicitly specify mapping (omit the whole parameter at all), the full-auto-mapping mechanism will be activated to match database columns with .Net one level properties/fields as more as possible. Following is the matching precedence:<ol>
 <li>Match the names of database columns with the names of .Net properties/fields in a case-sensitive manner;</li>
 <li>Match the rest in a case-insensitive manner;</li>
 <li>De-underscore(compact) the rest of database column names (as we know, most Oracle users adopt underscores naming convention), then match the rest names with rest .Net properties/fields in a case-insensitive manner. - v1.7.6.2+<br />E.g. A database column named "USER_FIRST_NAME" will auto-map to a .Net property named UserFirstName (or userFirstName).</li>
@@ -377,15 +422,15 @@ To allow map a database column to a deep Properties or Fields in .Net, please ma
 <ul>
 <li><a name="api-dbaccess"></a><strong><span style="text-decoration: underline; color: #2b91af;">DbAccess</span></strong><br />(Namespace: DbParallel.DataAccess)</li>
 </ul>
-<div style="margin-left: 40px;"><strong>Constructors</strong> <span style="color: #808080;">(4 overloads)</span>:
+<div style="margin-left: 40px;"><a name="api-dbaccess-constructors"></a><strong>Constructors</strong> <span style="color: #808080;">(4 overloads)</span>:
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">public</span> DbAccess(<span style="color: #2b91af;">DbProviderFactory</span> dbProviderFactory, <span style="color: blue;">string</span> connectionString);
 <span style="color: blue;">public</span> DbAccess(<span style="color: blue;">string</span> providerName, <span style="color: blue;">string</span> connectionString);
 <span style="color: blue;">public</span> DbAccess(<span style="color: #2b91af;">ConnectionStringSettings</span> connSetting);
 <span style="color: blue;">public</span> DbAccess(<span style="color: blue;">string</span> connectionStringKey);</pre>
 </div>
-<div><br /><strong>Static Global</strong><br /><span style="color: blue;">public static</span> <span style="color: #2b91af;">CommandType</span> DefaultCommandType { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }<br />&nbsp; &nbsp; The default is <strong>StoredProcedure</strong>.<br />&nbsp;</div>
-<div><strong>Methods</strong><br />- ExecuteReader <span style="color: #808080;">(9 overloads)</span>:</div>
+<div><br /><a name="api-dbaccess-static-global"></a><strong>Static Global</strong><br /><span style="color: blue;">public static</span> <span style="color: #2b91af;">CommandType</span> DefaultCommandType { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }<br />&nbsp; &nbsp; The default is <strong>StoredProcedure</strong>.<br />&nbsp;</div>
+<div><a name="api-dbaccess-methods"></a><strong>Methods</strong><br /><a name="api-dbaccess-executereader"></a>- ExecuteReader <span style="color: #808080;">(9 overloads)</span>:</div>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbDataReader</span>&gt; dataReader);
 
@@ -405,7 +450,7 @@ To allow map a database column to a deep Properties or Fields in .Net, please ma
 
 <span style="color: blue;">void</span> ExecuteReader(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, <span style="color: #2b91af;">CommandType</span> commandType, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbDataReader</span>, <span style="color: blue;">int</span><span style="color: green;">/*resultSet*/</span>&gt; dataReaders); <span style="color: green;">// For multiple result set</span></pre>
 </div>
-<div><span style="color: #2b91af;">- DbParameterBuilder</span></div>
+<div><a name="api-dbaccess-dbparameterbuilder"></a><span style="color: #2b91af;">- DbParameterBuilder</span></div>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">public</span> <span style="color: #2b91af;">DbParameter DbParameterBuilder</span>.Add(<span style="color: blue;">string</span> parameterName, <span style="color: blue;">object</span> oValue, <span style="color: blue;">int</span> nSize = 0); <span style="color: green;">// Direction defaults to ParameterDirection.Input</span>
 
@@ -413,22 +458,22 @@ To allow map a database column to a deep Properties or Fields in .Net, please ma
 
 <span style="color: blue;">public</span> <span style="color: #2b91af;">DbParameter DbParameterBuilder</span>.AddOutput(<span style="color: blue;">string</span> parameterName, <span style="color: #2b91af;">DbType</span> dbType, <span style="color: blue;">int</span> nSize = 0);</pre>
 </div>
-<div><span style="color: #2b91af;">- DbFieldMap</span></div>
+<div><a name="api-dbaccess-dbfieldmap"></a><span style="color: #2b91af;">- DbFieldMap</span></div>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">public</span> <span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt; <span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt;.Add(string columnName, <span style="color: #2b91af;">Expression</span>&lt;<span style="color: #2b91af;">Func</span>&lt;T, <span style="color: blue;">object</span>&gt;&gt; fieldExpr);</pre>
 </div>
-<div>- ExecuteMultiReader <span style="color: #808080;">(2 overloads)</span>:</div>
+<div><a name="api-dbaccess-executemultireader"></a>- ExecuteMultiReader <span style="color: #808080;">(2 overloads)</span>:</div>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">public</span> <span style="color: blue;">void</span> ExecuteMultiReader(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbMultiResultSet</span>&gt; multiResultSetMap);
 
 <span style="color: blue;">public</span> <span style="color: blue;">void</span> ExecuteMultiReader(<span style="color: blue;">string</span> commandText, <span style="color: blue;">int</span> commandTimeout, <span style="color: #2b91af;">CommandType</span> commandType, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbMultiResultSet</span>&gt; multiResultSetMap);
 </pre>
 </div>
-<div><span style="color: #2b91af;">- DbMultiResultSet</span></div>
+<div><a name="api-dbaccess-dbmultiresultset"></a><span style="color: #2b91af;">- DbMultiResultSet</span></div>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">public void</span> <span style="color: #2b91af;">DbMultiResultSet</span>.Add&lt;T&gt;(<span style="color: #2b91af;">ICollection</span>&lt;T&gt; resultSet, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbFieldMap</span>&lt;T&gt;&gt; resultMap = <span style="color: blue;">null</span>) <span style="color: blue;">where</span> T : <span style="color: blue;">new</span>();</pre>
 </div>
-<div>- ExecuteNonQuery <span style="color: #808080;">(2 overloads)</span>:</div>
+<div><a name="api-dbaccess-executenonquery"></a>- ExecuteNonQuery <span style="color: #808080;">(2 overloads)</span>:</div>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">int</span> ExecuteNonQuery(<span style="color: blue;">string</span> commandText, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder = <span style="color: blue;">null</span>);
 
@@ -438,14 +483,14 @@ To allow map a database column to a deep Properties or Fields in .Net, please ma
 <ul>
 <li><a name="api-oraclelauncher"></a><strong><span style="text-decoration: underline; color: #2b91af;">OracleLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Booster.Oracle)</li>
 </ul>
-<div style="margin-left: 40px;"><strong>Constructors</strong>:
+<div style="margin-left: 40px;"><a name="api-oraclelauncher-constructors"></a><strong>Constructors</strong>:
 <div style="color: black; background-color: white;">
 <pre>OracleLauncher(<span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> storedProcedure, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">DbParameterBuilder</span>&gt; parametersBuilder, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
 </pre>
 </div>
 <div>The <em>_DefaultMultipleRockets</em> is <span style="color: #ff0000;">6</span>:</div>
 <div><img style="vertical-align: middle;" src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=databooster&amp;DownloadId=386327" alt="Multiple Rockets" width="360" height="180" /></div>
-<p><br /><strong>Methods</strong><br />- Post:</p>
+<p><br /><a name="api-oraclelauncher-methods"></a><strong>Methods</strong><br /><a name="api-oraclelauncher-post"></a>- Post:</p>
 <div style="color: black; background-color: white;">
 <pre><span style="color: blue;">void</span> Post(<span style="color: blue;">params</span> <span style="color: blue;">object</span>[] values);</pre>
 </div>
@@ -461,13 +506,13 @@ Your application DAL should wrap this method as strong type parameters, like fol
 <ul>
 <li><a name="api-sqllauncher"></a><strong><span style="text-decoration: underline; color: #2b91af;">SqlLauncher</span></strong><br />(Namespace: DbParallel.DataAccess.Booster.SqlServer)</li>
 </ul>
-<div style="margin-left: 40px;"><strong>Constructors</strong>:
+<div style="margin-left: 40px;"><a name="api-sqllauncher-constructors"></a><strong>Constructors</strong>:
 <div style="color: black; background-color: white;">
 <pre>SqlLauncher(<span style="color: blue;">string</span> connectionString, <span style="color: blue;">string</span> destinationTableName, <span style="color: #2b91af;">Action</span>&lt;<span style="color: #2b91af;">SqlBulkCopyColumnMappingCollection</span>&gt; columnMappings = <span style="color: blue;">null</span>, <span style="color: blue;">int</span> multipleRockets = _DefaultMultipleRockets, <span style="color: blue;">int</span> bulkSize = _DefaultBulkSize, <span style="color: blue;">int</span> commandTimeout = _CommandTimeout);
 </pre>
 </div>
 <p>Detail for destinationTableName and <span style="color: #2b91af;">SqlBulkCopyColumnMappingCollection</span>, please refer to <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.destinationtablename.aspx" target="_blank">SqlBulkCopy.DestinationTableName</a>, <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopy.columnmappings.aspx" target="_blank">SqlBulkCopy.ColumnMappings</a> and <a href="http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlbulkcopycolumnmappingcollection.aspx" target="_blank">SqlBulkCopyColumnMappingCollection</a> on MSDN.</p>
-<p><strong>Methods</strong><br />- Post: The same as <span style="color: #2b91af;">OracleLauncher</span></p>
+<p><a name="api-sqllauncher-methods"></a><strong>Methods</strong><br /><a name="api-sqllauncher-post"></a>- Post: The same as <a href="#api-oraclelauncher-post"><span style="color: #2b91af;">OracleLauncher</span></a></p>
 </div>
 <div><a name="nuget-packages"></a><strong>NuGet Packages</strong></div>
 <div style="padding-left: 30px;">It is strongly recommended to use this library through NuGet Library Package Manager right in Visual Studio. NuGet Packages can also generate some scaffolding, sample code and configuration into your project for a very quick start from the ground.
@@ -479,23 +524,26 @@ Your application DAL should wrap this method as strong type parameters, like fol
 </tr>
 <tr>
 <td>DataBooster for SQL Server</td>
-<td>DataBooster.SqlServer</td>
+<td><a href="http://www.nuget.org/packages/DataBooster.SqlServer" target="_blank">DataBooster.SqlServer</a></td>
 </tr>
 <tr>
 <td>DataBooster for SQL Server + Oracle (use ODP.NET Provider)</td>
-<td>DataBooster.Oracle.ODP</td>
+<td><a href="http://www.nuget.org/packages/DataBooster.Oracle.ODP" target="_blank">DataBooster.Oracle.ODP</a></td>
 </tr>
 <tr>
 <td>DataBooster for SQL Server + Oracle (use ODP.NET Managed Driver) &nbsp;</td>
-<td>DataBooster.Oracle.Managed</td>
+<td><a href="http://www.nuget.org/packages/DataBooster.Oracle.Managed" target="_blank">DataBooster.Oracle.Managed</a></td>
 </tr>
 <tr>
 <td>DataBooster for SQL Server + Oracle (use DataDirect Provider)</td>
-<td>DataBooster.Oracle.DataDirect &nbsp;</td>
+<td><a href="http://www.nuget.org/packages/DataBooster.Oracle.DataDirect" target="_blank">DataBooster.Oracle.DataDirect</a> &nbsp;</td>
 </tr>
 </tbody>
 </table>
 <img src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=databooster&amp;DownloadId=735881" alt="" /><br /><br />All sample code is only available in DEBUG mode, you can even turn off sample code in DEBUG mode easily, just add NO_SAMPLE into your project Conditional Compilation Symbols (Visual Studio Project Properties Dialog -&gt; Build -&gt; General -&gt; Conditional Compilation Symbols).<br />&nbsp;</div>
+<div><a name="symbolsource"></a><strong>Debugging Symbols/Sources</strong></div>
+<div style="padding-left: 30px;">Associated Symbol Packages with above NuGet Packages are also available in http://srv.symbolsource.org/pdb/Public. <br />To source step during debugging into the code of DataBooster library, please see <a href="http://www.symbolsource.org/Public/Home/VisualStudio" target="_blank">SymbolSource.org</a> for detailed instructions.</div>
+<div>&nbsp;</div>
 <p><a name="requirements"></a><strong>Requirements</strong></p>
 <ul>
 <li>.NET Framework 4.0 or later.</li>
