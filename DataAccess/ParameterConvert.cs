@@ -287,7 +287,7 @@ namespace DbParallel.DataAccess
 
 		private static int WeighNumericType(object numericObject)
 		{
-			return (numericObject == null) ? 0 : WeighNumericType(numericObject.GetType());
+			return (numericObject == null) ? -1 : WeighNumericType(numericObject.GetType());
 		}
 
 		private static int WeighNumericType(Type numericType)
