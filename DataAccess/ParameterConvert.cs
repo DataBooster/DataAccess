@@ -246,48 +246,16 @@ namespace DbParallel.DataAccess
 		/// </summary>
 		/// <param name="rawArray">A promiscuous types' numeric array</param>
 		/// <returns>A normalized new array if all elements are numeric, or just the rawArray itself if contains any non-numeric element.</returns>
+		[Obsolete("This extension method may be removed from future release.", false)]
 		public static Array NormalizeNumericArray(this object[] rawArray)
 		{
-			Type compatibleType = GetNumericElementType(rawArray);
-
-			if (compatibleType != null && compatibleType != typeof(object))
-			{
-				Array newArray = Array.CreateInstance(compatibleType, rawArray.Length);
-
-				for (int i = 0; i < rawArray.Length; i++)
-					newArray.SetValue(Convert.ChangeType(rawArray[i], compatibleType), i);
-
-				return newArray;
-			}
-
+			// Need closer scrutiny about Oracle Associative Array
 			return rawArray;
-		}
-
-		private static Type GetNumericElementType(Array arrayValue)
-		{
-			int weight, maxWeight = 0;
-			Type mostCompatibleType = null;
-
-			foreach (object element in arrayValue)
-			{
-				weight = WeighNumericType(element);
-
-				if (weight < 0)			// Non-numeric
-					return null;
-
-				if (weight > maxWeight)	// More compatible numeric type
-				{
-					mostCompatibleType = element.GetType();
-					maxWeight = weight;
-				}
-			}
-
-			return mostCompatibleType;
 		}
 
 		private static int WeighNumericType(object numericObject)
 		{
-			return (numericObject == null) ? -1 : WeighNumericType(numericObject.GetType());
+			return (numericObject == null) ? 0 : WeighNumericType(numericObject.GetType());
 		}
 
 		private static int WeighNumericType(Type numericType)
