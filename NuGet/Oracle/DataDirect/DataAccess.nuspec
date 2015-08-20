@@ -26,6 +26,6 @@
 		<file src="..\NuGet\Oracle\DataDirect\Web.config.uninstall.xdt" target="content" />
 		<file src="..\NuGet\Oracle\DataDirect\Web.config.uninstall.xdt" target="content\App.config.uninstall.xdt" />
 		<file src="..\NuGet\Oracle\DataDirect\Readme.txt" target="" />
-		<file src="..\NuGet\Oracle\DataDirect\DataAccess\*.cs.pp" target="content\DataAccess" />
+		<file src="..\NuGet\Oracle\DataDirect\DataAccess\*.cs.pp" target="content\DataAccess\Oracle.DataDirect" />
 	</files>
 </package>

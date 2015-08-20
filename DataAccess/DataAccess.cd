@@ -1,39 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DbParallel.DataAccess.DbExtensions">
-    <Position X="5.5" Y="0.5" Width="2.25" />
+    <Position X="4.25" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AEMACAAAAAAEAgAEAgAIAAAAAQASAAAAAACEQgBAsCA=</HashCode>
+      <HashCode>AgMACAAAIAAEAgAAAgAIAAAAgQASAAAAAACAQgAAsAA=</HashCode>
       <FileName>DbExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.DbParameterBuilder">
-    <Position X="3.25" Y="0.5" Width="2" />
+    <Position X="7" Y="0.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAICAAAAAAABAAAQCAAABAQAAAAAAAEAIEQAAAAAAAA=</HashCode>
+      <HashCode>AAICACAAAAABAAAACAAABAQAAAAAAAAAIEQAAAAAAAA=</HashCode>
       <FileName>DbParameterBuilder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.DbAccess">
-    <Position X="0.5" Y="0.5" Width="2.5" />
+    <Position X="0.5" Y="0.5" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>BQAAAAAJIqCAgCFAAEgGAEAAAAQAQgAQCIggAIAEIAA=</HashCode>
+      <HashCode>BQQAAAAJIqCAgCFMAEgGgEgAAAQAUgAQiIggEIAEIAA=</HashCode>
       <FileName>DbAccess.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DbParallel.DataAccess.DbFieldMap&lt;T&gt;">
-    <Position X="3.25" Y="4" Width="2" />
+    <Position X="5.75" Y="5.75" Width="2.75" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAoAAAgABAAIAAAAAACAAAAAQAAAAEAEAAAAACAAIBA=</HashCode>
+      <HashCode>AAoAAAgABEAIAAAAAACAAAAEQAAAAEIEAAAAACAAIBA=</HashCode>
       <FileName>DbFieldMap.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.DbTransactionManager">
-    <Position X="0.5" Y="7.25" Width="2" />
+    <Position X="0.75" Y="8.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AACAAEgBBCAAAAEDAAAgAAAAAAAAAAAAAAAEgAAAgAA=</HashCode>
       <FileName>DbTransactionManager.cs</FileName>
@@ -41,7 +41,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DbParallel.DataAccess.DbTransactionScope">
-    <Position X="3.25" Y="7.75" Width="1.75" />
+    <Position X="3.5" Y="10" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAACAAAAJAAAAAAAAAAAAAAAAAAAAAAACEAAA=</HashCode>
       <FileName>DbTransactionScope.cs</FileName>
@@ -49,7 +49,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DbParallel.DataAccess.DbMultiResultSet">
-    <Position X="8.25" Y="0.5" Width="2" />
+    <Position X="9.75" Y="0.5" Width="2" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -66,36 +66,36 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.PropertyOrField">
-    <Position X="5.5" Y="8" Width="2.25" />
+    <Position X="9.5" Y="8.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAIAIAAgAEAAAAAAAAgFAAAAAAgAAAAAAAAAA=</HashCode>
       <FileName>PropertyOrField.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.ColumnMemberInfo">
-    <Position X="5.5" Y="5.25" Width="2.5" />
+    <Position X="9.5" Y="5.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAEAAAAAAgAAEABAAAAACAAAAAAAAAAAAQAAAAA=</HashCode>
       <FileName>ColumnMemberInfo.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.StoredProcedureRequest">
-    <Position X="11" Y="0.5" Width="2" />
+    <Position X="12.25" Y="0.5" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAAAIAAAAAAAAASIAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAIAAAAAAAAASIAAAAAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
       <FileName>Dynamic\StoredProcedureRequest.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DbParallel.DataAccess.StoredProcedureResponse">
-    <Position X="11" Y="2.75" Width="2" />
+    <Position X="12.75" Y="3.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAABAAAAAAAAAIAAAAAAAgAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Dynamic\StoredProcedureResponse.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.DerivedParametersCache">
-    <Position X="9.25" Y="5.5" Width="2.75" />
+    <Position X="12.5" Y="5.5" Width="3" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -107,12 +107,12 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAEQAEAAAFQAAQAAEEIAAAAAACAAAAIAgAAAAAAECBA=</HashCode>
-      <FileName>DerivedParametersCache.cs</FileName>
+      <HashCode>AAEQAAAAANQAAQAAEEIACQAEACAAAAOAgCAAAAAECBA=</HashCode>
+      <FileName>Cache\DerivedParametersCache.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="DbParallel.DataAccess.BindableDynamicObject">
-    <Position X="13.5" Y="0.5" Width="3.75" />
+    <Position X="16" Y="1" Width="3.75" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -124,8 +124,16 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>EEAAAAASBAAAgQAAAQAABYgEGgAAAAhGAAACICgQgQo=</HashCode>
+      <HashCode>EEAAAAASBAAAgQAAAQAABYgkGgAAAAhGAAACICgQgQo=</HashCode>
       <FileName>Dynamic\BindableDynamicObject.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DbParallel.DataAccess.DbContextBase">
+    <Position X="6.25" Y="10.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAEAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>DbContextBase.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>

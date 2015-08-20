@@ -25,6 +25,6 @@
 		<file src="..\NuGet\SqlServer\Web.config.uninstall.xdt" target="content" />
 		<file src="..\NuGet\SqlServer\Web.config.uninstall.xdt" target="content\App.config.uninstall.xdt" />
 		<file src="..\NuGet\SqlServer\Readme.txt" target="" />
-		<file src="..\NuGet\SqlServer\DataAccess\*.cs.pp" target="content\DataAccess" />
+		<file src="..\NuGet\SqlServer\DataAccess\*.cs.pp" target="content\DataAccess\SqlServer" />
 	</files>
 </package>
