@@ -54,7 +54,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{F6C0BDD7-66FC-4267-A168-1977E56DFA24}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\SqlServer\DataAccess\ConfigHelper.sample.cs.pp = NuGet\SqlServer\DataAccess\ConfigHelper.sample.cs.pp
-		NuGet\SqlServer\DataAccess\DbPackage.partial.sample.cs.pp = NuGet\SqlServer\DataAccess\DbPackage.partial.sample.cs.pp
+		NuGet\SqlServer\DataAccess\DalCenter.partial.sample.cs.pp = NuGet\SqlServer\DataAccess\DalCenter.partial.sample.cs.pp
+		NuGet\SqlServer\DataAccess\DalCenter.sample.cs.pp = NuGet\SqlServer\DataAccess\DalCenter.sample.cs.pp
 		NuGet\SqlServer\DataAccess\DbPackage.sample.cs.pp = NuGet\SqlServer\DataAccess\DbPackage.sample.cs.pp
 		NuGet\SqlServer\DataAccess\MyBizMain.sample.cs.pp = NuGet\SqlServer\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
@@ -88,7 +89,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{2B813FDC-3A12-4A85-8DA4-211704F8EEE3}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Oracle\DataDirect\DataAccess\ConfigHelper.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\ConfigHelper.sample.cs.pp
-		NuGet\Oracle\DataDirect\DataAccess\DbPackage.partial.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\DbPackage.partial.sample.cs.pp
+		NuGet\Oracle\DataDirect\DataAccess\DalCenter.partial.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\DalCenter.partial.sample.cs.pp
+		NuGet\Oracle\DataDirect\DataAccess\DalCenter.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\DalCenter.sample.cs.pp
 		NuGet\Oracle\DataDirect\DataAccess\DbPackage.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\DbPackage.sample.cs.pp
 		NuGet\Oracle\DataDirect\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\DataDirect\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
@@ -96,7 +98,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{59B02269-C7CB-461A-8DC4-9FB2C127551F}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Oracle\ODP.NET\DataAccess\ConfigHelper.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\ConfigHelper.sample.cs.pp
-		NuGet\Oracle\ODP.NET\DataAccess\DbPackage.partial.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\DbPackage.partial.sample.cs.pp
+		NuGet\Oracle\ODP.NET\DataAccess\DalCenter.partial.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\DalCenter.partial.sample.cs.pp
+		NuGet\Oracle\ODP.NET\DataAccess\DalCenter.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\DalCenter.sample.cs.pp
 		NuGet\Oracle\ODP.NET\DataAccess\DbPackage.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\DbPackage.sample.cs.pp
 		NuGet\Oracle\ODP.NET\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\ODP.NET\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
@@ -104,7 +107,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataAccess", "DataAccess", "{7867C9DB-860B-43F1-81DF-24E2A9BDE700}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\Oracle\ODP.NET.Managed\DataAccess\ConfigHelper.sample.cs.pp = NuGet\Oracle\ODP.NET.Managed\DataAccess\ConfigHelper.sample.cs.pp
-		NuGet\Oracle\ODP.NET.Managed\DataAccess\DbPackage.partial.sample.cs.pp = NuGet\Oracle\ODP.NET.Managed\DataAccess\DbPackage.partial.sample.cs.pp
+		NuGet\Oracle\ODP.NET.Managed\DataAccess\DalCenter.partial.sample.cs.pp = NuGet\Oracle\ODP.NET.Managed\DataAccess\DalCenter.partial.sample.cs.pp
+		NuGet\Oracle\ODP.NET.Managed\DataAccess\DalCenter.sample.cs.pp = NuGet\Oracle\ODP.NET.Managed\DataAccess\DalCenter.sample.cs.pp
 		NuGet\Oracle\ODP.NET.Managed\DataAccess\DbPackage.sample.cs.pp = NuGet\Oracle\ODP.NET.Managed\DataAccess\DbPackage.sample.cs.pp
 		NuGet\Oracle\ODP.NET.Managed\DataAccess\MyBizMain.sample.cs.pp = NuGet\Oracle\ODP.NET.Managed\DataAccess\MyBizMain.sample.cs.pp
 	EndProjectSection
