@@ -6,7 +6,7 @@ namespace DbParallel.DataAccess
 {
 	public abstract class DbContextBase : IDisposable
 	{
-		private DbAccess _DbAccess;
+		protected DbAccess _DbAccess;
 
 		public DbContextBase(DbProviderFactory dbProviderFactory, string connectionString)
 		{
