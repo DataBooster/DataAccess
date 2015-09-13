@@ -6,12 +6,17 @@ using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Dynamic;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace DbParallel.DataAccess
 {
-	[Serializable]
-	public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, object>, ISerializable
+	[Serializable, XmlSchemaProvider("GetSchema")]
+	public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, object>, ISerializable, IXmlSerializable
 	{
+		private static XmlQualifiedName _typeName = new XmlQualifiedName(typeof(BindableDynamicObject).Name, "");
+
 		private IDictionary<string, object> _data;
 
 		public BindableDynamicObject(IDictionary<string, object> content = null)
@@ -265,6 +270,36 @@ namespace DbParallel.DataAccess
 		{
 			foreach (var dynProperty in _data)
 				info.AddValue(dynProperty.Key, Convert.IsDBNull(dynProperty.Value) ? null : dynProperty.Value);
+		}
+
+		#endregion
+
+		public static XmlQualifiedName GetSchema(XmlSchemaSet schemas)
+		{
+			//	XmlSerializableServices.AddDefaultSchema(schemas, _typeName);
+			return _typeName;
+		}
+
+		#region IXmlSerializable Members
+
+		XmlSchema IXmlSerializable.GetSchema()
+		{
+			return null;
+		}
+
+		void IXmlSerializable.ReadXml(XmlReader reader)
+		{
+			throw new NotImplementedException();
+		}
+
+		void IXmlSerializable.WriteXml(XmlWriter writer)
+		{
+			// TODO
+			foreach (var pair in _data)
+			{
+				// TODO
+				writer.WriteElement(pair.Key, pair.Value);
+			}
 		}
 
 		#endregion

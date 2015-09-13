@@ -1,11 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace DbParallel.DataAccess
 {
+	[DataContract(Namespace = "")]
 	public class StoredProcedureResponse
 	{
+		[DataMember(Order = 1)]
 		public IList<IList<BindableDynamicObject>> ResultSets { get; set; }
+
+		[DataMember(Order = 2)]
 		public BindableDynamicObject OutputParameters { get; set; }
+
+		[DataMember(Order = 3)]
 		public object ReturnValue { get; set; }
 
 		public StoredProcedureResponse()
