@@ -51,6 +51,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +77,7 @@
     <Compile Include="Dynamic\StoredProcedureRequest.cs" />
     <Compile Include="Dynamic\StoredProcedureResponse.cs" />
     <Compile Include="Dynamic\StringUtils.cs" />
+    <Compile Include="Dynamic\XmlWriterExtensions.cs" />
     <Compile Include="Oracle\Booster\OracleLauncher.cs" />
     <Compile Include="Oracle\Booster\OracleRocket.cs" />
     <Compile Include="Oracle\DbAccess.partial.cs" />
