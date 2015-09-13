@@ -298,7 +298,7 @@ namespace DbParallel.DataAccess
 			foreach (var pair in _data)
 			{
 				// TODO
-				writer.WriteElement(pair.Key, pair.Value);
+				writer.WriteElementValue(pair.Key, pair.Value);
 			}
 		}
 
