@@ -6,7 +6,7 @@ namespace DbParallel.DataAccess
 {
 	internal static class XmlWriterExtensions
 	{
-		public static void WriteElementValue(this XmlWriter writer, string localName, object value, bool emitNullValue = true)
+		public static void WriteElementValue(this XmlWriter writer, string localName, object value, bool emitNullValue = true, bool emitXsiType = false)
 		{
 			bool isNull = IsNull(value);
 
@@ -17,10 +17,22 @@ namespace DbParallel.DataAccess
 				if (isNull)
 					writer.WriteAttributeString("nil", XmlSchema.InstanceNamespace, "true");
 				else
+				{
+					if (emitXsiType)
+						writer.WriteQualifiedAttributeString("type", XmlSchema.InstanceNamespace, GetXsiType(value), XmlSchema.Namespace);
+
 					writer.WriteValue(value);
+				}
 
 				writer.WriteEndElement();
 			}
+		}
+
+		public static void WriteQualifiedAttributeString(this XmlWriter writer, string localName, string ns, string value, string valueNs)
+		{
+			writer.WriteStartAttribute(localName, ns);
+			writer.WriteQualifiedName(value, valueNs);
+			writer.WriteEndAttribute();
 		}
 
 		public static void WriteAttributeValue(this XmlWriter writer, string localName, object value, bool emitNullValue = true)
@@ -38,6 +50,13 @@ namespace DbParallel.DataAccess
 
 				writer.WriteEndAttribute();
 			}
+		}
+
+		private static string GetXsiType(object value)
+		{
+			Type type = value.GetType();
+
+			return GetBuiltInXsiType(type) ?? type.Name;
 		}
 
 		private static string GetBuiltInXsiType(Type type)

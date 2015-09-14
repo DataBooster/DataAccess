@@ -294,6 +294,9 @@ namespace DbParallel.DataAccess
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)
 		{
+			if (writer.LookupPrefix(XmlSchema.Namespace) == null)
+				writer.WriteAttributeString("_", XmlSchema.Namespace, "");
+
 			// TODO
 			foreach (var pair in _data)
 			{
