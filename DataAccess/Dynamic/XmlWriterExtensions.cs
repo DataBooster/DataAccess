@@ -62,20 +62,20 @@ namespace DbParallel.DataAccess
 				case TypeCode.UInt16: return "unsignedShort";
 				case TypeCode.UInt32: return "unsignedInt";
 				case TypeCode.UInt64: return "unsignedLong";
-
-				default:
-					if (type == typeof(byte[]))
-						return "base64Binary";
-					else if (type == typeof(Uri))
-						return "anyURI";
-					else if (type == typeof(XmlQualifiedName))
-						return "QName";
-					else if (type == typeof(TimeSpan))
-						return "duration";
-					else if (type == typeof(Guid))
-						return "guid";
-					return null;
 			}
+
+			if (type == typeof(TimeSpan))
+				return "duration";
+			else if (type == typeof(Guid))
+				return "guid";
+			else if (type == typeof(Uri))
+				return "anyURI";
+			else if (type == typeof(XmlQualifiedName))
+				return "QName";
+			else if (type == typeof(byte[]))
+				return "base64Binary";
+
+			return null;
 		}
 
 		private static bool IsNull(object value)
