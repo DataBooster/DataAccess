@@ -23,11 +23,11 @@ namespace DbParallel.DataAccess
 				{
 					switch (emitDataSchemaType)
 					{
-						case BindableDynamicObject.XmlSettings.DataSchemaType.XSD:
+						case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
 							writer.WriteQualifiedAttributeString("type", XmlSchema.InstanceNamespace, GetXsiType(value), XmlSchema.Namespace);
 							break;
-						case BindableDynamicObject.XmlSettings.DataSchemaType.NET:
-							writer.WriteAttributeString("type", NsNetXs, value.GetType().FullName);
+						case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+							writer.WriteAttributeString("Type", NsNetXs, value.GetType().FullName);
 							break;
 					}
 
@@ -65,11 +65,11 @@ namespace DbParallel.DataAccess
 		{
 			switch (emitDataSchemaType)
 			{
-				case BindableDynamicObject.XmlSettings.DataSchemaType.XSD:
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
 					if (string.IsNullOrEmpty(writer.LookupPrefix(XmlSchema.Namespace)))
 						writer.WriteAttributeString(localName, XmlSchema.Namespace, value);
 					break;
-				case BindableDynamicObject.XmlSettings.DataSchemaType.NET:
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
 					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNetXs)))
 						writer.WriteAttributeString(localName, NsNetXs, value);
 					break;
