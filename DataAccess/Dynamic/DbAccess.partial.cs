@@ -51,6 +51,19 @@ namespace DbParallel.DataAccess
 
 		#endregion
 
+		#region BindableDynamicObject.XmlSettings
+
+		private readonly BindableDynamicObject.XmlSettings _DynamicObjectXmlSettings = new BindableDynamicObject.XmlSettings();
+		/// <summary>
+		/// Gets the BindableDynamicObject.XmlSettings object used to control the behavior of XML serialization.
+		/// </summary>
+		public BindableDynamicObject.XmlSettings DynamicObjectXmlSettings
+		{
+			get { return _DynamicObjectXmlSettings; }
+		}
+
+		#endregion
+
 		#region Load result sets into dynamic data
 
 		protected string[] GetVisibleFieldNames(DbDataReader reader)
@@ -88,7 +101,7 @@ namespace DbParallel.DataAccess
 			string[] visibleFieldNames = GetVisibleFieldNames(reader);
 
 			while (reader.Read())
-				yield return new BindableDynamicObject(CreateExpando<T>(reader, visibleFieldNames));
+				yield return new BindableDynamicObject(CreateExpando<T>(reader, visibleFieldNames), _DynamicObjectXmlSettings);
 		}
 
 		protected DbParameter ExecuteStoredProcedure(StoredProcedureRequest request, Action<DbDataReader> readAction, out List<DbParameter> outputParameters)
@@ -148,7 +161,7 @@ namespace DbParallel.DataAccess
 				foreach (DbParameter op in outputParameters)
 					expandoObject.Add(op.ParameterName.TrimParameterPrefix(), op.Value);
 
-				spResponse.OutputParameters = new BindableDynamicObject(expandoObject);
+				spResponse.OutputParameters = new BindableDynamicObject(expandoObject, _DynamicObjectXmlSettings);
 			}
 
 			if (returnParameter != null)

@@ -12,16 +12,17 @@ using System.Xml.Serialization;
 
 namespace DbParallel.DataAccess
 {
-	[Serializable, XmlRoot(Namespace=""), XmlSchemaProvider("GetSchema")]
+	[Serializable, XmlRoot(Namespace = ""), XmlSchemaProvider("GetSchema")]
 	public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, object>, ISerializable, IXmlSerializable
 	{
 		private static XmlQualifiedName _typeName = new XmlQualifiedName(typeof(BindableDynamicObject).Name, "");
-
+		private XmlSettings _xmlSettings;
 		private IDictionary<string, object> _data;
 
-		public BindableDynamicObject(IDictionary<string, object> content = null)
+		public BindableDynamicObject(IDictionary<string, object> content = null, XmlSettings xmlSettings = null)
 		{
 			_data = content ?? new ExpandoObject();
+			_xmlSettings = xmlSettings ?? new XmlSettings();
 		}
 
 		#region DynamicObject Members
@@ -274,34 +275,6 @@ namespace DbParallel.DataAccess
 
 		#endregion
 
-		/// <summary>
-		/// Specifies BindableDynamicObject XML serialization settings
-		/// </summary>
-		public class XmlSettings
-		{
-			private bool _SerializePropertyAsAttribute;
-			/// <summary>
-			/// <para>Gets or sets a value indicating whether to serialize dynamic properties as XML attributes.</para>
-			/// 
-			/// </summary>
-			public bool SerializePropertyAsAttribute
-			{
-				get { return _SerializePropertyAsAttribute; }
-				set { _SerializePropertyAsAttribute = value; }
-			}
-
-			private bool _EmitNullValue = true;
-			/// <summary>
-			/// <para>Gets or sets a value that specifies whether to serialize the null or DbNull value for a property being serialized.</para>
-			/// 
-			/// </summary>
-			public bool EmitNullValue
-			{
-				get { return _EmitNullValue; }
-				set { _EmitNullValue = value; }
-			}
-		}
-
 		public static XmlQualifiedName GetSchema(XmlSchemaSet schemas)
 		{
 			//	XmlSerializableServices.AddDefaultSchema(schemas, _typeName);
@@ -322,14 +295,82 @@ namespace DbParallel.DataAccess
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)
 		{
-			if (writer.LookupPrefix(XmlSchema.Namespace) == null)
-				writer.WriteAttributeString("_", XmlSchema.Namespace, "");
-
-			// TODO
-			foreach (var pair in _data)
+			if (_xmlSettings.SerializePropertyAsAttribute)
 			{
-				// TODO
-				writer.WriteElementValue(pair.Key, pair.Value);
+				foreach (var pair in _data)
+					writer.WriteAttributeValue(pair.Key, pair.Value, _xmlSettings.EmitNullValue);
+			}
+			else // Serialize Property as XML Element
+			{
+				writer.PrepareTypeNamespaceAttribute("_", "", _xmlSettings.EmitDataSchemaType);
+
+				foreach (var pair in _data)
+					writer.WriteElementValue(pair.Key, pair.Value, _xmlSettings.EmitNullValue, _xmlSettings.EmitDataSchemaType);
+			}
+		}
+
+		/// <summary>
+		/// Specifies BindableDynamicObject XML serialization settings
+		/// </summary>
+		public class XmlSettings
+		{
+			/// <summary>
+			/// Indicates whether to emit data type attributes in the XML, or which type system to use.
+			/// </summary>
+			public enum DataSchemaType
+			{
+				/// <summary>
+				/// Not to emit data type information
+				/// </summary>
+				None = 0,
+
+				/// <summary>
+				/// Emit XSD type information ("http://www.w3.org/2001/XMLSchema" namespace)
+				/// </summary>
+				XSD = 1,
+
+				/// <summary>
+				/// Emit .NET type information ("http://schemas.microsoft.com/2003/10/Serialization/" namespace)
+				/// </summary>
+				NET = 2
+			}
+
+			private bool _SerializePropertyAsAttribute;
+			/// <summary>
+			/// <para>Gets or sets a boolean value indicating whether to serialize dynamic properties as XML attributes.</para>
+			/// <para>true to serialize dynamic properties as XML attributes; otherwise, false to serialize dynamic properties as XML elements.</para>
+			/// <para>The default is false.</para>
+			/// </summary>
+			public bool SerializePropertyAsAttribute
+			{
+				get { return _SerializePropertyAsAttribute; }
+				set { _SerializePropertyAsAttribute = value; }
+			}
+
+			private bool _EmitNullValue = true;
+			/// <summary>
+			/// <para>Gets or sets a boolean value indicating whether to serialize the null or DbNull value for a property being serialized.</para>
+			/// <para>true if the null or DbNull value for a property should be generated in the serialization stream; otherwise, false.</para>
+			/// <para>The default is true.</para>
+			/// </summary>
+			public bool EmitNullValue
+			{
+				get { return _EmitNullValue; }
+				set { _EmitNullValue = value; }
+			}
+
+			private DataSchemaType _EmitDataSchemaType = DataSchemaType.None;
+			/// <summary>
+			/// <para>Gets or sets a value indicating whether to emit data type attributes in the XML, or which type system to use. This setting only apply to SerializePropertyAsAttribute = false (serialize dynamic properties as XML elements).</para>
+			/// <para>None: Do not emit data type information;</para>
+			/// <para>XSD: Emit XSD type information ("http://www.w3.org/2001/XMLSchema" namespace);</para>
+			/// <para>NET: Emit .NET type information ("http://schemas.microsoft.com/2003/10/Serialization/" namespace);</para>
+			/// <para>The default is None.</para>
+			/// </summary>
+			public DataSchemaType EmitDataSchemaType
+			{
+				get { return _EmitDataSchemaType; }
+				set { _EmitDataSchemaType = value; }
 			}
 		}
 
