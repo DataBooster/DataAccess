@@ -328,12 +328,12 @@ namespace DbParallel.DataAccess
 				/// <summary>
 				/// Emit XSD type information ("http://www.w3.org/2001/XMLSchema" namespace)
 				/// </summary>
-				XSD = 1,
+				Xsd = 1,
 
 				/// <summary>
 				/// Emit .NET type information ("http://schemas.microsoft.com/2003/10/Serialization/" namespace)
 				/// </summary>
-				NET = 2
+				Net = 2
 			}
 
 			private bool _SerializePropertyAsAttribute;
