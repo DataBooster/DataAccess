@@ -5,8 +5,8 @@ namespace DbParallel.DataAccess
 {
 	public static class StringUtils
 	{
-		private static Random _RandomNumber;
-		private static object _RandomLock;
+		private static readonly Random _RandomNumber;
+		private static readonly object _RandomLock;
 
 		static StringUtils()
 		{

@@ -15,14 +15,15 @@ namespace DbParallel.DataAccess
 	[Serializable, XmlRoot(Namespace = ""), XmlSchemaProvider("GetSchema")]
 	public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, object>, ISerializable, IXmlSerializable
 	{
-		private static XmlQualifiedName _typeName = new XmlQualifiedName(typeof(BindableDynamicObject).Name, "");
-		private XmlSettings _xmlSettings;
-		private IDictionary<string, object> _data;
+		private static readonly XmlQualifiedName _typeName = new XmlQualifiedName(typeof(BindableDynamicObject).Name, "");
+		private static readonly XmlSettings _defaultXmlSettings = new XmlSettings();
+		private readonly XmlSettings _xmlSettings;
+		private readonly IDictionary<string, object> _data;
 
 		public BindableDynamicObject(IDictionary<string, object> content = null, XmlSettings xmlSettings = null)
 		{
 			_data = content ?? new ExpandoObject();
-			_xmlSettings = xmlSettings ?? new XmlSettings();
+			_xmlSettings = xmlSettings ?? _defaultXmlSettings;
 		}
 
 		#region DynamicObject Members

@@ -19,7 +19,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		private static ConcurrentDictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionDataSource/ConnectionString
+		private static readonly ConcurrentDictionary<string, StoredProcedureDictionary> _CacheRoot;	// By ConnectionDataSource/ConnectionString
 		private static long _ExpireIntervalTicks;
 		public static TimeSpan ExpireInterval
 		{
