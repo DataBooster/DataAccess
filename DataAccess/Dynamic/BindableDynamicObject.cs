@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 
 namespace DbParallel.DataAccess
 {
-	[Serializable, XmlSchemaProvider("GetSchema")]
+	[Serializable, XmlRoot(Namespace=""), XmlSchemaProvider("GetSchema")]
 	public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, object>, ISerializable, IXmlSerializable
 	{
 		private static XmlQualifiedName _typeName = new XmlQualifiedName(typeof(BindableDynamicObject).Name, "");
@@ -273,6 +273,34 @@ namespace DbParallel.DataAccess
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Specifies BindableDynamicObject XML serialization settings
+		/// </summary>
+		public class XmlSettings
+		{
+			private bool _SerializePropertyAsAttribute;
+			/// <summary>
+			/// <para>Gets or sets a value indicating whether to serialize dynamic properties as XML attributes.</para>
+			/// 
+			/// </summary>
+			public bool SerializePropertyAsAttribute
+			{
+				get { return _SerializePropertyAsAttribute; }
+				set { _SerializePropertyAsAttribute = value; }
+			}
+
+			private bool _EmitNullValue = true;
+			/// <summary>
+			/// <para>Gets or sets a value that specifies whether to serialize the null or DbNull value for a property being serialized.</para>
+			/// 
+			/// </summary>
+			public bool EmitNullValue
+			{
+				get { return _EmitNullValue; }
+				set { _EmitNullValue = value; }
+			}
+		}
 
 		public static XmlQualifiedName GetSchema(XmlSchemaSet schemas)
 		{
