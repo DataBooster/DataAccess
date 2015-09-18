@@ -12,10 +12,11 @@ using System.Xml.Serialization;
 
 namespace DbParallel.DataAccess
 {
-	[Serializable, XmlRoot(Namespace = ""), XmlSchemaProvider("GetSchema")]
+	[Serializable, XmlSchemaProvider("GetSchema"), XmlRoot(Namespace = "", ElementName = BindableDynamicObject.XmlElementName)]
 	public class BindableDynamicObject : DynamicObject, ICustomTypeDescriptor, IDictionary<string, object>, ISerializable, IXmlSerializable
 	{
-		private static readonly XmlQualifiedName _typeName = new XmlQualifiedName(typeof(BindableDynamicObject).Name, "");
+		internal const string XmlElementName = "Record";
+		private static readonly XmlQualifiedName _typeName = new XmlQualifiedName(XmlElementName, "");
 		private static readonly XmlSettings _defaultXmlSettings = new XmlSettings();
 		private readonly XmlSettings _xmlSettings;
 		private readonly IDictionary<string, object> _data;
@@ -344,8 +345,17 @@ namespace DbParallel.DataAccess
 			/// </summary>
 			public bool SerializePropertyAsAttribute
 			{
-				get { return _SerializePropertyAsAttribute; }
-				set { _SerializePropertyAsAttribute = value; }
+				get
+				{
+					return _SerializePropertyAsAttribute;
+				}
+				set
+				{
+					_SerializePropertyAsAttribute = value;
+
+					if (_SerializePropertyAsAttribute && _EmitDataSchemaType != DataSchemaType.None)
+						_EmitDataSchemaType = DataSchemaType.None;
+				}
 			}
 
 			private bool _EmitNullValue = true;
@@ -371,7 +381,7 @@ namespace DbParallel.DataAccess
 			public DataSchemaType EmitDataSchemaType
 			{
 				get { return _EmitDataSchemaType; }
-				set { _EmitDataSchemaType = value; }
+				set { if (!_SerializePropertyAsAttribute) _EmitDataSchemaType = value; }
 			}
 		}
 
