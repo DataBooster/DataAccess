@@ -135,7 +135,7 @@ namespace DbParallel.DataAccess
 
 		protected StoredProcedureResponse ExecuteStoredProcedure<T>(StoredProcedureRequest request) where T : IDictionary<string, object>, new()
 		{
-			StoredProcedureResponse spResponse = new StoredProcedureResponse();
+			StoredProcedureResponse spResponse = new StoredProcedureResponse(_DynamicObjectXmlSettings);
 			List<DbParameter> outputParameters;
 
 			DbParameter returnParameter = ExecuteStoredProcedure(request, reader =>

@@ -20,22 +20,26 @@ namespace DbParallel.DataAccess
 				if (isNull)
 					writer.WriteAttributeString("nil", XmlSchema.InstanceNamespace, "true");
 				else
-				{
-					switch (emitDataSchemaType)
-					{
-						case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
-							writer.WriteQualifiedAttributeString("type", XmlSchema.InstanceNamespace, GetXsiType(value), XmlSchema.Namespace);
-							break;
-						case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
-							writer.WriteAttributeString("Type", NsNetXs, value.GetType().FullName);
-							break;
-					}
-
-					writer.WriteValue(value);
-				}
+					writer.WriteValueWithType(value, emitDataSchemaType);
 
 				writer.WriteEndElement();
 			}
+		}
+
+		internal static void WriteValueWithType(this XmlWriter writer, object value, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
+		{
+			switch (emitDataSchemaType)
+			{
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+					writer.WriteQualifiedAttributeString("type", XmlSchema.InstanceNamespace, GetXsiType(value), XmlSchema.Namespace);
+					break;
+
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+					writer.WriteAttributeString("Type", NsNetXs, value.GetType().FullName);
+					break;
+			}
+
+			writer.WriteValue(value);
 		}
 
 		private static void WriteQualifiedAttributeString(this XmlWriter writer, string localName, string ns, string value, string valueNs)
@@ -60,8 +64,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		internal static void PrepareTypeNamespaceAttribute(this XmlWriter writer, string localName, string value,
-			BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
+		internal static void PrepareTypeNamespaceAttribute(this XmlWriter writer, string localName, string value, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
 		{
 			switch (emitDataSchemaType)
 			{
@@ -69,9 +72,26 @@ namespace DbParallel.DataAccess
 					if (string.IsNullOrEmpty(writer.LookupPrefix(XmlSchema.Namespace)))
 						writer.WriteAttributeString(localName, XmlSchema.Namespace, value);
 					break;
+
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
 					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNetXs)))
 						writer.WriteAttributeString(localName, NsNetXs, value);
+					break;
+			}
+		}
+
+		internal static void PrepareTypeNamespaceRoot(this XmlWriter writer, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
+		{
+			switch (emitDataSchemaType)
+			{
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+					if (string.IsNullOrEmpty(writer.LookupPrefix(XmlSchema.Namespace)))
+						writer.WriteAttributeString("xmlns", "x", null, XmlSchema.Namespace);
+					break;
+
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNetXs)))
+						writer.WriteAttributeString("xmlns", "z", null, NsNetXs);
 					break;
 			}
 		}
