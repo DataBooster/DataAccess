@@ -39,7 +39,7 @@ namespace DbParallel.DataAccess
 					break;
 			}
 
-			writer.WriteValue(value);
+			writer.TryWriteValue(value);
 		}
 
 		private static void WriteQualifiedAttributeString(this XmlWriter writer, string localName, string ns, string value, string valueNs)
@@ -58,9 +58,21 @@ namespace DbParallel.DataAccess
 				writer.WriteStartAttribute(localName);
 
 				if (!isNull)
-					writer.WriteValue(value);
+					writer.TryWriteValue(value);
 
 				writer.WriteEndAttribute();
+			}
+		}
+
+		private static void TryWriteValue(this XmlWriter writer, object value)
+		{
+			try
+			{
+				writer.WriteValue(value);
+			}
+			catch (InvalidCastException)
+			{
+				writer.WriteString(value.ToString());
 			}
 		}
 

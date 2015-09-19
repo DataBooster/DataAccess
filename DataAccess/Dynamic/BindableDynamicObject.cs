@@ -299,7 +299,9 @@ namespace DbParallel.DataAccess
 		{
 			if (_xmlSettings.SerializePropertyAsAttribute)
 			{
-				foreach (var pair in _data)
+				var invertedProperties = _data.Reverse();
+
+				foreach (var pair in invertedProperties)
 					writer.WriteAttributeValue(pair.Key, pair.Value, _xmlSettings.EmitNullValue);
 			}
 			else // Serialize Property as XML Element
@@ -382,6 +384,23 @@ namespace DbParallel.DataAccess
 			{
 				get { return _EmitDataSchemaType; }
 				set { if (!_SerializePropertyAsAttribute) _EmitDataSchemaType = value; }
+			}
+
+			internal void ReadXml(XmlReader reader)
+			{
+				throw new NotImplementedException();
+			}
+
+			internal void WriteXml(XmlWriter writer)
+			{
+				PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(this);
+				PropertyDescriptor prop;
+
+				for (int i = properties.Count - 1; i >= 0; i--)
+				{
+					prop = properties[i];
+					writer.WriteAttributeValue(prop.Name, prop.GetValue(this));
+				}
 			}
 		}
 

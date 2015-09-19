@@ -140,7 +140,10 @@ namespace DbParallel.DataAccess
 		void IXmlSerializable.WriteXml(XmlWriter writer)
 		{
 			if (_xmlSettings != null)
+			{
 				writer.PrepareTypeNamespaceRoot(_xmlSettings.EmitDataSchemaType);
+				_xmlSettings.WriteXml(writer);
+			}
 
 			DataContractSerializer serializer = new DataContractSerializer(typeof(XStoredProcedureResponse));
 			XStoredProcedureResponse responseXml = new XStoredProcedureResponse(this, _xmlSettings);
