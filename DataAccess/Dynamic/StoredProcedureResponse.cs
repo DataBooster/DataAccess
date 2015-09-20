@@ -147,6 +147,7 @@ namespace DbParallel.DataAccess
 
 			DataContractSerializer serializer = new DataContractSerializer(typeof(XStoredProcedureResponse));
 			XStoredProcedureResponse responseXml = new XStoredProcedureResponse(this, _xmlSettings);
+
 			serializer.WriteObjectContent(writer, responseXml);
 		}
 
