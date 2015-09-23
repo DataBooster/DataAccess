@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Dynamic;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
@@ -21,7 +22,9 @@ namespace DbParallel.DataAccess
 		private readonly XmlSettings _xmlSettings;
 		private readonly IDictionary<string, object> _data;
 
-		public BindableDynamicObject(IDictionary<string, object> content = null, XmlSettings xmlSettings = null)
+		public BindableDynamicObject() : this(null) { }
+
+		public BindableDynamicObject(IDictionary<string, object> content, XmlSettings xmlSettings = null)
 		{
 			_data = content ?? new ExpandoObject();
 			_xmlSettings = xmlSettings ?? _defaultXmlSettings;
@@ -292,7 +295,10 @@ namespace DbParallel.DataAccess
 
 		void IXmlSerializable.ReadXml(XmlReader reader)
 		{
-			throw new NotImplementedException();
+			XElement x = new XElement(reader.LocalName);
+			(x as IXmlSerializable).ReadXml(reader);
+
+			// TODO
 		}
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)
