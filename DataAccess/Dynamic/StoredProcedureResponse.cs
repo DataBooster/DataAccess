@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Collections.Generic;
@@ -16,7 +17,9 @@ namespace DbParallel.DataAccess
 		public object ReturnValue { get; set; }
 		#endregion
 
-		public StoredProcedureResponse(BindableDynamicObject.XmlSettings xmlSettings = null)
+		public StoredProcedureResponse() : this(null) { }
+
+		public StoredProcedureResponse(BindableDynamicObject.XmlSettings xmlSettings)
 		{
 			ResultSets = new List<IList<BindableDynamicObject>>();
 			_xmlSettings = xmlSettings;
@@ -52,7 +55,9 @@ namespace DbParallel.DataAccess
 					set { _Value = value; }
 				}
 
-				internal XValue(object simpleValue = null, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType = BindableDynamicObject.XmlSettings.DataSchemaType.None)
+				private XValue() : this(null) { }
+
+				internal XValue(object simpleValue, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType = BindableDynamicObject.XmlSettings.DataSchemaType.None)
 				{
 					_Value = simpleValue;
 					_EmitDataSchemaType = emitDataSchemaType;
@@ -65,7 +70,10 @@ namespace DbParallel.DataAccess
 
 				void IXmlSerializable.ReadXml(XmlReader reader)
 				{
-					throw new NotImplementedException();
+					XElement x = new XElement(reader.LocalName);
+					(x as IXmlSerializable).ReadXml(reader);
+
+					// TODO
 				}
 
 				void IXmlSerializable.WriteXml(XmlWriter writer)
@@ -107,7 +115,9 @@ namespace DbParallel.DataAccess
 				}
 			}
 
-			internal XStoredProcedureResponse(StoredProcedureResponse spResponse = null, BindableDynamicObject.XmlSettings xmlSettings = null)
+			private XStoredProcedureResponse() : this(null, null) { }
+
+			internal XStoredProcedureResponse(StoredProcedureResponse spResponse, BindableDynamicObject.XmlSettings xmlSettings)
 			{
 				_OriginalResponse = spResponse ?? new StoredProcedureResponse(xmlSettings);
 
@@ -134,7 +144,10 @@ namespace DbParallel.DataAccess
 
 		void IXmlSerializable.ReadXml(XmlReader reader)
 		{
-			throw new NotImplementedException();
+			XElement x = new XElement(reader.LocalName);
+			(x as IXmlSerializable).ReadXml(reader);
+
+			// TODO
 		}
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)
