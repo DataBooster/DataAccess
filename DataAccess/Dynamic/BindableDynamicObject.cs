@@ -320,7 +320,7 @@ namespace DbParallel.DataAccess
 		/// <summary>
 		/// Specifies BindableDynamicObject XML serialization settings
 		/// </summary>
-		public class XmlSettings
+		public class XmlSettings : IXmlSerializable
 		{
 			/// <summary>
 			/// Indicates whether to emit data type attributes in the XML, or which type system to use.
@@ -390,12 +390,36 @@ namespace DbParallel.DataAccess
 				set { if (!_SerializePropertyAsAttribute) _EmitDataSchemaType = value; }
 			}
 
-			internal void ReadXml(XmlReader reader)
+			XmlSchema IXmlSerializable.GetSchema()
 			{
-				throw new NotImplementedException();
+				return null;
 			}
 
-			internal void WriteXml(XmlWriter writer)
+			internal void ReadXml(XElement xe)
+			{
+				bool? serializePropertyAsAttribute = (bool?)xe.Attribute("SerializePropertyAsAttribute");
+				bool? emitNullValue = (bool?)xe.Attribute("EmitNullValue");
+				string emitDataSchemaType = (string)xe.Attribute("EmitDataSchemaType");
+
+				if (serializePropertyAsAttribute.HasValue)
+					_SerializePropertyAsAttribute = serializePropertyAsAttribute.Value;
+
+				if (emitNullValue.HasValue)
+					_EmitNullValue = emitNullValue.Value;
+
+				if (!string.IsNullOrWhiteSpace(emitDataSchemaType))
+					_EmitDataSchemaType = (DataSchemaType)Enum.Parse(typeof(DataSchemaType), emitDataSchemaType, true);
+			}
+
+			void IXmlSerializable.ReadXml(XmlReader reader)
+			{
+				XElement xe = new XElement(reader.LocalName);
+				(xe as IXmlSerializable).ReadXml(reader);
+
+				ReadXml(xe);
+			}
+
+			void IXmlSerializable.WriteXml(XmlWriter writer)
 			{
 				PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(this);
 

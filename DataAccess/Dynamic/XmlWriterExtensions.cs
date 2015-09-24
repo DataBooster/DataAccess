@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 
 namespace DbParallel.DataAccess
 {
 	internal static class XmlWriterExtensions
 	{
-		private const string NsNetXs = "http://schemas.microsoft.com/2003/10/Serialization/";
+		private const string NsNet = "http://schemas.microsoft.com/2003/10/Serialization/";
+		internal static readonly XNamespace XNsNet = NsNet;
+		internal static readonly XNamespace XNsXsd = XmlSchema.Namespace;
+		internal static readonly XNamespace XNsXsi = XmlSchema.InstanceNamespace;
+		private static readonly XName XnNil = XNsXsi + "nil";
 
 		public static void WriteElementValue(this XmlWriter writer, string localName, object value, bool emitNullValue = true,
 			BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType = BindableDynamicObject.XmlSettings.DataSchemaType.None)
@@ -35,7 +40,7 @@ namespace DbParallel.DataAccess
 					break;
 
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
-					writer.WriteAttributeString("Type", NsNetXs, value.GetType().FullName);
+					writer.WriteAttributeString("Type", NsNet, value.GetType().FullName);
 					break;
 			}
 
@@ -86,8 +91,8 @@ namespace DbParallel.DataAccess
 					break;
 
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
-					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNetXs)))
-						writer.WriteAttributeString(localName, NsNetXs, value);
+					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNet)))
+						writer.WriteAttributeString(localName, NsNet, value);
 					break;
 			}
 		}
@@ -102,8 +107,8 @@ namespace DbParallel.DataAccess
 					break;
 
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
-					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNetXs)))
-						writer.WriteAttributeString("xmlns", "z", null, NsNetXs);
+					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNet)))
+						writer.WriteAttributeString("xmlns", "z", null, NsNet);
 					break;
 			}
 		}
@@ -156,6 +161,11 @@ namespace DbParallel.DataAccess
 		private static bool IsNull(object value)
 		{
 			return (value == null || Convert.IsDBNull(value));
+		}
+
+		internal static string NilAwareXmlValue(this XElement xe)
+		{
+			return ((bool?)xe.Attribute(XnNil) ?? false) ? null : xe.Value;
 		}
 	}
 }
