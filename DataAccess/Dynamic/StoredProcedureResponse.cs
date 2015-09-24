@@ -63,6 +63,11 @@ namespace DbParallel.DataAccess
 					_EmitDataSchemaType = emitDataSchemaType;
 				}
 
+				internal void ReadXml(XElement xe)
+				{
+
+				}
+
 				XmlSchema IXmlSerializable.GetSchema()
 				{
 					return null;
@@ -70,10 +75,10 @@ namespace DbParallel.DataAccess
 
 				void IXmlSerializable.ReadXml(XmlReader reader)
 				{
-					XElement x = new XElement(reader.LocalName);
-					(x as IXmlSerializable).ReadXml(reader);
+					XElement xe = new XElement(reader.LocalName);
+					(xe as IXmlSerializable).ReadXml(reader);
 
-					// TODO
+					ReadXml(xe);
 				}
 
 				void IXmlSerializable.WriteXml(XmlWriter writer)
@@ -133,7 +138,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		private readonly BindableDynamicObject.XmlSettings _xmlSettings;
+		private BindableDynamicObject.XmlSettings _xmlSettings;
 
 		#region IXmlSerializable Members
 
@@ -144,9 +149,21 @@ namespace DbParallel.DataAccess
 
 		void IXmlSerializable.ReadXml(XmlReader reader)
 		{
-			XElement x = new XElement(reader.LocalName);
-			(x as IXmlSerializable).ReadXml(reader);
+			XElement xe = new XElement(reader.LocalName);
+			(xe as IXmlSerializable).ReadXml(reader);
 
+			if (_xmlSettings == null)
+				_xmlSettings = new BindableDynamicObject.XmlSettings();
+
+			_xmlSettings.ReadXml(xe);
+
+			XElement xReturnValue = xe.Element("ReturnValue");
+
+			if (xReturnValue != null)
+			{
+				string returnValue = xReturnValue.NilAwareXmlValue();
+
+			}
 			// TODO
 		}
 
@@ -155,7 +172,7 @@ namespace DbParallel.DataAccess
 			if (_xmlSettings != null)
 			{
 				writer.PrepareTypeNamespaceRoot(_xmlSettings.EmitDataSchemaType);
-				_xmlSettings.WriteXml(writer);
+				(_xmlSettings as IXmlSerializable).WriteXml(writer);
 			}
 
 			DataContractSerializer serializer = new DataContractSerializer(typeof(XStoredProcedureResponse));
