@@ -160,10 +160,8 @@ namespace DbParallel.DataAccess
 			XElement xReturnValue = xe.Element("ReturnValue");
 
 			if (xReturnValue != null)
-			{
-				string returnValue = xReturnValue.NilAwareXmlValue();
+				ReturnValue = xReturnValue.ReadValue(_xmlSettings.EmitDataSchemaType);
 
-			}
 			// TODO
 		}
 

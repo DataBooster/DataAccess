@@ -2,11 +2,14 @@
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using System.Data.Linq;
 
 namespace DbParallel.DataAccess
 {
 	internal static class XmlWriterExtensions
 	{
+		private const string XsdTypeAttributeName = "type";
+		private const string NetTypeAttributeName = "Type";
 		private const string NsNet = "http://schemas.microsoft.com/2003/10/Serialization/";
 		internal static readonly XNamespace XNsNet = NsNet;
 		internal static readonly XNamespace XNsXsd = XmlSchema.Namespace;
@@ -33,14 +36,21 @@ namespace DbParallel.DataAccess
 
 		internal static void WriteValueWithType(this XmlWriter writer, object value, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
 		{
+			Type type = value.GetType();
+
 			switch (emitDataSchemaType)
 			{
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
-					writer.WriteQualifiedAttributeString("type", XmlSchema.InstanceNamespace, GetXsiType(value), XmlSchema.Namespace);
+					string xsiType = GetBuiltInXsiType(type);
+
+					if (xsiType == null)
+						writer.WriteAttributeString(XsdTypeAttributeName, XmlSchema.InstanceNamespace, type.FullName);
+					else
+						writer.WriteQualifiedAttributeString(XsdTypeAttributeName, XmlSchema.InstanceNamespace, xsiType, XmlSchema.Namespace);
 					break;
 
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
-					writer.WriteAttributeString("Type", NsNet, value.GetType().FullName);
+					writer.WriteAttributeString(NetTypeAttributeName, NsNet, type.FullName);
 					break;
 			}
 
@@ -113,13 +123,6 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		private static string GetXsiType(object value)
-		{
-			Type type = value.GetType();
-
-			return GetBuiltInXsiType(type) ?? type.Name;
-		}
-
 		private static string GetBuiltInXsiType(Type type)
 		{
 			if (type.IsEnum)
@@ -158,14 +161,82 @@ namespace DbParallel.DataAccess
 			return null;
 		}
 
+		private static Type GetXsdType(string xsdType)
+		{
+			switch (xsdType)
+			{
+				case null:
+				case "":
+				case "string": return typeof(string);
+				case "boolean": return typeof(bool);
+				case "unsignedByte": return typeof(byte);
+				case "char": return typeof(char);
+				case "dateTime": return typeof(DateTime);
+				case "decimal": return typeof(decimal);
+				case "double": return typeof(double);
+				case "short": return typeof(short);
+				case "int": return typeof(int);
+				case "long": return typeof(long);
+				case "byte": return typeof(sbyte);
+				case "float": return typeof(float);
+				case "unsignedShort": return typeof(ushort);
+				case "unsignedInt": return typeof(uint);
+				case "unsignedLong": return typeof(ulong);
+				case "duration": return typeof(TimeSpan);
+				case "guid": return typeof(Guid);
+				case "anyURI": return typeof(Uri);
+				case "QName": return typeof(XmlQualifiedName);
+				case "base64Binary": return typeof(byte[]);
+			}
+
+			return Type.GetType(xsdType) ?? typeof(string);
+		}
+
 		private static bool IsNull(object value)
 		{
 			return (value == null || Convert.IsDBNull(value));
 		}
 
-		internal static string NilAwareXmlValue(this XElement xe)
+		internal static object ReadValue(this XElement xe, BindableDynamicObject.XmlSettings.DataSchemaType dataSchemaType)
 		{
-			return ((bool?)xe.Attribute(XnNil) ?? false) ? null : xe.Value;
+			if ((bool?)xe.Attribute(XnNil) ?? false)
+				return null;
+
+			XAttribute declaredAttribute;
+			string declaredType = null;
+
+			switch (dataSchemaType)
+			{
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+					declaredAttribute = xe.Attribute(XNsXsi + XsdTypeAttributeName);
+					if (declaredAttribute != null && !string.IsNullOrEmpty(declaredAttribute.Value))
+					{
+						declaredType = declaredAttribute.Value;
+						int colon = declaredType.IndexOf(':');
+						if (colon >= 0)
+							declaredType = declaredType.Substring(colon + 1);
+					}
+					break;
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+					declaredAttribute = xe.Attribute(XNsNet + NetTypeAttributeName);
+					if (declaredAttribute != null && !string.IsNullOrEmpty(declaredAttribute.Value))
+						declaredType = declaredAttribute.Value;
+					break;
+			}
+
+			Type valueType = GetXsdType(declaredType);
+
+			if (valueType == typeof(string))
+				return xe.Value;
+
+			try
+			{
+				return DBConvert.ChangeType(xe.Value, valueType);
+			}
+			catch
+			{
+				return xe.Value;
+			}
 		}
 	}
 }
