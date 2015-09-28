@@ -284,7 +284,8 @@ namespace DbParallel.DataAccess
 
 		private static void ReadAttributes(this XElement xe, IDictionary<string, object> dynamicObject)
 		{
-			var localAttributes = xe.Attributes().Where(a => a.Name.Namespace == XNamespace.None);
+			XNamespace defaultNamespace = xe.GetDefaultNamespace();
+			var localAttributes = xe.Attributes().Where(a => a.Name.Namespace == defaultNamespace);
 
 			foreach (var attr in localAttributes)
 				dynamicObject[attr.Name.LocalName] = attr.Value;
@@ -292,7 +293,9 @@ namespace DbParallel.DataAccess
 
 		private static void ReadElements(this XElement xe, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings.DataSchemaType dataSchemaType)
 		{
-			foreach (var e in xe.Elements())
+			XNamespace defaultNamespace = xe.GetDefaultNamespace();
+
+			foreach (var e in xe.Elements().Where(e => e.Name.Namespace == defaultNamespace))
 				dynamicObject[e.Name.LocalName] = e.ReadValue(dataSchemaType);
 		}
 

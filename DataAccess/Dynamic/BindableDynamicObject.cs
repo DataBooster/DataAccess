@@ -402,9 +402,10 @@ namespace DbParallel.DataAccess
 
 			internal void ReadXml(XElement xe)
 			{
-				bool? serializePropertyAsAttribute = (bool?)xe.Attribute("SerializePropertyAsAttribute");
-				bool? emitNullValue = (bool?)xe.Attribute("EmitNullValue");
-				string emitDataSchemaType = (string)xe.Attribute("EmitDataSchemaType");
+				XNamespace defaultNamespace = xe.GetDefaultNamespace();
+				bool? serializePropertyAsAttribute = (bool?)xe.Attribute(defaultNamespace + "SerializePropertyAsAttribute");
+				bool? emitNullValue = (bool?)xe.Attribute(defaultNamespace + "EmitNullValue");
+				string emitDataSchemaType = (string)xe.Attribute(defaultNamespace + "EmitDataSchemaType");
 
 				if (serializePropertyAsAttribute.HasValue)
 					_SerializePropertyAsAttribute = serializePropertyAsAttribute.Value;
