@@ -151,21 +151,41 @@ namespace DbParallel.DataAccess
 		{
 			XElement xe = new XElement(reader.LocalName);
 			(xe as IXmlSerializable).ReadXml(reader);
+			XNamespace defaultNamespace = xe.GetDefaultNamespace();
 
 			if (_xmlSettings == null)
 				_xmlSettings = new BindableDynamicObject.XmlSettings();
 
 			_xmlSettings.ReadXml(xe);
 
-			XElement xResultSets = xe.Element("ResultSets");
+			XElement xResultSets = xe.Element(defaultNamespace + "ResultSets");
 
 			if (xResultSets != null)
 			{
-				// TODO
+				List<BindableDynamicObject> resultSet;
 
+				if (ResultSets == null)
+					ResultSets = new List<IList<BindableDynamicObject>>();
+				else
+					ResultSets.Clear();
+
+				foreach (var xResultSet in xResultSets.Elements(defaultNamespace + "ResultSet"))
+				{
+					resultSet = new List<BindableDynamicObject>();
+
+					foreach (var record in xResultSet.Elements(defaultNamespace + "Record"))
+					{
+						BindableDynamicObject dynamicObject = new BindableDynamicObject(null, _xmlSettings);
+
+						dynamicObject.ReadXml(record);
+						resultSet.Add(dynamicObject);
+					}
+
+					ResultSets.Add(resultSet);
+				}
 			}
 
-			XElement xOutputParameters = xe.Element("OutputParameters");
+			XElement xOutputParameters = xe.Element(defaultNamespace + "OutputParameters");
 
 			if (xOutputParameters != null)
 			{
@@ -173,7 +193,7 @@ namespace DbParallel.DataAccess
 				OutputParameters.ReadXml(xOutputParameters);
 			}
 
-			XElement xReturnValue = xe.Element("ReturnValue");
+			XElement xReturnValue = xe.Element(defaultNamespace + "ReturnValue");
 
 			if (xReturnValue != null)
 				ReturnValue = xReturnValue.ReadValue(_xmlSettings.EmitDataSchemaType);
