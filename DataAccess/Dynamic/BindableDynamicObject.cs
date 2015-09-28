@@ -286,6 +286,11 @@ namespace DbParallel.DataAccess
 			return _typeName;
 		}
 
+		internal void ReadXml(XElement xe)
+		{
+			xe.ReadTo(_data, _xmlSettings);
+		}
+
 		#region IXmlSerializable Members
 
 		XmlSchema IXmlSerializable.GetSchema()
@@ -298,7 +303,7 @@ namespace DbParallel.DataAccess
 			XElement x = new XElement(reader.LocalName);
 			(x as IXmlSerializable).ReadXml(reader);
 
-			// TODO
+			ReadXml(x);
 		}
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)

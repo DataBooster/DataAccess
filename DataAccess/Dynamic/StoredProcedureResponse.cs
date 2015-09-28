@@ -65,7 +65,7 @@ namespace DbParallel.DataAccess
 
 				internal void ReadXml(XElement xe)
 				{
-
+					_Value = xe.ReadValue(_EmitDataSchemaType);
 				}
 
 				XmlSchema IXmlSerializable.GetSchema()
@@ -157,12 +157,26 @@ namespace DbParallel.DataAccess
 
 			_xmlSettings.ReadXml(xe);
 
+			XElement xResultSets = xe.Element("ResultSets");
+
+			if (xResultSets != null)
+			{
+				// TODO
+
+			}
+
+			XElement xOutputParameters = xe.Element("OutputParameters");
+
+			if (xOutputParameters != null)
+			{
+				OutputParameters = new BindableDynamicObject(null, _xmlSettings);
+				OutputParameters.ReadXml(xOutputParameters);
+			}
+
 			XElement xReturnValue = xe.Element("ReturnValue");
 
 			if (xReturnValue != null)
 				ReturnValue = xReturnValue.ReadValue(_xmlSettings.EmitDataSchemaType);
-
-			// TODO
 		}
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)

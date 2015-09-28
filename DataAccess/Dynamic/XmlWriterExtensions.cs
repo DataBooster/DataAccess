@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Data.Linq;
+using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
@@ -237,6 +239,69 @@ namespace DbParallel.DataAccess
 			{
 				return xe.Value;
 			}
+		}
+
+		//private static object ReadValue(this XElement xe)
+		//{
+		//	if ((bool?)xe.Attribute(XnNil) ?? false)
+		//		return null;
+
+		//	string declaredType = null;
+		//	XAttribute declaredAttribute = xe.Attribute(XNsXsi + XsdTypeAttributeName);
+
+		//	if (declaredAttribute != null)
+		//	{
+		//		if (!string.IsNullOrEmpty(declaredAttribute.Value))
+		//		{
+		//			declaredType = declaredAttribute.Value;
+		//			int colon = declaredType.IndexOf(':');
+		//			if (colon >= 0)
+		//				declaredType = declaredType.Substring(colon + 1);
+		//		}
+		//	}
+		//	else
+		//	{
+		//		declaredAttribute = xe.Attribute(XNsNet + NetTypeAttributeName);
+
+		//		if (declaredAttribute != null && !string.IsNullOrEmpty(declaredAttribute.Value))
+		//			declaredType = declaredAttribute.Value;
+		//	}
+
+		//	Type valueType = GetXsdType(declaredType);
+
+		//	if (valueType == typeof(string))
+		//		return xe.Value;
+
+		//	try
+		//	{
+		//		return DBConvert.ChangeType(xe.Value, valueType);
+		//	}
+		//	catch
+		//	{
+		//		return xe.Value;
+		//	}
+		//}
+
+		private static void ReadAttributes(this XElement xe, IDictionary<string, object> dynamicObject)
+		{
+			var localAttributes = xe.Attributes().Where(a => a.Name.Namespace == XNamespace.None);
+
+			foreach (var attr in localAttributes)
+				dynamicObject[attr.Name.LocalName] = attr.Value;
+		}
+
+		private static void ReadElements(this XElement xe, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings.DataSchemaType dataSchemaType)
+		{
+			foreach (var e in xe.Elements())
+				dynamicObject[e.Name.LocalName] = e.ReadValue(dataSchemaType);
+		}
+
+		internal static void ReadTo(this XElement xe, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings xmlSettings)
+		{
+			if (xmlSettings.SerializePropertyAsAttribute)
+				xe.ReadAttributes(dynamicObject);
+			else
+				xe.ReadElements(dynamicObject, xmlSettings.EmitDataSchemaType);
 		}
 	}
 }
