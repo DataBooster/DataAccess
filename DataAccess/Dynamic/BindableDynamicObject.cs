@@ -18,7 +18,7 @@ namespace DbParallel.DataAccess
 	{
 		internal const string XmlElementName = "Record";
 		private static readonly XmlQualifiedName _typeName = new XmlQualifiedName(XmlElementName, "");
-		private static readonly XmlSettings _defaultXmlSettings = new XmlSettings();
+		private static readonly XmlSettings _defaultXmlSettings = new XmlSettings(true);
 		private readonly XmlSettings _xmlSettings;
 		private readonly IDictionary<string, object> _data;
 
@@ -393,6 +393,20 @@ namespace DbParallel.DataAccess
 			{
 				get { return _EmitDataSchemaType; }
 				set { if (!_SerializePropertyAsAttribute) _EmitDataSchemaType = value; }
+			}
+
+			private readonly bool _IsImplicit;
+
+			public XmlSettings() { }
+
+			internal XmlSettings(bool isImplicit)
+			{
+				_IsImplicit = isImplicit;
+			}
+
+			internal bool IsImplicit()
+			{
+				return _IsImplicit;
 			}
 
 			XmlSchema IXmlSerializable.GetSchema()
