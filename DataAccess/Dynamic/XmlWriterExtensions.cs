@@ -199,30 +199,32 @@ namespace DbParallel.DataAccess
 			return (value == null || Convert.IsDBNull(value));
 		}
 
-		internal static object ReadValue(this XElement xe, BindableDynamicObject.XmlSettings.DataSchemaType dataSchemaType)
+		internal static object ReadValue(this XElement xe, BindableDynamicObject.XmlSettings xmlSettings)
 		{
 			if ((bool?)xe.Attribute(XnNil) ?? false)
 				return null;
 
-			XAttribute declaredAttribute;
 			string declaredType = null;
 
-			switch (dataSchemaType)
+			switch (xmlSettings.EmitDataSchemaType)
 			{
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
-					declaredAttribute = xe.Attribute(XNsXsi + XsdTypeAttributeName);
-					if (declaredAttribute != null && !string.IsNullOrEmpty(declaredAttribute.Value))
-					{
-						declaredType = declaredAttribute.Value;
-						int colon = declaredType.IndexOf(':');
-						if (colon >= 0)
-							declaredType = declaredType.Substring(colon + 1);
-					}
+					declaredType = xe.GetXsdTypeAttributeString();
+					if (declaredType == null && xmlSettings.IsImplicit())
+						declaredType = xe.GetNetTypeAttributeString();
 					break;
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
-					declaredAttribute = xe.Attribute(XNsNet + NetTypeAttributeName);
-					if (declaredAttribute != null && !string.IsNullOrEmpty(declaredAttribute.Value))
-						declaredType = declaredAttribute.Value;
+					declaredType = xe.GetNetTypeAttributeString();
+					if (declaredType == null && xmlSettings.IsImplicit())
+						declaredType = xe.GetXsdTypeAttributeString();
+					break;
+				default:
+					if (xmlSettings.IsImplicit())
+					{
+						declaredType = xe.GetXsdTypeAttributeString();
+						if (declaredType == null)
+							declaredType = xe.GetNetTypeAttributeString();
+					}
 					break;
 			}
 
@@ -241,46 +243,30 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		//private static object ReadValue(this XElement xe)
-		//{
-		//	if ((bool?)xe.Attribute(XnNil) ?? false)
-		//		return null;
+		private static string GetXsdTypeAttributeString(this XElement xe)
+		{
+			XAttribute declaredAttribute = xe.Attribute(XNsXsi + XsdTypeAttributeName);
 
-		//	string declaredType = null;
-		//	XAttribute declaredAttribute = xe.Attribute(XNsXsi + XsdTypeAttributeName);
+			if (declaredAttribute == null)
+				return null;
+			if (string.IsNullOrEmpty(declaredAttribute.Value))
+				return declaredAttribute.Value;
 
-		//	if (declaredAttribute != null)
-		//	{
-		//		if (!string.IsNullOrEmpty(declaredAttribute.Value))
-		//		{
-		//			declaredType = declaredAttribute.Value;
-		//			int colon = declaredType.IndexOf(':');
-		//			if (colon >= 0)
-		//				declaredType = declaredType.Substring(colon + 1);
-		//		}
-		//	}
-		//	else
-		//	{
-		//		declaredAttribute = xe.Attribute(XNsNet + NetTypeAttributeName);
+			string declaredType = declaredAttribute.Value;
+			int colon = declaredType.IndexOf(':');
 
-		//		if (declaredAttribute != null && !string.IsNullOrEmpty(declaredAttribute.Value))
-		//			declaredType = declaredAttribute.Value;
-		//	}
+			return (colon < 0) ? declaredType : declaredType.Substring(colon + 1);
+		}
 
-		//	Type valueType = GetXsdType(declaredType);
+		private static string GetNetTypeAttributeString(this XElement xe)
+		{
+			XAttribute declaredAttribute = xe.Attribute(XNsNet + NetTypeAttributeName);
 
-		//	if (valueType == typeof(string))
-		//		return xe.Value;
-
-		//	try
-		//	{
-		//		return DBConvert.ChangeType(xe.Value, valueType);
-		//	}
-		//	catch
-		//	{
-		//		return xe.Value;
-		//	}
-		//}
+			if (declaredAttribute == null)
+				return null;
+			else
+				return declaredAttribute.Value;
+		}
 
 		private static void ReadAttributes(this XElement xe, IDictionary<string, object> dynamicObject)
 		{
@@ -291,20 +277,26 @@ namespace DbParallel.DataAccess
 				dynamicObject[attr.Name.LocalName] = attr.Value;
 		}
 
-		private static void ReadElements(this XElement xe, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings.DataSchemaType dataSchemaType)
+		private static void ReadElements(this XElement xe, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings xmlSettings)
 		{
 			XNamespace defaultNamespace = xe.GetDefaultNamespace();
 
 			foreach (var e in xe.Elements().Where(e => e.Name.Namespace == defaultNamespace))
-				dynamicObject[e.Name.LocalName] = e.ReadValue(dataSchemaType);
+				dynamicObject[e.Name.LocalName] = e.ReadValue(xmlSettings);
 		}
 
 		internal static void ReadTo(this XElement xe, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings xmlSettings)
 		{
-			if (xmlSettings.SerializePropertyAsAttribute)
+			if (xmlSettings.IsImplicit())
+			{
 				xe.ReadAttributes(dynamicObject);
+				xe.ReadElements(dynamicObject, xmlSettings);
+			}
 			else
-				xe.ReadElements(dynamicObject, xmlSettings.EmitDataSchemaType);
+				if (xmlSettings.SerializePropertyAsAttribute)
+					xe.ReadAttributes(dynamicObject);
+				else
+					xe.ReadElements(dynamicObject, xmlSettings);
 		}
 	}
 }

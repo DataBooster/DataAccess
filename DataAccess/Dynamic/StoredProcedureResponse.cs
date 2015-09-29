@@ -22,7 +22,7 @@ namespace DbParallel.DataAccess
 		public StoredProcedureResponse(BindableDynamicObject.XmlSettings xmlSettings)
 		{
 			ResultSets = new List<IList<BindableDynamicObject>>();
-			_xmlSettings = xmlSettings;
+			_xmlSettings = xmlSettings ?? new BindableDynamicObject.XmlSettings();
 		}
 
 		#region Xml Serialization Decoration
@@ -47,7 +47,7 @@ namespace DbParallel.DataAccess
 			internal class XValue : IXmlSerializable
 			{
 				private object _Value;
-				private readonly BindableDynamicObject.XmlSettings.DataSchemaType _EmitDataSchemaType;
+				private readonly BindableDynamicObject.XmlSettings _XmlSettings;
 
 				internal object Value
 				{
@@ -57,15 +57,15 @@ namespace DbParallel.DataAccess
 
 				private XValue() : this(null) { }
 
-				internal XValue(object simpleValue, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType = BindableDynamicObject.XmlSettings.DataSchemaType.None)
+				internal XValue(object simpleValue, BindableDynamicObject.XmlSettings xmlSettings = null)
 				{
 					_Value = simpleValue;
-					_EmitDataSchemaType = emitDataSchemaType;
+					_XmlSettings = xmlSettings ?? new BindableDynamicObject.XmlSettings(true);
 				}
 
 				internal void ReadXml(XElement xe)
 				{
-					_Value = xe.ReadValue(_EmitDataSchemaType);
+					_Value = xe.ReadValue(_XmlSettings);
 				}
 
 				XmlSchema IXmlSerializable.GetSchema()
@@ -84,7 +84,7 @@ namespace DbParallel.DataAccess
 				void IXmlSerializable.WriteXml(XmlWriter writer)
 				{
 					if (_Value != null)
-						writer.WriteValueWithType(_Value, _EmitDataSchemaType);
+						writer.WriteValueWithType(_Value, _XmlSettings.EmitDataSchemaType);
 				}
 			}
 
@@ -124,12 +124,15 @@ namespace DbParallel.DataAccess
 
 			internal XStoredProcedureResponse(StoredProcedureResponse spResponse, BindableDynamicObject.XmlSettings xmlSettings)
 			{
+				if (xmlSettings == null)
+					xmlSettings = new BindableDynamicObject.XmlSettings();
+
 				_OriginalResponse = spResponse ?? new StoredProcedureResponse(xmlSettings);
 
 				_ResultSets = new XResultSets(_OriginalResponse.ResultSets);
 
 				if (_OriginalResponse.ReturnValue != null)
-					_ReturnValue = (xmlSettings == null) ? new XValue(_OriginalResponse.ReturnValue) : new XValue(_OriginalResponse.ReturnValue, xmlSettings.EmitDataSchemaType);
+					_ReturnValue = new XValue(_OriginalResponse.ReturnValue, xmlSettings);
 			}
 
 			internal StoredProcedureResponse GetOriginalResponse()
@@ -152,9 +155,6 @@ namespace DbParallel.DataAccess
 			XElement xe = new XElement(reader.LocalName);
 			(xe as IXmlSerializable).ReadXml(reader);
 			XNamespace defaultNamespace = xe.GetDefaultNamespace();
-
-			if (_xmlSettings == null)
-				_xmlSettings = new BindableDynamicObject.XmlSettings();
 
 			_xmlSettings.ReadXml(xe);
 
@@ -196,16 +196,13 @@ namespace DbParallel.DataAccess
 			XElement xReturnValue = xe.Element(defaultNamespace + "ReturnValue");
 
 			if (xReturnValue != null)
-				ReturnValue = xReturnValue.ReadValue(_xmlSettings.EmitDataSchemaType);
+				ReturnValue = xReturnValue.ReadValue(_xmlSettings);
 		}
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)
 		{
-			if (_xmlSettings != null)
-			{
-				writer.PrepareTypeNamespaceRoot(_xmlSettings.EmitDataSchemaType);
-				(_xmlSettings as IXmlSerializable).WriteXml(writer);
-			}
+			writer.PrepareTypeNamespaceRoot(_xmlSettings.EmitDataSchemaType);
+			(_xmlSettings as IXmlSerializable).WriteXml(writer);
 
 			DataContractSerializer serializer = new DataContractSerializer(typeof(XStoredProcedureResponse));
 			XStoredProcedureResponse responseXml = new XStoredProcedureResponse(this, _xmlSettings);
