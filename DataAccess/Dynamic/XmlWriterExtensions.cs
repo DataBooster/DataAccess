@@ -18,6 +18,8 @@ namespace DbParallel.DataAccess
 		internal static readonly XNamespace XNsXsi = XmlSchema.InstanceNamespace;
 		private static readonly XName XnNil = XNsXsi + "nil";
 
+		#region Xml Writer
+
 		public static void WriteElementValue(this XmlWriter writer, string localName, object value, bool emitNullValue = true,
 			BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType = BindableDynamicObject.XmlSettings.DataSchemaType.None)
 		{
@@ -163,6 +165,10 @@ namespace DbParallel.DataAccess
 			return null;
 		}
 
+		#endregion 
+
+		#region Xml Reader
+
 		private static Type GetXsdType(string xsdType)
 		{
 			switch (xsdType)
@@ -282,7 +288,7 @@ namespace DbParallel.DataAccess
 			XNamespace defaultNamespace = xe.GetDefaultNamespace();
 
 			foreach (var e in xe.Elements().Where(e => e.Name.Namespace == defaultNamespace))
-				dynamicObject[e.Name.LocalName] = e.ReadValue(xmlSettings);
+				dynamicObject[e.Name.LocalName] = e.ReadValue(xmlSettings) ?? DBNull.Value;
 		}
 
 		internal static void ReadTo(this XElement xe, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings xmlSettings)
@@ -298,6 +304,8 @@ namespace DbParallel.DataAccess
 				else
 					xe.ReadElements(dynamicObject, xmlSettings);
 		}
+
+		#endregion
 	}
 }
 
