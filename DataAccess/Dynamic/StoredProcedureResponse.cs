@@ -55,9 +55,9 @@ namespace DbParallel.DataAccess
 					set { _Value = value; }
 				}
 
-				private XValue() : this(null) { }
+				private XValue() : this(null, null) { }
 
-				internal XValue(object simpleValue, BindableDynamicObject.XmlSettings xmlSettings = null)
+				internal XValue(object simpleValue, BindableDynamicObject.XmlSettings xmlSettings)
 				{
 					_Value = simpleValue;
 					_XmlSettings = xmlSettings ?? new BindableDynamicObject.XmlSettings(true);
