@@ -5,6 +5,7 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Data.Linq;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace DbParallel.DataAccess
 {
@@ -17,6 +18,7 @@ namespace DbParallel.DataAccess
 		internal static readonly XNamespace XNsXsd = XmlSchema.Namespace;
 		internal static readonly XNamespace XNsXsi = XmlSchema.InstanceNamespace;
 		private static readonly XName XnNil = XNsXsi + "nil";
+		private static readonly DataContractSerializer _ObjectDataContractSerializer = new DataContractSerializer(typeof(object));
 
 		#region Xml Writer
 
@@ -40,25 +42,32 @@ namespace DbParallel.DataAccess
 
 		internal static void WriteValueWithType(this XmlWriter writer, object value, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
 		{
-			Type type = value.GetType();
-
 			switch (emitDataSchemaType)
 			{
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
-					string xsiType = GetBuiltInXsiType(type);
+					try
+					{
+						_ObjectDataContractSerializer.WriteObjectContent(writer, value);
+					}
+					catch
+					{
+						Type type = value.GetType();
+						string xsiType = GetBuiltInXsiType(type);
 
-					if (xsiType == null)
-						writer.WriteAttributeString(XsdTypeAttributeName, XmlSchema.InstanceNamespace, type.FullName);
-					else
-						writer.WriteQualifiedAttributeString(XsdTypeAttributeName, XmlSchema.InstanceNamespace, xsiType, XmlSchema.Namespace);
+						if (xsiType == null)
+							writer.WriteAttributeString(XsdTypeAttributeName, XmlSchema.InstanceNamespace, type.FullName);
+						else
+							writer.WriteQualifiedAttributeString(XsdTypeAttributeName, XmlSchema.InstanceNamespace, xsiType, XmlSchema.Namespace);
+
+						writer.TryWriteValue(value);
+					}
 					break;
 
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
-					writer.WriteAttributeString(NetTypeAttributeName, NsNet, type.FullName);
+					writer.WriteAttributeString(NetTypeAttributeName, NsNet, value.GetType().FullName);
+					writer.TryWriteValue(value);
 					break;
 			}
-
-			writer.TryWriteValue(value);
 		}
 
 		private static void WriteQualifiedAttributeString(this XmlWriter writer, string localName, string ns, string value, string valueNs)
@@ -165,7 +174,7 @@ namespace DbParallel.DataAccess
 			return null;
 		}
 
-		#endregion 
+		#endregion
 
 		#region Xml Reader
 
@@ -216,20 +225,35 @@ namespace DbParallel.DataAccess
 			{
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
 					declaredType = xe.GetXsdTypeAttributeString();
-					if (declaredType == null && xmlSettings.IsImplicit())
-						declaredType = xe.GetNetTypeAttributeString();
+					if (string.IsNullOrEmpty(declaredType))
+					{
+						if (xmlSettings.IsImplicit())
+							declaredType = xe.GetNetTypeAttributeString();
+					}
+					else
+					{
+						try { return _ObjectDataContractSerializer.ReadObject(xe.CreateReader(), false); }
+						catch { }
+					}
 					break;
+
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
 					declaredType = xe.GetNetTypeAttributeString();
 					if (declaredType == null && xmlSettings.IsImplicit())
 						declaredType = xe.GetXsdTypeAttributeString();
 					break;
+
 				default:
 					if (xmlSettings.IsImplicit())
 					{
 						declaredType = xe.GetXsdTypeAttributeString();
-						if (declaredType == null)
+						if (string.IsNullOrEmpty(declaredType))
 							declaredType = xe.GetNetTypeAttributeString();
+						else
+						{
+							try { return _ObjectDataContractSerializer.ReadObject(xe.CreateReader(), false); }
+							catch { }
+						}
 					}
 					break;
 			}
