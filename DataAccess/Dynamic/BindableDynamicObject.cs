@@ -433,10 +433,18 @@ namespace DbParallel.DataAccess
 
 			void IXmlSerializable.ReadXml(XmlReader reader)
 			{
-				XElement xe = new XElement(reader.LocalName);
-				(xe as IXmlSerializable).ReadXml(reader);
+				bool? serializePropertyAsAttribute = reader.GetAttributeAsBool("SerializePropertyAsAttribute");
+				bool? emitNullValue = reader.GetAttributeAsBool("EmitNullValue");
+				string emitDataSchemaType = reader.GetAttribute("EmitDataSchemaType");
 
-				ReadXml(xe);
+				if (serializePropertyAsAttribute.HasValue)
+					_SerializePropertyAsAttribute = serializePropertyAsAttribute.Value;
+
+				if (emitNullValue.HasValue)
+					_EmitNullValue = emitNullValue.Value;
+
+				if (!string.IsNullOrWhiteSpace(emitDataSchemaType))
+					_EmitDataSchemaType = (DataSchemaType)Enum.Parse(typeof(DataSchemaType), emitDataSchemaType, true);
 			}
 
 			void IXmlSerializable.WriteXml(XmlWriter writer)

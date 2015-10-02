@@ -6,6 +6,7 @@ using System.Xml.Schema;
 using System.Data.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 namespace DbParallel.DataAccess
 {
@@ -176,7 +177,7 @@ namespace DbParallel.DataAccess
 
 		#endregion
 
-		#region Xml Reader
+		#region Xml Reader - by XElement
 
 		private static Type GetXsdType(string xsdType)
 		{
@@ -327,6 +328,21 @@ namespace DbParallel.DataAccess
 					xe.ReadAttributes(dynamicObject);
 				else
 					xe.ReadElements(dynamicObject, xmlSettings);
+		}
+
+		#endregion
+
+		#region Xml Reader - raw
+
+
+		internal static bool? GetAttributeAsBool(this XmlReader reader, string name)
+		{
+			string strValue = reader.GetAttribute(name);
+
+			if (strValue == null)
+				return null;
+			else
+				return XmlConvert.ToBoolean(strValue.ToLower(CultureInfo.InvariantCulture));
 		}
 
 		#endregion
