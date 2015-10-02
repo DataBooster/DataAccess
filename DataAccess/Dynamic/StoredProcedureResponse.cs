@@ -27,10 +27,12 @@ namespace DbParallel.DataAccess
 
 		#region Xml Serialization Decoration
 
-		private static readonly XmlQualifiedName _TypeName = new XmlQualifiedName(typeof(StoredProcedureResponse).Name, "");
+		private BindableDynamicObject.XmlSettings _xmlSettings;
+		private static readonly DataContractSerializer _dataContractSerializer = new DataContractSerializer(typeof(XStoredProcedureResponse));
+		private static readonly XmlQualifiedName _typeName = new XmlQualifiedName(typeof(StoredProcedureResponse).Name, "");
 		public static XmlQualifiedName GetSchema(XmlSchemaSet schemas)
 		{
-			return _TypeName;
+			return _typeName;
 		}
 
 		[DataContract(Namespace = "")]
@@ -141,8 +143,6 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		private BindableDynamicObject.XmlSettings _xmlSettings;
-
 		#region IXmlSerializable Members
 
 		XmlSchema IXmlSerializable.GetSchema()
@@ -204,10 +204,9 @@ namespace DbParallel.DataAccess
 			writer.PrepareTypeNamespaceRoot(_xmlSettings.EmitDataSchemaType);
 			(_xmlSettings as IXmlSerializable).WriteXml(writer);
 
-			DataContractSerializer serializer = new DataContractSerializer(typeof(XStoredProcedureResponse));
 			XStoredProcedureResponse responseXml = new XStoredProcedureResponse(this, _xmlSettings);
 
-			serializer.WriteObjectContent(writer, responseXml);
+			_dataContractSerializer.WriteObjectContent(writer, responseXml);
 		}
 
 		#endregion
