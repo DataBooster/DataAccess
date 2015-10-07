@@ -190,21 +190,21 @@ namespace DbParallel.DataAccess
 
 		private static void ReadElements(this XmlReader reader, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings xmlSettings)
 		{
-			int depth = reader.Depth;
 			string ns = reader.NamespaceURI;
+			int depth = reader.Depth + 1;
 
 			if (reader.ReadToFirstChildElement())
 			{
-				do
+				while (reader.Depth >= depth)
 				{
-					if (reader.NodeType == XmlNodeType.Element && reader.NamespaceURI == ns)
+					if (reader.NodeType == XmlNodeType.Element && reader.Depth == depth && reader.NamespaceURI == ns)
 						dynamicObject[reader.LocalName] = reader.ReadValue(xmlSettings) ?? DBNull.Value;
 					else
 						reader.Read();
-				} while (reader.Depth > depth);
-			}
+				}
 
-			reader.Skip();
+				reader.Skip();
+			}
 		}
 
 		internal static void ReadTo(this XmlReader reader, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings xmlSettings)
@@ -324,19 +324,13 @@ namespace DbParallel.DataAccess
 			int depth = reader.Depth;
 
 			while (reader.Read())
-				switch (reader.NodeType)
+				if (reader.Depth == depth + 1)
 				{
-					case XmlNodeType.Element:
-						return (reader.Depth > depth);
-
-					case XmlNodeType.EndElement:
-						return false;
-
-					default:
-						if (reader.Depth < depth)
-							return false;
-						break;
+					if (reader.NodeType == XmlNodeType.Element)
+						return true;
 				}
+				else if (reader.Depth < depth)
+					return false;
 
 			return false;
 		}
