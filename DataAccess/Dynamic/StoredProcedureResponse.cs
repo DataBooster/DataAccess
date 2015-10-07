@@ -150,13 +150,13 @@ namespace DbParallel.DataAccess
 		void IXmlSerializable.ReadXml(XmlReader reader)
 		{
 			(_xmlSettings as IXmlSerializable).ReadXml(reader);
-			int depthRoot = reader.Depth;
+			int depth1 = reader.Depth + 1;
 
 			if (reader.ReadToFirstChildElement())
 			{
-				do
+				while (reader.Depth >= depth1)
 				{
-					if (reader.NodeType == XmlNodeType.Element)
+					if (reader.NodeType == XmlNodeType.Element && reader.Depth == depth1)
 					{
 						switch (reader.Name)
 						{
@@ -166,32 +166,32 @@ namespace DbParallel.DataAccess
 								else if (ResultSets.Count > 0)
 									ResultSets.Clear();
 
-								int depthResultSets = reader.Depth;
+								int depthResultSet = reader.Depth + 1;
 
 								if (reader.ReadToFirstChildElement())
 								{
-									do
+									while (reader.Depth >= depthResultSet)
 									{
-										if (reader.NodeType == XmlNodeType.Element && reader.Name == "ResultSet")
+										if (reader.NodeType == XmlNodeType.Element && reader.Depth == depthResultSet && reader.Name == "ResultSet")
 										{
 											List<BindableDynamicObject> resultSet = new List<BindableDynamicObject>();
-											int depthResultSet = reader.Depth;
+											int depthRecord = reader.Depth + 1;
 
 											if (reader.ReadToFirstChildElement())
 											{
-												do
+												while (reader.Depth >= depthRecord)
 												{
-													if (reader.NodeType == XmlNodeType.Element && reader.Name == "Record")
+													if (reader.NodeType == XmlNodeType.Element && reader.Depth == depthRecord && reader.Name == "Record")
 														resultSet.Add(reader.ReadDynamicObject(_xmlSettings));
 													else
 														reader.Read();
-												} while (reader.Depth > depthResultSet);
+												}
 											}
 											ResultSets.Add(resultSet);
 										}
 										else
 											reader.Read();
-									} while (reader.Depth > depthResultSets);
+									}
 								}
 								break;
 
@@ -210,7 +210,7 @@ namespace DbParallel.DataAccess
 					}
 					else
 						reader.Read();
-				} while (reader.Depth > depthRoot);
+				}
 			}
 		}
 
