@@ -4,9 +4,10 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Data.Linq;
+using System.Globalization;
+using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Globalization;
 
 namespace DbParallel.DataAccess
 {
@@ -19,54 +20,45 @@ namespace DbParallel.DataAccess
 		internal static readonly XNamespace XNsXsd = XmlSchema.Namespace;
 		internal static readonly XNamespace XNsXsi = XmlSchema.InstanceNamespace;
 		private static readonly XName XnNil = XNsXsi + "nil";
-		private static readonly DataContractSerializer _ObjectDataContractSerializer = new DataContractSerializer(typeof(object));
+		private static readonly DataContractSerializer _XsdDataContractSerializer = new DataContractSerializer(typeof(object));
+		private static readonly NetDataContractSerializer _NetDataContractSerializer = new NetDataContractSerializer();
 
 		#region Xml Writer
 
 		public static void WriteElementValue(this XmlWriter writer, string localName, object value, bool emitNullValue = true,
 			BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType = BindableDynamicObject.XmlSettings.DataSchemaType.None)
 		{
-			bool isNull = IsNull(value);
+			if (Convert.IsDBNull(value))
+				value = null;
 
-			if (emitNullValue || !isNull)
+			if (emitNullValue || value != null)
 			{
 				writer.WriteStartElement(localName);
-
-				if (isNull)
-					writer.WriteAttributeString("nil", XmlSchema.InstanceNamespace, "true");
-				else
-					writer.WriteValueWithType(value, emitDataSchemaType);
-
+				writer.WriteTypedValue(value, emitDataSchemaType);
 				writer.WriteEndElement();
 			}
 		}
 
-		internal static void WriteValueWithType(this XmlWriter writer, object value, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
+		internal static void WriteTypedValue(this XmlWriter writer, object value, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
 		{
+			if (Convert.IsDBNull(value))
+				value = null;
+
 			switch (emitDataSchemaType)
 			{
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
-					try
-					{
-						_ObjectDataContractSerializer.WriteObjectContent(writer, value);
-					}
-					catch
-					{
-						Type type = value.GetType();
-						string xsiType = GetBuiltInXsiType(type);
-
-						if (xsiType == null)
-							writer.WriteAttributeString(XsdTypeAttributeName, XmlSchema.InstanceNamespace, type.FullName);
-						else
-							writer.WriteQualifiedAttributeString(XsdTypeAttributeName, XmlSchema.InstanceNamespace, xsiType, XmlSchema.Namespace);
-
-						writer.TryWriteValue(value);
-					}
+					_XsdDataContractSerializer.WriteObjectContent(writer, value);
 					break;
 
 				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
-					writer.WriteAttributeString(NetTypeAttributeName, NsNet, value.GetType().FullName);
-					writer.TryWriteValue(value);
+					_NetDataContractSerializer.WriteObjectContent(writer, value);
+					break;
+
+				default:
+					if (value == null)
+						writer.WriteAttributeString("nil", XmlSchema.InstanceNamespace, "true");
+					else
+						writer.TryWriteValue(value);
 					break;
 			}
 		}
@@ -80,13 +72,14 @@ namespace DbParallel.DataAccess
 
 		public static void WriteAttributeValue(this XmlWriter writer, string localName, object value, bool emitNullValue = true)
 		{
-			bool isNull = IsNull(value);
+			if (Convert.IsDBNull(value))
+				value = null;
 
-			if (emitNullValue || !isNull)
+			if (emitNullValue || value != null)
 			{
 				writer.WriteStartAttribute(localName);
 
-				if (!isNull)
+				if (value != null)
 					writer.TryWriteValue(value);
 
 				writer.WriteEndAttribute();
@@ -177,6 +170,179 @@ namespace DbParallel.DataAccess
 
 		#endregion
 
+		#region Xml Reader - raw
+
+		private static void ReadAttributes(this XmlReader reader, IDictionary<string, object> dynamicObject)
+		{
+			string ns = reader.NamespaceURI;
+
+			if (reader.MoveToFirstAttribute())
+			{
+				do
+				{
+					if (reader.NamespaceURI == ns)
+						dynamicObject[reader.LocalName] = reader.Value;
+				} while (reader.MoveToNextAttribute());
+
+				reader.MoveToElement();
+			}
+		}
+
+		private static void ReadElements(this XmlReader reader, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings xmlSettings)
+		{
+			int depth = reader.Depth;
+			string ns = reader.NamespaceURI;
+
+			if (reader.ReadToFirstChildElement())
+			{
+				do
+				{
+					if (reader.NodeType == XmlNodeType.Element && reader.NamespaceURI == ns)
+						dynamicObject[reader.LocalName] = reader.ReadValue(xmlSettings) ?? DBNull.Value;
+					else
+						reader.Read();
+				} while (reader.Depth > depth);
+			}
+
+			reader.Skip();
+		}
+
+		internal static void ReadTo(this XmlReader reader, IDictionary<string, object> dynamicObject, BindableDynamicObject.XmlSettings xmlSettings)
+		{
+			if (xmlSettings.IsImplicit())
+			{
+				reader.ReadAttributes(dynamicObject);
+				reader.ReadElements(dynamicObject, xmlSettings);
+			}
+			else
+				if (xmlSettings.SerializePropertyAsAttribute)
+					reader.ReadAttributes(dynamicObject);
+				else
+					reader.ReadElements(dynamicObject, xmlSettings);
+		}
+
+		internal static BindableDynamicObject ReadDynamicObject(this XmlReader reader, BindableDynamicObject.XmlSettings xmlSettings)
+		{
+			if (reader.IsNilElement())
+			{
+				reader.Skip();
+				return null;
+			}
+
+			BindableDynamicObject bindableDynamicObject = new BindableDynamicObject(null, xmlSettings);
+			(bindableDynamicObject as IXmlSerializable).ReadXml(reader);
+
+			return bindableDynamicObject;
+		}
+
+		internal static object ReadValue(this XmlReader reader, BindableDynamicObject.XmlSettings xmlSettings)
+		{
+			if (reader.IsNilElement())
+			{
+				reader.Skip();
+				return null;
+			}
+
+			string declaredType = null;
+
+			switch (xmlSettings.EmitDataSchemaType)
+			{
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+					declaredType = reader.GetAttribute(XsdTypeAttributeName, XmlSchema.InstanceNamespace);
+					if (string.IsNullOrEmpty(declaredType))
+					{
+						if (xmlSettings.IsImplicit())
+						{
+							declaredType = reader.GetAttribute(NetTypeAttributeName, NsNet);
+							if (!string.IsNullOrEmpty(declaredType))
+								return _NetDataContractSerializer.ReadObject(reader, false);
+						}
+					}
+					else
+						return _XsdDataContractSerializer.ReadObject(reader, false);
+					break;
+
+				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+					declaredType = reader.GetAttribute(NetTypeAttributeName, NsNet);
+					if (string.IsNullOrEmpty(declaredType))
+					{
+						if (xmlSettings.IsImplicit())
+							declaredType = reader.GetAttribute(XsdTypeAttributeName, XmlSchema.InstanceNamespace);
+						if (!string.IsNullOrEmpty(declaredType))
+							return _XsdDataContractSerializer.ReadObject(reader, false);
+					}
+					else
+						return _NetDataContractSerializer.ReadObject(reader, false);
+					break;
+
+				default:
+					if (xmlSettings.IsImplicit())
+					{
+						declaredType = reader.GetAttribute(XsdTypeAttributeName, XmlSchema.InstanceNamespace);
+						if (string.IsNullOrEmpty(declaredType))
+						{
+							declaredType = reader.GetAttribute(NetTypeAttributeName, NsNet);
+							if (!string.IsNullOrEmpty(declaredType))
+								return _NetDataContractSerializer.ReadObject(reader, false);
+						}
+						else
+							return _XsdDataContractSerializer.ReadObject(reader, false);
+					}
+					break;
+			}
+
+			string strValue = reader.Value;
+
+			reader.Skip();
+
+			return strValue;
+		}
+
+		private static bool IsNilElement(this XmlReader reader)
+		{
+			return (reader.GetAttribute("nil", XmlSchema.InstanceNamespace) == "true");
+		}
+
+		internal static bool? GetAttributeAsBool(this XmlReader reader, string name)
+		{
+			string strValue = reader.GetAttribute(name);
+
+			if (strValue == null)
+				return null;
+			else
+				return XmlConvert.ToBoolean(strValue.ToLower(CultureInfo.InvariantCulture));
+		}
+
+		internal static bool ReadToFirstChildElement(this XmlReader reader)
+		{
+			if (reader.IsEmptyElement)
+			{
+				reader.Read();
+				return false;
+			}
+
+			int depth = reader.Depth;
+
+			while (reader.Read())
+				switch (reader.NodeType)
+				{
+					case XmlNodeType.Element:
+						return (reader.Depth > depth);
+
+					case XmlNodeType.EndElement:
+						return false;
+
+					default:
+						if (reader.Depth < depth)
+							return false;
+						break;
+				}
+
+			return false;
+		}
+
+		#endregion
+
 		#region Xml Reader - by XElement
 
 		private static Type GetXsdType(string xsdType)
@@ -210,11 +376,6 @@ namespace DbParallel.DataAccess
 			return Type.GetType(xsdType) ?? typeof(string);
 		}
 
-		private static bool IsNull(object value)
-		{
-			return (value == null || Convert.IsDBNull(value));
-		}
-
 		internal static object ReadValue(this XElement xe, BindableDynamicObject.XmlSettings xmlSettings)
 		{
 			if ((bool?)xe.Attribute(XnNil) ?? false)
@@ -233,7 +394,7 @@ namespace DbParallel.DataAccess
 					}
 					else
 					{
-						try { return _ObjectDataContractSerializer.ReadObject(xe.CreateReader(), false); }
+						try { return _XsdDataContractSerializer.ReadObject(xe.CreateReader(), false); }
 						catch { }
 					}
 					break;
@@ -252,7 +413,7 @@ namespace DbParallel.DataAccess
 							declaredType = xe.GetNetTypeAttributeString();
 						else
 						{
-							try { return _ObjectDataContractSerializer.ReadObject(xe.CreateReader(), false); }
+							try { return _XsdDataContractSerializer.ReadObject(xe.CreateReader(), false); }
 							catch { }
 						}
 					}
@@ -328,21 +489,6 @@ namespace DbParallel.DataAccess
 					xe.ReadAttributes(dynamicObject);
 				else
 					xe.ReadElements(dynamicObject, xmlSettings);
-		}
-
-		#endregion
-
-		#region Xml Reader - raw
-
-
-		internal static bool? GetAttributeAsBool(this XmlReader reader, string name)
-		{
-			string strValue = reader.GetAttribute(name);
-
-			if (strValue == null)
-				return null;
-			else
-				return XmlConvert.ToBoolean(strValue.ToLower(CultureInfo.InvariantCulture));
 		}
 
 		#endregion
