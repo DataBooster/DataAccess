@@ -216,7 +216,10 @@ namespace DbParallel.DataAccess
 			}
 			else
 				if (xmlSettings.SerializePropertyAsAttribute)
+				{
 					reader.ReadAttributes(dynamicObject);
+					reader.Skip();
+				}
 				else
 					reader.ReadElements(dynamicObject, xmlSettings);
 		}
@@ -291,11 +294,7 @@ namespace DbParallel.DataAccess
 					break;
 			}
 
-			string strValue = reader.Value;
-
-			reader.Skip();
-
-			return strValue;
+			return reader.ReadElementContentAsString();
 		}
 
 		private static bool IsNilElement(this XmlReader reader)
