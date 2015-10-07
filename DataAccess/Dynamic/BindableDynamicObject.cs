@@ -300,10 +300,7 @@ namespace DbParallel.DataAccess
 
 		void IXmlSerializable.ReadXml(XmlReader reader)
 		{
-			XElement x = new XElement(reader.LocalName);
-			(x as IXmlSerializable).ReadXml(reader);
-
-			ReadXml(x);
+			reader.ReadTo(_data, _xmlSettings);
 		}
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)

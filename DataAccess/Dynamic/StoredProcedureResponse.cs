@@ -77,16 +77,13 @@ namespace DbParallel.DataAccess
 
 				void IXmlSerializable.ReadXml(XmlReader reader)
 				{
-					XElement xe = new XElement(reader.LocalName);
-					(xe as IXmlSerializable).ReadXml(reader);
-
-					ReadXml(xe);
+					reader.ReadValue(_XmlSettings);
 				}
 
 				void IXmlSerializable.WriteXml(XmlWriter writer)
 				{
 					if (_Value != null)
-						writer.WriteValueWithType(_Value, _XmlSettings.EmitDataSchemaType);
+						writer.WriteTypedValue(_Value, _XmlSettings.EmitDataSchemaType);
 				}
 			}
 
@@ -152,51 +149,69 @@ namespace DbParallel.DataAccess
 
 		void IXmlSerializable.ReadXml(XmlReader reader)
 		{
-			XElement xe = new XElement(reader.LocalName);
-			(xe as IXmlSerializable).ReadXml(reader);
-			XNamespace defaultNamespace = xe.GetDefaultNamespace();
+			(_xmlSettings as IXmlSerializable).ReadXml(reader);
+			int depthRoot = reader.Depth;
 
-			_xmlSettings.ReadXml(xe);
-
-			XElement xResultSets = xe.Element(defaultNamespace + "ResultSets");
-
-			if (xResultSets != null)
+			if (reader.ReadToFirstChildElement())
 			{
-				List<BindableDynamicObject> resultSet;
-
-				if (ResultSets == null)
-					ResultSets = new List<IList<BindableDynamicObject>>();
-				else
-					ResultSets.Clear();
-
-				foreach (var xResultSet in xResultSets.Elements(defaultNamespace + "ResultSet"))
+				do
 				{
-					resultSet = new List<BindableDynamicObject>();
-
-					foreach (var record in xResultSet.Elements(defaultNamespace + "Record"))
+					if (reader.NodeType == XmlNodeType.Element)
 					{
-						BindableDynamicObject dynamicObject = new BindableDynamicObject(null, _xmlSettings);
+						switch (reader.Name)
+						{
+							case "ResultSets":
+								if (ResultSets == null)
+									ResultSets = new List<IList<BindableDynamicObject>>();
+								else if (ResultSets.Count > 0)
+									ResultSets.Clear();
 
-						dynamicObject.ReadXml(record);
-						resultSet.Add(dynamicObject);
+								int depthResultSets = reader.Depth;
+
+								if (reader.ReadToFirstChildElement())
+								{
+									do
+									{
+										if (reader.NodeType == XmlNodeType.Element && reader.Name == "ResultSet")
+										{
+											List<BindableDynamicObject> resultSet = new List<BindableDynamicObject>();
+											int depthResultSet = reader.Depth;
+
+											if (reader.ReadToFirstChildElement())
+											{
+												do
+												{
+													if (reader.NodeType == XmlNodeType.Element && reader.Name == "Record")
+														resultSet.Add(reader.ReadDynamicObject(_xmlSettings));
+													else
+														reader.Read();
+												} while (reader.Depth > depthResultSet);
+											}
+											ResultSets.Add(resultSet);
+										}
+										else
+											reader.Read();
+									} while (reader.Depth > depthResultSets);
+								}
+								break;
+
+							case "OutputParameters":
+								OutputParameters = reader.ReadDynamicObject(_xmlSettings);
+								break;
+
+							case "ReturnValue":
+								ReturnValue = reader.ReadValue(_xmlSettings);
+								break;
+
+							default:
+								reader.Read();
+								break;
+						}
 					}
-
-					ResultSets.Add(resultSet);
-				}
+					else
+						reader.Read();
+				} while (reader.Depth > depthRoot);
 			}
-
-			XElement xOutputParameters = xe.Element(defaultNamespace + "OutputParameters");
-
-			if (xOutputParameters != null)
-			{
-				OutputParameters = new BindableDynamicObject(null, _xmlSettings);
-				OutputParameters.ReadXml(xOutputParameters);
-			}
-
-			XElement xReturnValue = xe.Element(defaultNamespace + "ReturnValue");
-
-			if (xReturnValue != null)
-				ReturnValue = xReturnValue.ReadValue(_xmlSettings);
 		}
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)
