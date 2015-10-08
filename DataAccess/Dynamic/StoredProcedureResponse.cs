@@ -83,7 +83,7 @@ namespace DbParallel.DataAccess
 				void IXmlSerializable.WriteXml(XmlWriter writer)
 				{
 					if (_Value != null)
-						writer.WriteTypedValue(_Value, _XmlSettings.EmitDataSchemaType);
+						writer.WriteTypedValue(_Value, _XmlSettings.TypeSchema);
 				}
 			}
 
@@ -216,7 +216,7 @@ namespace DbParallel.DataAccess
 
 		void IXmlSerializable.WriteXml(XmlWriter writer)
 		{
-			writer.PrepareTypeNamespaceRoot(_xmlSettings.EmitDataSchemaType);
+			writer.PrepareTypeNamespaceRoot(_xmlSettings.TypeSchema);
 			(_xmlSettings as IXmlSerializable).WriteXml(writer);
 
 			XStoredProcedureResponse responseXml = new XStoredProcedureResponse(this, _xmlSettings);

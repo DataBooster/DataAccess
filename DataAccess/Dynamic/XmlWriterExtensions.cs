@@ -26,7 +26,7 @@ namespace DbParallel.DataAccess
 		#region Xml Writer
 
 		public static void WriteElementValue(this XmlWriter writer, string localName, object value, bool emitNullValue = true,
-			BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType = BindableDynamicObject.XmlSettings.DataSchemaType.None)
+			BindableDynamicObject.XmlSettings.DataTypeSchema typeSchema = BindableDynamicObject.XmlSettings.DataTypeSchema.None)
 		{
 			if (Convert.IsDBNull(value))
 				value = null;
@@ -34,23 +34,23 @@ namespace DbParallel.DataAccess
 			if (emitNullValue || value != null)
 			{
 				writer.WriteStartElement(localName);
-				writer.WriteTypedValue(value, emitDataSchemaType);
+				writer.WriteTypedValue(value, typeSchema);
 				writer.WriteEndElement();
 			}
 		}
 
-		internal static void WriteTypedValue(this XmlWriter writer, object value, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
+		internal static void WriteTypedValue(this XmlWriter writer, object value, BindableDynamicObject.XmlSettings.DataTypeSchema typeSchema)
 		{
 			if (Convert.IsDBNull(value))
 				value = null;
 
-			switch (emitDataSchemaType)
+			switch (typeSchema)
 			{
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Xsd:
 					_XsdDataContractSerializer.WriteObjectContent(writer, value);
 					break;
 
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Net:
 					_NetDataContractSerializer.WriteObjectContent(writer, value);
 					break;
 
@@ -98,32 +98,32 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		internal static void PrepareTypeNamespaceAttribute(this XmlWriter writer, string localName, string value, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
+		internal static void PrepareTypeNamespaceAttribute(this XmlWriter writer, string localName, string value, BindableDynamicObject.XmlSettings.DataTypeSchema typeSchema)
 		{
-			switch (emitDataSchemaType)
+			switch (typeSchema)
 			{
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Xsd:
 					if (string.IsNullOrEmpty(writer.LookupPrefix(XmlSchema.Namespace)))
 						writer.WriteAttributeString(localName, XmlSchema.Namespace, value);
 					break;
 
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Net:
 					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNet)))
 						writer.WriteAttributeString(localName, NsNet, value);
 					break;
 			}
 		}
 
-		internal static void PrepareTypeNamespaceRoot(this XmlWriter writer, BindableDynamicObject.XmlSettings.DataSchemaType emitDataSchemaType)
+		internal static void PrepareTypeNamespaceRoot(this XmlWriter writer, BindableDynamicObject.XmlSettings.DataTypeSchema typeSchema)
 		{
-			switch (emitDataSchemaType)
+			switch (typeSchema)
 			{
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Xsd:
 					if (string.IsNullOrEmpty(writer.LookupPrefix(XmlSchema.Namespace)))
 						writer.WriteAttributeString("xmlns", "x", null, XmlSchema.Namespace);
 					break;
 
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Net:
 					if (string.IsNullOrEmpty(writer.LookupPrefix(NsNet)))
 						writer.WriteAttributeString("xmlns", "z", null, NsNet);
 					break;
@@ -248,9 +248,9 @@ namespace DbParallel.DataAccess
 
 			string declaredType = null;
 
-			switch (xmlSettings.EmitDataSchemaType)
+			switch (xmlSettings.TypeSchema)
 			{
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Xsd:
 					declaredType = reader.GetAttribute(XsdTypeAttributeName, XmlSchema.InstanceNamespace);
 					if (string.IsNullOrEmpty(declaredType))
 					{
@@ -265,7 +265,7 @@ namespace DbParallel.DataAccess
 						return _XsdDataContractSerializer.ReadObject(reader, false);
 					break;
 
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Net:
 					declaredType = reader.GetAttribute(NetTypeAttributeName, NsNet);
 					if (string.IsNullOrEmpty(declaredType))
 					{
@@ -299,7 +299,9 @@ namespace DbParallel.DataAccess
 
 		private static bool IsNilElement(this XmlReader reader)
 		{
-			return (reader.GetAttribute("nil", XmlSchema.InstanceNamespace) == "true");
+			string strBool = reader.GetAttribute("nil", XmlSchema.InstanceNamespace);
+
+			return (string.IsNullOrEmpty(strBool)) ? false : strBool.Equals("true", StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		internal static bool? GetAttributeAsBool(this XmlReader reader, string name)
@@ -376,9 +378,9 @@ namespace DbParallel.DataAccess
 
 			string declaredType = null;
 
-			switch (xmlSettings.EmitDataSchemaType)
+			switch (xmlSettings.TypeSchema)
 			{
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Xsd:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Xsd:
 					declaredType = xe.GetXsdTypeAttributeString();
 					if (string.IsNullOrEmpty(declaredType))
 					{
@@ -392,7 +394,7 @@ namespace DbParallel.DataAccess
 					}
 					break;
 
-				case BindableDynamicObject.XmlSettings.DataSchemaType.Net:
+				case BindableDynamicObject.XmlSettings.DataTypeSchema.Net:
 					declaredType = xe.GetNetTypeAttributeString();
 					if (declaredType == null && xmlSettings.IsImplicit())
 						declaredType = xe.GetXsdTypeAttributeString();
