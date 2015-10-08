@@ -312,10 +312,10 @@ namespace DbParallel.DataAccess
 			}
 			else // Serialize Property as XML Element
 			{
-				writer.PrepareTypeNamespaceAttribute("_", "", _xmlSettings.EmitDataSchemaType);
+				writer.PrepareTypeNamespaceAttribute("_", "", _xmlSettings.TypeSchema);
 
 				foreach (var pair in _data)
-					writer.WriteElementValue(pair.Key, pair.Value, _xmlSettings.EmitNullValue, _xmlSettings.EmitDataSchemaType);
+					writer.WriteElementValue(pair.Key, pair.Value, _xmlSettings.EmitNullValue, _xmlSettings.TypeSchema);
 			}
 		}
 
@@ -327,7 +327,7 @@ namespace DbParallel.DataAccess
 			/// <summary>
 			/// Indicates whether to emit data type attributes in the XML, or which type system to use.
 			/// </summary>
-			public enum DataSchemaType
+			public enum DataTypeSchema
 			{
 				/// <summary>
 				/// Not to emit data type information
@@ -361,8 +361,8 @@ namespace DbParallel.DataAccess
 				{
 					_SerializePropertyAsAttribute = value;
 
-					if (_SerializePropertyAsAttribute && _EmitDataSchemaType != DataSchemaType.None)
-						_EmitDataSchemaType = DataSchemaType.None;
+					if (_SerializePropertyAsAttribute && _TypeSchema != DataTypeSchema.None)
+						_TypeSchema = DataTypeSchema.None;
 				}
 			}
 
@@ -378,7 +378,7 @@ namespace DbParallel.DataAccess
 				set { _EmitNullValue = value; }
 			}
 
-			private DataSchemaType _EmitDataSchemaType = DataSchemaType.None;
+			private DataTypeSchema _TypeSchema = DataTypeSchema.Xsd;
 			/// <summary>
 			/// <para>Gets or sets a value indicating whether to emit data type attributes in the XML, or which type system to use. This setting only apply to SerializePropertyAsAttribute = false (serialize dynamic properties as XML elements).</para>
 			/// <para>None: Do not emit data type information;</para>
@@ -386,10 +386,10 @@ namespace DbParallel.DataAccess
 			/// <para>NET: Emit .NET type information ("http://schemas.microsoft.com/2003/10/Serialization/" namespace);</para>
 			/// <para>The default is None.</para>
 			/// </summary>
-			public DataSchemaType EmitDataSchemaType
+			public DataTypeSchema TypeSchema
 			{
-				get { return _EmitDataSchemaType; }
-				set { if (!_SerializePropertyAsAttribute) _EmitDataSchemaType = value; }
+				get { return _TypeSchema; }
+				set { if (!_SerializePropertyAsAttribute) _TypeSchema = value; }
 			}
 
 			private readonly bool _IsImplicit;
@@ -416,7 +416,7 @@ namespace DbParallel.DataAccess
 				XNamespace defaultNamespace = xe.GetDefaultNamespace();
 				bool? serializePropertyAsAttribute = (bool?)xe.Attribute(defaultNamespace + "SerializePropertyAsAttribute");
 				bool? emitNullValue = (bool?)xe.Attribute(defaultNamespace + "EmitNullValue");
-				string emitDataSchemaType = (string)xe.Attribute(defaultNamespace + "EmitDataSchemaType");
+				string typeSchema = (string)xe.Attribute(defaultNamespace + "TypeSchema");
 
 				if (serializePropertyAsAttribute.HasValue)
 					_SerializePropertyAsAttribute = serializePropertyAsAttribute.Value;
@@ -424,15 +424,15 @@ namespace DbParallel.DataAccess
 				if (emitNullValue.HasValue)
 					_EmitNullValue = emitNullValue.Value;
 
-				if (!string.IsNullOrWhiteSpace(emitDataSchemaType))
-					_EmitDataSchemaType = (DataSchemaType)Enum.Parse(typeof(DataSchemaType), emitDataSchemaType, true);
+				if (!string.IsNullOrWhiteSpace(typeSchema))
+					_TypeSchema = (DataTypeSchema)Enum.Parse(typeof(DataTypeSchema), typeSchema, true);
 			}
 
 			void IXmlSerializable.ReadXml(XmlReader reader)
 			{
 				bool? serializePropertyAsAttribute = reader.GetAttributeAsBool("SerializePropertyAsAttribute");
 				bool? emitNullValue = reader.GetAttributeAsBool("EmitNullValue");
-				string emitDataSchemaType = reader.GetAttribute("EmitDataSchemaType");
+				string typeSchema = reader.GetAttribute("TypeSchema");
 
 				if (serializePropertyAsAttribute.HasValue)
 					_SerializePropertyAsAttribute = serializePropertyAsAttribute.Value;
@@ -440,8 +440,8 @@ namespace DbParallel.DataAccess
 				if (emitNullValue.HasValue)
 					_EmitNullValue = emitNullValue.Value;
 
-				if (!string.IsNullOrWhiteSpace(emitDataSchemaType))
-					_EmitDataSchemaType = (DataSchemaType)Enum.Parse(typeof(DataSchemaType), emitDataSchemaType, true);
+				if (!string.IsNullOrWhiteSpace(typeSchema))
+					_TypeSchema = (DataTypeSchema)Enum.Parse(typeof(DataTypeSchema), typeSchema, true);
 			}
 
 			void IXmlSerializable.WriteXml(XmlWriter writer)
