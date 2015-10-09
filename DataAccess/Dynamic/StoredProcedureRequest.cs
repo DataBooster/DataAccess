@@ -3,14 +3,23 @@ using System.Data;
 using System.Linq;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace DbParallel.DataAccess
 {
+	[DataContract(Namespace = "")]
 	public class StoredProcedureRequest : ICloneable
 	{
+		[DataMember(Order = 1)]
 		public string CommandText { get; set; }
+
+		[DataMember(Order = 2)]
 		public CommandType CommandType { get; set; }
+
+		[DataMember(Order = 3)]
 		public int CommandTimeout { get; set; }
+
+		[DataMember(Order = 4)]
 		public IDictionary<string, object> InputParameters { get; set; }
 
 		public StoredProcedureRequest()
@@ -29,7 +38,7 @@ namespace DbParallel.DataAccess
 		public StoredProcedureRequest(string sp, IDictionary<string, IConvertible> parameters)
 			: this()
 		{
-			Init(sp, parameters.ToDictionary(p => p.Key, p => p.Value.AsParameterValue() as object, StringComparer.OrdinalIgnoreCase));
+			Init(sp, parameters.ToDictionary(p => p.Key, p => (p.Value ?? DBNull.Value) as object, StringComparer.OrdinalIgnoreCase));
 		}
 
 		private void Init(string sp, IDictionary<string, object> parameters)

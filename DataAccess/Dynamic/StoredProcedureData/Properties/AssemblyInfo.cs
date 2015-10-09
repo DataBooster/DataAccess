@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DataBooster")]
-[assembly: AssemblyDescription("DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing huge numbers of records to database. Please visit http://databooster.codeplex.com for detail.")]
+[assembly: AssemblyTitle("DataBooster Client StoredProcedureData")]
+[assembly: AssemblyDescription("StoredProcedureData contains Data Models for DbWebApi client to receive StoredProcedureResponse.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Abel Cheng")]
-[assembly: AssemblyProduct("dbParallel Database Task Parallel Foundation")]
-[assembly: AssemblyCopyright("Copyright © 2012-2015 Abel Cheng")]
+[assembly: AssemblyProduct("StoredProcedureData - DataBooster Client Data Models")]
+[assembly: AssemblyCopyright("Copyright © 2015 Abel Cheng")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,12 +20,12 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("bf39ff9b-1363-47dc-af67-baf990ac1ec1")]
+[assembly: Guid("56deb575-5761-4841-82ce-ae6dd10b55a5")]
 
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version
-//      Minor Version
+//      Minor Version 
 //      Build Number
 //      Revision
 //
@@ -34,3 +34,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.7.9.5")]
 [assembly: AssemblyFileVersion("1.7.9.5")]
+[assembly: AssemblyInformationalVersion("1.7.9-beta")]
