@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{ABF94775
 		NuGet\Pack-Oracle-ODP.NET.bat = NuGet\Pack-Oracle-ODP.NET.bat
 		NuGet\Pack-Oracle-ODP.NET.Managed.bat = NuGet\Pack-Oracle-ODP.NET.Managed.bat
 		NuGet\Pack-SqlServer.bat = NuGet\Pack-SqlServer.bat
+		NuGet\Pack-StoredProcedureData.bat = NuGet\Pack-StoredProcedureData.bat
 		NuGet\Push-All.bat = NuGet\Push-All.bat
 	EndProjectSection
 EndProject
@@ -131,9 +132,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Oracle.ODP", "Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Oracle.DataDirect", "DataAccess\DataAccess.Oracle.DataDirect.csproj", "{C6ED3E18-B88F-41D9-B596-5E6454A5718E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientModels", "ClientModels", "{5EA31A71-C549-486C-AD55-46DCFC09153D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoredProcedureData", "DataAccess\Dynamic\StoredProcedureData\StoredProcedureData.csproj", "{FEAD42B9-C009-46AB-BEE9-65C827F7787E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StoredProcedureData", "StoredProcedureData", "{207582FB-0921-4960-A2F7-8BC3A3312303}"
+	ProjectSection(SolutionItems) = preProject
+		DataAccess\Dynamic\StoredProcedureData\StoredProcedureData.nuspec = DataAccess\Dynamic\StoredProcedureData\StoredProcedureData.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs23
 		SccLocalPath0 = .
@@ -153,6 +163,10 @@ Global
 		SccProjectTopLevelParentUniqueName4 = DataBooster.sln
 		SccProjectName4 = DataAccess
 		SccLocalPath4 = DataAccess
+		SccProjectUniqueName5 = DataAccess\\Dynamic\\StoredProcedureData\\StoredProcedureData.csproj
+		SccProjectTopLevelParentUniqueName5 = DataBooster.sln
+		SccProjectName5 = DataAccess/Dynamic/StoredProcedureData
+		SccLocalPath5 = DataAccess\\Dynamic\\StoredProcedureData
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +189,10 @@ Global
 		{C6ED3E18-B88F-41D9-B596-5E6454A5718E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6ED3E18-B88F-41D9-B596-5E6454A5718E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6ED3E18-B88F-41D9-B596-5E6454A5718E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEAD42B9-C009-46AB-BEE9-65C827F7787E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEAD42B9-C009-46AB-BEE9-65C827F7787E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEAD42B9-C009-46AB-BEE9-65C827F7787E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEAD42B9-C009-46AB-BEE9-65C827F7787E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -200,5 +218,8 @@ Global
 		{331F1221-2FE8-41BF-B519-118A1C038A50} = {5446D679-C08F-4BF9-B4DD-85095B2DF7BE}
 		{33D30F5A-B793-4195-88FE-DD2F851FD761} = {64A970A1-C52C-448D-9205-424E4DD3BA6A}
 		{C6ED3E18-B88F-41D9-B596-5E6454A5718E} = {CCBC6345-2979-4B63-8628-958B4368C3A0}
+		{5EA31A71-C549-486C-AD55-46DCFC09153D} = {F1809CCA-CE51-4801-B3B5-344C1B7416EA}
+		{FEAD42B9-C009-46AB-BEE9-65C827F7787E} = {5EA31A71-C549-486C-AD55-46DCFC09153D}
+		{207582FB-0921-4960-A2F7-8BC3A3312303} = {ABF94775-7C87-400A-A510-12263969BEDE}
 	EndGlobalSection
 EndGlobal

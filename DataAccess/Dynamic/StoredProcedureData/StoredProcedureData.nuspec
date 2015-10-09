@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata minClientVersion="2.6">
+		<id>DataBooster.Client.StoredProcedureData</id>
+		<version>$version$</version>
+		<title>$title$</title>
+		<authors>$author$</authors>
+		<owners>http://databooster.codeplex.com</owners>
+		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
+		<projectUrl>http://databooster.codeplex.com</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>$description$</description>
+		<releaseNotes>http://databooster.codeplex.com/releases</releaseNotes>
+		<copyright>Copyright 2015 Abel Cheng</copyright>
+		<tags>DbWebApi Client Data Model</tags>
+	</metadata>
+</package>
