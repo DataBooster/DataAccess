@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DataBooster Client StoredProcedureData")]
+[assembly: AssemblyTitle("DataBooster ClientModels StoredProcedureData")]
 [assembly: AssemblyDescription("StoredProcedureData contains Data Models for DbWebApi client to receive StoredProcedureResponse.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Abel Cheng")]
