@@ -134,11 +134,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess.Oracle.DataDirec
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientModels", "ClientModels", "{5EA31A71-C549-486C-AD55-46DCFC09153D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoredProcedureData", "DataAccess\Dynamic\StoredProcedureData\StoredProcedureData.csproj", "{FEAD42B9-C009-46AB-BEE9-65C827F7787E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoredProcedureData", "DataAccess\Dynamic\ClientModels\StoredProcedureData.csproj", "{FEAD42B9-C009-46AB-BEE9-65C827F7787E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StoredProcedureData", "StoredProcedureData", "{207582FB-0921-4960-A2F7-8BC3A3312303}"
 	ProjectSection(SolutionItems) = preProject
-		DataAccess\Dynamic\StoredProcedureData\StoredProcedureData.nuspec = DataAccess\Dynamic\StoredProcedureData\StoredProcedureData.nuspec
+		DataAccess\Dynamic\ClientModels\StoredProcedureData.nuspec = DataAccess\Dynamic\ClientModels\StoredProcedureData.nuspec
 	EndProjectSection
 EndProject
 Global
@@ -163,10 +163,10 @@ Global
 		SccProjectTopLevelParentUniqueName4 = DataBooster.sln
 		SccProjectName4 = DataAccess
 		SccLocalPath4 = DataAccess
-		SccProjectUniqueName5 = DataAccess\\Dynamic\\StoredProcedureData\\StoredProcedureData.csproj
+		SccProjectUniqueName5 = DataAccess\\Dynamic\\ClientModels\\StoredProcedureData.csproj
 		SccProjectTopLevelParentUniqueName5 = DataBooster.sln
-		SccProjectName5 = DataAccess/Dynamic/StoredProcedureData
-		SccLocalPath5 = DataAccess\\Dynamic\\StoredProcedureData
+		SccProjectName5 = DataAccess/Dynamic/ClientModels
+		SccLocalPath5 = DataAccess\\Dynamic\\ClientModels
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
