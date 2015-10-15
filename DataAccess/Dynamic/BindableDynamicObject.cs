@@ -454,6 +454,26 @@ namespace DbParallel.DataAccess
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Convert all null values to DBNull
+		/// </summary>
+		public void ConvertNullToDBNull()
+		{
+			foreach (var prop in _data)
+				if (prop.Value == null)
+					_data[prop.Key] = DBNull.Value;
+		}
+
+		/// <summary>
+		/// Convert all DBNull values to null
+		/// </summary>
+		public void ConvertDBNullToNull()
+		{
+			foreach (var prop in _data)
+				if (Convert.IsDBNull(prop.Value))
+					_data[prop.Key] = null;
+		}
 	}
 }
 
