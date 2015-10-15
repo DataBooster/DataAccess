@@ -44,7 +44,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Oracle.ManagedDataAccess, Version=4.121.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
-      <HintPath>..\packages\Oracle.ManagedDataAccess.12.1.022\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+      <HintPath>..\packages\Oracle.ManagedDataAccess.12.1.2400\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -98,11 +98,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="Booster\Booster.cd" />
     <None Include="DataAccess.cd" />
-    <None Include="packages.DataAccess.Oracle.Managed.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.DataAccess.Oracle.Managed.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
