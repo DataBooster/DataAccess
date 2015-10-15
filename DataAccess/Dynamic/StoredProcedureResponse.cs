@@ -226,6 +226,44 @@ namespace DbParallel.DataAccess
 
 		#endregion
 		#endregion
+
+		/// <summary>
+		/// Convert all null values to DBNull
+		/// </summary>
+		public void ConvertNullToDBNull()
+		{
+			if (ReturnValue == null)
+				ReturnValue = DBNull.Value;
+
+			if (OutputParameters != null)
+				OutputParameters.ConvertNullToDBNull();
+
+			if (ResultSets != null)
+				foreach (var resultSet in ResultSets)
+					if (resultSet != null)
+						foreach (var record in resultSet)
+							if (record != null)
+								record.ConvertNullToDBNull();
+		}
+
+		/// <summary>
+		/// Convert all DBNull values to null
+		/// </summary>
+		public void ConvertDBNullToNull()
+		{
+			if (Convert.IsDBNull(ReturnValue))
+				ReturnValue = null;
+
+			if (OutputParameters != null)
+				OutputParameters.ConvertDBNullToNull();
+
+			if (ResultSets != null)
+				foreach (var resultSet in ResultSets)
+					if (resultSet != null)
+						foreach (var record in resultSet)
+							if (record != null)
+								record.ConvertDBNullToNull();
+		}
 	}
 }
 
