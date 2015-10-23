@@ -1,23 +1,48 @@
-﻿using System.Data.Common;
+﻿using System.Data;
+using System.Data.Common;
 
 namespace DbParallel.DataAccess
 {
 	static partial class DerivedParametersCache
 	{
-		static partial void OracleDeriveParameters(DbCommand dbCmd);
-		static partial void SqlDeriveParameters(DbCommand dbCmd);
+		static partial void OracleDeriveParameters(DbCommand dbCmd, ref bool processed);
+		static partial void SqlDeriveParameters(DbCommand dbCmd, ref bool processed);
 		static private void DbDeriveParameters(DbCommand dbCmd)
 		{
-			OracleDeriveParameters(dbCmd);
-			SqlDeriveParameters(dbCmd);
+			bool hasBeenProcessed = false;
+
+			OracleDeriveParameters(dbCmd, ref hasBeenProcessed);
+			SqlDeriveParameters(dbCmd, ref hasBeenProcessed);
 		}
 
-		static partial void OracleOmitUnspecifiedInputParameters(DbCommand dbCmd);
-		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd);
+		static partial void OracleOmitUnspecifiedInputParameters(DbCommand dbCmd, ref bool processed);
+		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd, ref bool processed);
 		static private void OmitUnspecifiedInputParameters(DbCommand dbCmd)
 		{
-			OracleOmitUnspecifiedInputParameters(dbCmd);
-			SqlOmitUnspecifiedInputParameters(dbCmd);
+			bool hasBeenProcessed = false;
+
+			OracleOmitUnspecifiedInputParameters(dbCmd, ref hasBeenProcessed);
+			SqlOmitUnspecifiedInputParameters(dbCmd, ref hasBeenProcessed);
+		}
+
+		static partial void OracleAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
+		static partial void SqlAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
+		static private void AdaptParameterValue(DbParameter dbParameter, object specifiedParameterValue)
+		{
+			bool hasBeenProcessed = false;
+			string strSpecifiedParameterValue = specifiedParameterValue as string;
+
+			//if (dbParameter.IsUnpreciseDecimal())
+			//    dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
+
+			if ((dbParameter.DbType == DbType.Object || dbParameter.DbType == DbType.Binary) && !string.IsNullOrEmpty(strSpecifiedParameterValue))
+			{
+				OracleAdaptParameterValue(dbParameter, strSpecifiedParameterValue, ref hasBeenProcessed);
+				SqlAdaptParameterValue(dbParameter, strSpecifiedParameterValue, ref hasBeenProcessed);
+			}
+
+			if (hasBeenProcessed == false)
+				dbParameter.Value = specifiedParameterValue;
 		}
 	}
 }
