@@ -5,8 +5,11 @@ namespace DbParallel.DataAccess
 {
 	partial class DbAccess
 	{
-		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry)
+		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry, ref bool processed)
 		{
+			if (processed)
+				return;
+
 			if (_Connection is SqlConnection)
 			{
 				SqlException e = dbException as SqlException;
@@ -21,6 +24,8 @@ namespace DbParallel.DataAccess
 						// To add other cases
 						default: canRetry = false; break;
 					}
+
+				processed = true;
 			}
 		}
 	}

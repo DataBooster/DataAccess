@@ -1,4 +1,5 @@
 ﻿#if ORACLE
+using System;
 using System.Data;
 using System.Data.Common;
 
@@ -14,14 +15,19 @@ namespace DbParallel.DataAccess
 {
 	static partial class DerivedParametersCache
 	{
-		static partial void OracleDeriveParameters(DbCommand dbCmd)
+		static partial void OracleDeriveParameters(DbCommand dbCmd, ref bool processed)
 		{
+			if (processed)
+				return;
+
 			OracleCommand oraCmd = dbCmd as OracleCommand;
 
 			if (oraCmd != null)
 			{
 				ShuffleCommandTextCase(oraCmd);
 				OracleCommandBuilder.DeriveParameters(oraCmd);
+
+				processed = true;
 			}
 		}
 
@@ -38,8 +44,11 @@ namespace DbParallel.DataAccess
 #endif
 		}
 
-		static partial void OracleOmitUnspecifiedInputParameters(DbCommand dbCmd)
+		static partial void OracleOmitUnspecifiedInputParameters(DbCommand dbCmd, ref bool processed)
 		{
+			if (processed)
+				return;
+
 			OracleCommand oraCmd = dbCmd as OracleCommand;
 
 			if (oraCmd != null && oraCmd.CommandType == CommandType.StoredProcedure)
@@ -60,6 +69,46 @@ namespace DbParallel.DataAccess
 
 				if (cntOmitted > 0 && oraCmd.BindByName == false)
 					oraCmd.BindByName = true;
+
+				processed = true;
+			}
+		}
+
+		static partial void OracleAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed)
+		{
+			if (processed)
+				return;
+
+			OracleParameter oraParameter = dbParameter as OracleParameter;
+
+			if (oraParameter != null)
+			{
+				switch (oraParameter.OracleDbType)
+				{
+					case OracleDbType.Blob:
+					case OracleDbType.Raw:
+					case OracleDbType.LongRaw:
+#if DATADIRECT
+					case OracleDbType.Bfile:
+#else
+					case OracleDbType.BFile:
+#endif
+						try
+						{
+							dbParameter.Value = Convert.FromBase64String(specifiedParameterValue);
+						}
+						catch (FormatException)
+						{
+							dbParameter.Value = specifiedParameterValue;
+						}
+						break;
+
+					default:
+						dbParameter.Value = specifiedParameterValue;
+						break;
+				}
+
+				processed = true;
 			}
 		}
 	}

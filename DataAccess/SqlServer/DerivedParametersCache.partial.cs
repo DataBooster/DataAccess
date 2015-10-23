@@ -7,8 +7,11 @@ namespace DbParallel.DataAccess
 {
 	static partial class DerivedParametersCache
 	{
-		static partial void SqlDeriveParameters(DbCommand dbCmd)
+		static partial void SqlDeriveParameters(DbCommand dbCmd, ref bool processed)
 		{
+			if (processed)
+				return;
+
 			SqlCommand sqlCmd = dbCmd as SqlCommand;
 
 			if (sqlCmd != null)
@@ -19,6 +22,8 @@ namespace DbParallel.DataAccess
 
 				for (int i = 0; i < cntParams; i++)
 					ResolveSqlTypeName(sqlCmd.Parameters[i]);
+
+				processed = true;
 			}
 		}
 
@@ -38,8 +43,11 @@ namespace DbParallel.DataAccess
 					}
 		}
 
-		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd)
+		static partial void SqlOmitUnspecifiedInputParameters(DbCommand dbCmd, ref bool processed)
 		{
+			if (processed)
+				return;
+
 			SqlCommand sqlCmd = dbCmd as SqlCommand;
 
 			if (sqlCmd != null && sqlCmd.CommandType == CommandType.StoredProcedure)
@@ -47,6 +55,35 @@ namespace DbParallel.DataAccess
 				foreach (SqlParameter sqlParameter in sqlCmd.Parameters)
 					if (sqlParameter.Value == null && (sqlParameter.Direction == ParameterDirection.InputOutput || sqlParameter.Direction == ParameterDirection.Output))
 						sqlParameter.Value = DBNull.Value;
+
+				processed = true;
+			}
+		}
+
+		static partial void SqlAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed)
+		{
+			if (processed)
+				return;
+
+			SqlParameter sqlParameter = dbParameter as SqlParameter;
+
+			if (sqlParameter != null)
+			{
+				if (sqlParameter.DbType == DbType.Binary)
+				{
+					try
+					{
+						dbParameter.Value = Convert.FromBase64String(specifiedParameterValue);
+					}
+					catch (FormatException)
+					{
+						dbParameter.Value = specifiedParameterValue;
+					}
+				}
+				else
+					dbParameter.Value = specifiedParameterValue;
+
+				processed = true;
 			}
 		}
 	}

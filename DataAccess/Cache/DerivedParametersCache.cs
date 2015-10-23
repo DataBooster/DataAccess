@@ -204,11 +204,7 @@ namespace DbParallel.DataAccess
 				}
 
 				if (specifiedParameters.TryGetValue(dbParameter.ParameterName.TrimParameterPrefix(), out specifiedParameterValue))
-				{
-					//if (dbParameter.IsUnpreciseDecimal())
-					//    dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
-					dbParameter.Value = specifiedParameterValue;
-				}
+					AdaptParameterValue(dbParameter, specifiedParameterValue);
 
 				dbCommand.Parameters.Add(dbParameter);
 			}
