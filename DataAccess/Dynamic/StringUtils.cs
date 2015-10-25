@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Globalization;
 
 namespace DbParallel.DataAccess
@@ -154,6 +155,24 @@ namespace DbParallel.DataAccess
 						char.ToLower(originalString[i], CultureInfo.InvariantCulture);
 
 			return new string(shuffledChars);
+		}
+
+		internal static byte[] ToBytes(this string base64String)
+		{
+			if (base64String == null)
+				return null;
+
+			if (base64String.Length == 0)
+				return new byte[0];
+
+			try
+			{
+				return Convert.FromBase64String(base64String);
+			}
+			catch (FormatException)
+			{
+				return Encoding.UTF8.GetBytes(base64String);
+			}
 		}
 	}
 }
