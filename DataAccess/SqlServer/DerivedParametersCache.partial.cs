@@ -70,16 +70,7 @@ namespace DbParallel.DataAccess
 			if (sqlParameter != null)
 			{
 				if (sqlParameter.DbType == DbType.Binary)
-				{
-					try
-					{
-						dbParameter.Value = Convert.FromBase64String(specifiedParameterValue);
-					}
-					catch (FormatException)
-					{
-						dbParameter.Value = specifiedParameterValue;
-					}
-				}
+					dbParameter.Value = specifiedParameterValue.ToBytes();
 				else
 					dbParameter.Value = specifiedParameterValue;
 

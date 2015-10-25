@@ -93,14 +93,7 @@ namespace DbParallel.DataAccess
 #else
 					case OracleDbType.BFile:
 #endif
-						try
-						{
-							dbParameter.Value = Convert.FromBase64String(specifiedParameterValue);
-						}
-						catch (FormatException)
-						{
-							dbParameter.Value = specifiedParameterValue;
-						}
+						dbParameter.Value = specifiedParameterValue.ToBytes();
 						break;
 
 					default:
