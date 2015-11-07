@@ -203,12 +203,12 @@ namespace DbParallel.DataAccess
 			return new KeyValuePair<Encoding, byte[]>(encoding, encoding.GetPreamble());
 		}
 
-		private static bool Match(byte[] data, byte[] preamble)
+		private static bool MatchPreamble(byte[] data, byte[] preamble)
 		{
 			if (data == null || preamble == null || preamble.Length == 0 || data.Length < preamble.Length)
 				return false;
 
-			for (long i = 0; i < preamble.Length; i++)
+			for (int i = 0; i < preamble.Length; i++)
 				if (data[i] != preamble[i])
 					return false;
 
@@ -221,7 +221,7 @@ namespace DbParallel.DataAccess
 				return _DefaultReaderEncoding;
 
 			foreach (var encodingPreamble in _EncodingPreambles)
-				if (Match(data, encodingPreamble.Value))
+				if (MatchPreamble(data, encodingPreamble.Value))
 					return encodingPreamble.Key;
 
 			return _DefaultReaderEncoding;

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.Common;
 
 namespace DbParallel.DataAccess
@@ -33,16 +34,18 @@ namespace DbParallel.DataAccess
 			{
 				case DbType.Object:
 				case DbType.Binary:
-					string strSpecifiedParameterValue = specifiedParameterValue as string;
-					if (strSpecifiedParameterValue != null)
 					{
-						bool hasBeenProcessed = false;
+						string strValue = specifiedParameterValue as string;
+						if (strValue != null)
+						{
+							bool hasBeenProcessed = false;
 
-						OracleAdaptParameterValue(dbParameter, strSpecifiedParameterValue, ref hasBeenProcessed);
-						SqlAdaptParameterValue(dbParameter, strSpecifiedParameterValue, ref hasBeenProcessed);
+							OracleAdaptParameterValue(dbParameter, strValue, ref hasBeenProcessed);
+							SqlAdaptParameterValue(dbParameter, strValue, ref hasBeenProcessed);
 
-						if (hasBeenProcessed)
-							return;
+							if (hasBeenProcessed)
+								return;
+						}
 					}
 					break;
 
@@ -50,11 +53,27 @@ namespace DbParallel.DataAccess
 				case DbType.StringFixedLength:
 				case DbType.AnsiString:
 				case DbType.AnsiStringFixedLength:
-					byte[] uploadedBinary = TryCastAsBytes(specifiedParameterValue);
-					if (uploadedBinary != null)
 					{
-						dbParameter.Value = uploadedBinary.DecodeBytesToString();
-						return;
+						byte[] uploadedBinary = TryCastAsBytes(specifiedParameterValue);
+						if (uploadedBinary != null)
+						{
+							dbParameter.Value = uploadedBinary.DecodeBytesToString();
+							return;
+						}
+					}
+					break;
+
+				case DbType.Xml:
+					break;
+
+				default:
+					{
+						string strValue = specifiedParameterValue as string;
+						if (strValue != null && string.IsNullOrWhiteSpace(strValue))
+						{
+							dbParameter.Value = DBNull.Value;
+							return;
+						}
 					}
 					break;
 			}
