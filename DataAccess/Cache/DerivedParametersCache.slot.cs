@@ -29,20 +29,40 @@ namespace DbParallel.DataAccess
 		static partial void SqlAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
 		static private void AdaptParameterValue(DbParameter dbParameter, object specifiedParameterValue)
 		{
-			bool hasBeenProcessed = false;
-			string strSpecifiedParameterValue = specifiedParameterValue as string;
+			switch (dbParameter.DbType)
+			{
+				case DbType.Object:
+				case DbType.Binary:
+					string strSpecifiedParameterValue = specifiedParameterValue as string;
+					if (strSpecifiedParameterValue != null)
+					{
+						bool hasBeenProcessed = false;
+
+						OracleAdaptParameterValue(dbParameter, strSpecifiedParameterValue, ref hasBeenProcessed);
+						SqlAdaptParameterValue(dbParameter, strSpecifiedParameterValue, ref hasBeenProcessed);
+
+						if (hasBeenProcessed)
+							return;
+					}
+					break;
+
+				case DbType.String:
+				case DbType.StringFixedLength:
+				case DbType.AnsiString:
+				case DbType.AnsiStringFixedLength:
+					byte[] uploadedBinary = TryCastAsBytes(specifiedParameterValue);
+					if (uploadedBinary != null)
+					{
+						dbParameter.Value = uploadedBinary.DecodeBytesToString();
+						return;
+					}
+					break;
+			}
 
 			//if (dbParameter.IsUnpreciseDecimal())
 			//    dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
 
-			if ((dbParameter.DbType == DbType.Object || dbParameter.DbType == DbType.Binary) && !string.IsNullOrEmpty(strSpecifiedParameterValue))
-			{
-				OracleAdaptParameterValue(dbParameter, strSpecifiedParameterValue, ref hasBeenProcessed);
-				SqlAdaptParameterValue(dbParameter, strSpecifiedParameterValue, ref hasBeenProcessed);
-			}
-
-			if (hasBeenProcessed == false)
-				dbParameter.Value = specifiedParameterValue;
+			dbParameter.Value = specifiedParameterValue;
 		}
 	}
 }

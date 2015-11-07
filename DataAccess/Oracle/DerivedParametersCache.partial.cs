@@ -94,14 +94,9 @@ namespace DbParallel.DataAccess
 					case OracleDbType.BFile:
 #endif
 						dbParameter.Value = specifiedParameterValue.ToBytes();
-						break;
-
-					default:
-						dbParameter.Value = specifiedParameterValue;
+						processed = true;
 						break;
 				}
-
-				processed = true;
 			}
 		}
 	}

@@ -67,13 +67,9 @@ namespace DbParallel.DataAccess
 
 			SqlParameter sqlParameter = dbParameter as SqlParameter;
 
-			if (sqlParameter != null)
+			if (sqlParameter != null && sqlParameter.DbType == DbType.Binary)
 			{
-				if (sqlParameter.DbType == DbType.Binary)
-					dbParameter.Value = specifiedParameterValue.ToBytes();
-				else
-					dbParameter.Value = specifiedParameterValue;
-
+				dbParameter.Value = specifiedParameterValue.ToBytes();
 				processed = true;
 			}
 		}

@@ -280,6 +280,39 @@ namespace DbParallel.DataAccess
 		{
 			return (dbParameter.DbType == DbType.Decimal && (dbParameter as IDbDataParameter).Precision == 0);
 		}
+
+		static private byte[] TryCastAsBytes(object oValue)
+		{
+			byte[] bytes = oValue as byte[];
+			if (bytes != null)
+				return bytes;
+
+			Array array = oValue as Array;
+			if (array == null)
+				return null;
+
+			if (array.Length == 0)
+				return new byte[0];
+
+			if (array.GetValue(0) is byte)
+			{
+				bytes = new byte[array.Length];
+				long i = 0;
+
+				foreach (var o in array)
+				{
+					if (o is byte)
+						bytes[i] = (byte)o;
+					else
+						return null;
+					i++;
+				}
+
+				return bytes;
+			}
+
+			return null;
+		}
 	}
 }
 
