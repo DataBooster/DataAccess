@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace DbParallel.DataAccess
 {
@@ -8,11 +9,22 @@ namespace DbParallel.DataAccess
 	{
 		private static readonly Random _RandomNumber;
 		private static readonly object _RandomLock;
+		private static readonly List<KeyValuePair<Encoding, byte[]>> _EncodingPreambles;
+		private static readonly Encoding _DefaultReaderEncoding;
 
 		static StringUtils()
 		{
 			_RandomNumber = new Random();
 			_RandomLock = new object();
+
+			_EncodingPreambles = new List<KeyValuePair<Encoding, byte[]>>();
+			_EncodingPreambles.Add(CreateEncodingPreamble(new UTF32Encoding(true, true)));
+			_EncodingPreambles.Add(CreateEncodingPreamble(Encoding.UTF32));
+			_EncodingPreambles.Add(CreateEncodingPreamble(Encoding.UTF8));
+			_EncodingPreambles.Add(CreateEncodingPreamble(Encoding.BigEndianUnicode));
+			_EncodingPreambles.Add(CreateEncodingPreamble(Encoding.Unicode));
+
+			_DefaultReaderEncoding = new UTF8Encoding();
 		}
 
 		public static string DeunderscoreFieldName(this string fieldName, bool camelCase = false)
@@ -173,6 +185,46 @@ namespace DbParallel.DataAccess
 			{
 				return Encoding.UTF8.GetBytes(base64String);
 			}
+		}
+
+		internal static string DecodeBytesToString(this byte[] encodedBytes)
+		{
+			if (encodedBytes == null)
+				return null;
+
+			if (encodedBytes.Length == 0)
+				return string.Empty;
+
+			return DetectEncoding(encodedBytes).GetString(encodedBytes);
+		}
+
+		private static KeyValuePair<Encoding, byte[]> CreateEncodingPreamble(Encoding encoding)
+		{
+			return new KeyValuePair<Encoding, byte[]>(encoding, encoding.GetPreamble());
+		}
+
+		private static bool Match(byte[] data, byte[] preamble)
+		{
+			if (data == null || preamble == null || preamble.Length == 0 || data.Length < preamble.Length)
+				return false;
+
+			for (long i = 0; i < preamble.Length; i++)
+				if (data[i] != preamble[i])
+					return false;
+
+			return true;
+		}
+
+		private static Encoding DetectEncoding(byte[] data)
+		{
+			if (data == null || data.Length < 2)
+				return _DefaultReaderEncoding;
+
+			foreach (var encodingPreamble in _EncodingPreambles)
+				if (Match(data, encodingPreamble.Value))
+					return encodingPreamble.Key;
+
+			return _DefaultReaderEncoding;
 		}
 	}
 }
