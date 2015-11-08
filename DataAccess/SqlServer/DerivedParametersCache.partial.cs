@@ -60,7 +60,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		static partial void SqlAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed)
+		static partial void SqlAdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue, ref bool processed)
 		{
 			if (processed)
 				return;
