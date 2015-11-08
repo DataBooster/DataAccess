@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Reflection;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 
@@ -279,6 +280,380 @@ namespace DbParallel.DataAccess
 		static private bool IsUnpreciseDecimal(this DbParameter dbParameter)
 		{
 			return (dbParameter.DbType == DbType.Decimal && (dbParameter as IDbDataParameter).Precision == 0);
+		}
+
+		static private void AdaptParameterValue(DbParameter dbParameter, object specifiedParameterValue)
+		{
+			switch (dbParameter.DbType)
+			{
+				case DbType.Object:
+				case DbType.Binary:
+					{
+						string strValue = specifiedParameterValue as string;
+						if (strValue != null)
+							if (AdaptParameterValueStringToBinary(dbParameter, strValue))
+								return;
+					}
+					break;
+
+				case DbType.String:
+				case DbType.StringFixedLength:
+				case DbType.AnsiString:
+				case DbType.AnsiStringFixedLength:
+					{
+						byte[] uploadedBinary = TryCastAsBytes(specifiedParameterValue);
+						if (uploadedBinary != null)
+						{
+							dbParameter.Value = uploadedBinary.DecodeBytesToString();
+							return;
+						}
+					}
+					break;
+
+				case DbType.Currency:
+				case DbType.Decimal:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							decimal mValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (decimal.TryParse(strValue, NumberStyles.Any, null, out mValue))
+							{
+								dbParameter.Value = mValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Double:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							double dValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (double.TryParse(strValue, NumberStyles.Any, null, out dValue))
+							{
+								dbParameter.Value = dValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Single:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							float fValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (float.TryParse(strValue, NumberStyles.Any, null, out fValue))
+							{
+								dbParameter.Value = fValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Int64:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							long lValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (long.TryParse(strValue, NumberStyles.Any, null, out lValue))
+							{
+								dbParameter.Value = lValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.UInt64:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							ulong lValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (ulong.TryParse(strValue, NumberStyles.Any, null, out lValue))
+							{
+								dbParameter.Value = lValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Int32:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							int iValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (int.TryParse(strValue, NumberStyles.Any, null, out iValue))
+							{
+								dbParameter.Value = iValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.UInt32:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							uint uValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (uint.TryParse(strValue, NumberStyles.Any, null, out uValue))
+							{
+								dbParameter.Value = uValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Int16:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							short sValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (short.TryParse(strValue, NumberStyles.Any, null, out sValue))
+							{
+								dbParameter.Value = sValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.UInt16:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							ushort uValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (ushort.TryParse(strValue, NumberStyles.Any, null, out uValue))
+							{
+								dbParameter.Value = uValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Byte:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							byte bValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (byte.TryParse(strValue, out bValue))
+							{
+								dbParameter.Value = bValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.SByte:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							sbyte bValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (sbyte.TryParse(strValue, out bValue))
+							{
+								dbParameter.Value = bValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Boolean:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							bool bValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (bool.TryParse(strValue, out bValue))
+							{
+								dbParameter.Value = bValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Guid:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							Guid gValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (Guid.TryParse(strValue, out gValue))
+							{
+								dbParameter.Value = gValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Date:
+				case DbType.DateTime:
+				case DbType.DateTime2:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							DateTime dtValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (DateTime.TryParse(strValue, out dtValue))
+							{
+								dbParameter.Value = dtValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.DateTimeOffset:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							DateTimeOffset dtoValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (DateTimeOffset.TryParse(strValue, out dtoValue))
+							{
+								dbParameter.Value = dtoValue;
+								return;
+							}
+						}
+					}
+					break;
+
+				case DbType.Time:
+					{
+						string strValue = specifiedParameterValue as string;
+
+						if (strValue != null)
+						{
+							TimeSpan tsValue;
+							if (string.IsNullOrWhiteSpace(strValue))
+							{
+								dbParameter.Value = DBNull.Value;
+								return;
+							}
+							if (TimeSpan.TryParse(strValue, out tsValue))
+							{
+								dbParameter.Value = tsValue;
+								return;
+							}
+						}
+					}
+					break;
+			}
+
+			//if (dbParameter.IsUnpreciseDecimal())
+			//    dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
+
+			dbParameter.Value = specifiedParameterValue;
 		}
 
 		static private byte[] TryCastAsBytes(object oValue)

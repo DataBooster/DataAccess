@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Data.Common;
+﻿using System.Data.Common;
 
 namespace DbParallel.DataAccess
 {
@@ -26,62 +24,16 @@ namespace DbParallel.DataAccess
 			SqlOmitUnspecifiedInputParameters(dbCmd, ref hasBeenProcessed);
 		}
 
-		static partial void OracleAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
-		static partial void SqlAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
-		static private void AdaptParameterValue(DbParameter dbParameter, object specifiedParameterValue)
+		static partial void OracleAdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
+		static partial void SqlAdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
+		static private bool AdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue)
 		{
-			switch (dbParameter.DbType)
-			{
-				case DbType.Object:
-				case DbType.Binary:
-					{
-						string strValue = specifiedParameterValue as string;
-						if (strValue != null)
-						{
-							bool hasBeenProcessed = false;
+			bool hasBeenProcessed = false;
 
-							OracleAdaptParameterValue(dbParameter, strValue, ref hasBeenProcessed);
-							SqlAdaptParameterValue(dbParameter, strValue, ref hasBeenProcessed);
+			OracleAdaptParameterValueStringToBinary(dbParameter, specifiedParameterValue, ref hasBeenProcessed);
+			SqlAdaptParameterValueStringToBinary(dbParameter, specifiedParameterValue, ref hasBeenProcessed);
 
-							if (hasBeenProcessed)
-								return;
-						}
-					}
-					break;
-
-				case DbType.String:
-				case DbType.StringFixedLength:
-				case DbType.AnsiString:
-				case DbType.AnsiStringFixedLength:
-					{
-						byte[] uploadedBinary = TryCastAsBytes(specifiedParameterValue);
-						if (uploadedBinary != null)
-						{
-							dbParameter.Value = uploadedBinary.DecodeBytesToString();
-							return;
-						}
-					}
-					break;
-
-				case DbType.Xml:
-					break;
-
-				default:
-					{
-						string strValue = specifiedParameterValue as string;
-						if (strValue != null && string.IsNullOrWhiteSpace(strValue))
-						{
-							dbParameter.Value = DBNull.Value;
-							return;
-						}
-					}
-					break;
-			}
-
-			//if (dbParameter.IsUnpreciseDecimal())
-			//    dbParameter.ResetDbType();		// To solve OracleTypeException: numeric precision specifier is out of range (1 to 38).
-
-			dbParameter.Value = specifiedParameterValue;
+			return hasBeenProcessed;
 		}
 	}
 }

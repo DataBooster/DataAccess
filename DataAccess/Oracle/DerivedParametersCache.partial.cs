@@ -74,7 +74,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		static partial void OracleAdaptParameterValue(DbParameter dbParameter, string specifiedParameterValue, ref bool processed)
+		static partial void OracleAdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue, ref bool processed)
 		{
 			if (processed)
 				return;
