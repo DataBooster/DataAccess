@@ -74,6 +74,49 @@ namespace DbParallel.DataAccess
 			}
 		}
 
+		static partial void SqlGetUnderlyingDbType(DbParameter dbParameter, ref DbType underlyingDbType, ref bool processed)
+		{
+			if (processed)
+				return;
+
+			OracleParameter oraParameter = dbParameter as OracleParameter;
+
+			if (oraParameter != null)
+			{
+				switch (oraParameter.OracleDbType)
+				{
+					case OracleDbType.Blob:
+					case OracleDbType.Raw:
+					case OracleDbType.LongRaw:
+#if DATADIRECT
+					case OracleDbType.Bfile:
+#else
+					case OracleDbType.BFile:
+#endif
+						underlyingDbType = DbType.Binary;
+						processed = true;
+						break;
+
+					case OracleDbType.Clob:
+					case OracleDbType.NClob:
+					case OracleDbType.Char:
+					case OracleDbType.NChar:
+					case OracleDbType.Long:
+#if DATADIRECT
+					case OracleDbType.VarChar:
+					case OracleDbType.NVarChar:
+#else
+					case OracleDbType.Varchar2:
+					case OracleDbType.NVarchar2:
+#endif
+					case OracleDbType.XmlType:
+						underlyingDbType = DbType.String;
+						processed = true;
+						break;
+				}
+			}
+		}
+
 		static partial void OracleAdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue, ref bool processed)
 		{
 			if (processed)
@@ -97,6 +140,42 @@ namespace DbParallel.DataAccess
 						processed = true;
 						break;
 				}
+			}
+		}
+
+		static partial void IsAlsoOracleString(DbParameter dbParameter, ref bool isDbString, ref bool processed)
+		{
+			if (processed)
+				return;
+
+			OracleParameter oraParameter = dbParameter as OracleParameter;
+
+			if (oraParameter != null)
+			{
+				switch (oraParameter.OracleDbType)
+				{
+					case OracleDbType.Clob:
+					case OracleDbType.NClob:
+					case OracleDbType.Char:
+					case OracleDbType.NChar:
+					case OracleDbType.Long:
+#if DATADIRECT
+					case OracleDbType.VarChar:
+					case OracleDbType.NVarChar:
+#else
+					case OracleDbType.Varchar2:
+					case OracleDbType.NVarchar2:
+#endif
+					case OracleDbType.XmlType:
+						isDbString = true;
+						break;
+
+					default:
+						isDbString = false;
+						break;
+				}
+
+				processed = true;
 			}
 		}
 	}

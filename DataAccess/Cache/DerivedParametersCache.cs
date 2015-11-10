@@ -287,6 +287,10 @@ namespace DbParallel.DataAccess
 			switch (dbParameter.DbType)
 			{
 				case DbType.Object:
+					if (IsAlsoDbString(dbParameter))
+						goto case DbType.String;
+					else
+						goto case DbType.Binary;
 				case DbType.Binary:
 					{
 						string strValue = specifiedParameterValue as string;
