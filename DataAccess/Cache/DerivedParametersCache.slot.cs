@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Data;
+using System.Data.Common;
 
 namespace DbParallel.DataAccess
 {
@@ -24,6 +25,19 @@ namespace DbParallel.DataAccess
 			SqlOmitUnspecifiedInputParameters(dbCmd, ref hasBeenProcessed);
 		}
 
+		static partial void OracleGetUnderlyingDbType(DbParameter dbParameter, ref DbType underlyingDbType, ref bool processed);
+		static partial void SqlGetUnderlyingDbType(DbParameter dbParameter, ref DbType underlyingDbType, ref bool processed);
+		static private DbType GetUnderlyingDbType(DbParameter dbParameter)
+		{
+			DbType underlyingDbType = dbParameter.DbType;
+			bool hasBeenProcessed = false;
+
+			OracleGetUnderlyingDbType(dbParameter, ref underlyingDbType, ref hasBeenProcessed);
+			SqlGetUnderlyingDbType(dbParameter, ref underlyingDbType, ref hasBeenProcessed);
+
+			return underlyingDbType;
+		}
+
 		static partial void OracleAdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
 		static partial void SqlAdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue, ref bool processed);
 		static private bool AdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue)
@@ -34,6 +48,18 @@ namespace DbParallel.DataAccess
 			SqlAdaptParameterValueStringToBinary(dbParameter, specifiedParameterValue, ref hasBeenProcessed);
 
 			return hasBeenProcessed;
+		}
+
+		static partial void IsAlsoOracleString(DbParameter dbParameter, ref bool isDbString, ref bool processed);
+		static partial void IsAlsoSqlString(DbParameter dbParameter, ref bool isDbString, ref bool processed);
+		static private bool IsAlsoDbString(DbParameter dbParameter)
+		{
+			bool isDbString = false, hasBeenProcessed = false;
+
+			IsAlsoOracleString(dbParameter, ref isDbString, ref hasBeenProcessed);
+			IsAlsoSqlString(dbParameter, ref isDbString, ref hasBeenProcessed);
+
+			return isDbString;
 		}
 	}
 }
