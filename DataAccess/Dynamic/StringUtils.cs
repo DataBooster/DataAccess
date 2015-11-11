@@ -195,7 +195,9 @@ namespace DbParallel.DataAccess
 			if (encodedBytes.Length == 0)
 				return string.Empty;
 
-			return DetectEncoding(encodedBytes).GetString(encodedBytes);
+			int preambleLength;
+
+			return DetectEncoding(encodedBytes, out preambleLength).GetString(encodedBytes, preambleLength, encodedBytes.Length - preambleLength);
 		}
 
 		private static KeyValuePair<Encoding, byte[]> CreateEncodingPreamble(Encoding encoding)
@@ -215,15 +217,17 @@ namespace DbParallel.DataAccess
 			return true;
 		}
 
-		private static Encoding DetectEncoding(byte[] data)
+		private static Encoding DetectEncoding(byte[] data, out int preambleLength)
 		{
-			if (data == null || data.Length < 2)
-				return _DefaultReaderEncoding;
+			if (data != null && data.Length >= 2)
+				foreach (var encodingPreamble in _EncodingPreambles)
+					if (MatchPreamble(data, encodingPreamble.Value))
+					{
+						preambleLength = encodingPreamble.Value.Length;
+						return encodingPreamble.Key;
+					}
 
-			foreach (var encodingPreamble in _EncodingPreambles)
-				if (MatchPreamble(data, encodingPreamble.Value))
-					return encodingPreamble.Key;
-
+			preambleLength = 0;
 			return _DefaultReaderEncoding;
 		}
 	}
