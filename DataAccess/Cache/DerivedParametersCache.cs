@@ -284,22 +284,8 @@ namespace DbParallel.DataAccess
 
 		static private void AdaptParameterValue(DbParameter dbParameter, object specifiedParameterValue)
 		{
-			switch (dbParameter.DbType)
+			switch (GetUnderlyingDbType(dbParameter))
 			{
-				case DbType.Object:
-					if (IsAlsoDbString(dbParameter))
-						goto case DbType.String;
-					else
-						goto case DbType.Binary;
-				case DbType.Binary:
-					{
-						string strValue = specifiedParameterValue as string;
-						if (strValue != null)
-							if (AdaptParameterValueStringToBinary(dbParameter, strValue))
-								return;
-					}
-					break;
-
 				case DbType.String:
 				case DbType.StringFixedLength:
 				case DbType.AnsiString:
@@ -309,6 +295,17 @@ namespace DbParallel.DataAccess
 						if (uploadedBinary != null)
 						{
 							dbParameter.Value = uploadedBinary.DecodeBytesToString();
+							return;
+						}
+					}
+					break;
+
+				case DbType.Binary:
+					{
+						string strValue = specifiedParameterValue as string;
+						if (strValue != null)
+						{
+							dbParameter.Value = strValue.ToBytes();
 							return;
 						}
 					}

@@ -59,20 +59,6 @@ namespace DbParallel.DataAccess
 				processed = true;
 			}
 		}
-
-		static partial void SqlAdaptParameterValueStringToBinary(DbParameter dbParameter, string specifiedParameterValue, ref bool processed)
-		{
-			if (processed)
-				return;
-
-			SqlParameter sqlParameter = dbParameter as SqlParameter;
-
-			if (sqlParameter != null && sqlParameter.DbType == DbType.Binary)
-			{
-				dbParameter.Value = specifiedParameterValue.ToBytes();
-				processed = true;
-			}
-		}
 	}
 }
 
