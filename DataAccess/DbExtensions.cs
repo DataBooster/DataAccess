@@ -32,7 +32,7 @@ namespace DbParallel.DataAccess
 		}
 		#endregion
 
-		private static T TryConvert<T>(object dbValue)
+		internal static T TryConvert<T>(object dbValue)
 		{
 			if (dbValue == null || Convert.IsDBNull(dbValue))
 				return default(T);

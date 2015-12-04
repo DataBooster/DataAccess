@@ -6,7 +6,9 @@ namespace DbParallel.DataAccess
 {
 	public abstract class DbContextBase : IDisposable
 	{
+		[Obsolete("This field is deprecated and will be private in the next major release. Use AccessChannel property instead.", false)]
 		protected DbAccess _DbAccess;
+		protected DbAccess AccessChannel { get { return _DbAccess; } }
 
 		public DbContextBase(DbProviderFactory dbProviderFactory, string connectionString)
 		{
@@ -16,6 +18,11 @@ namespace DbParallel.DataAccess
 		public virtual StoredProcedureResponse ExecuteProcedure(string sp, IDictionary<string, object> parameters = null)
 		{
 			return _DbAccess.ExecuteStoredProcedure(new StoredProcedureRequest(sp, parameters));
+		}
+
+		protected T Cast<T>(object oValue)
+		{
+			return DbExtensions.TryConvert<T>(oValue);
 		}
 
 		#region IDisposable Members
