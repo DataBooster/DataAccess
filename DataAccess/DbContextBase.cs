@@ -20,6 +20,11 @@ namespace DbParallel.DataAccess
 			return _DbAccess.ExecuteStoredProcedure(new StoredProcedureRequest(sp, parameters));
 		}
 
+		public virtual StoredProcedureResponse ExecuteProcedure(string sp, object anonymousTypeInstanceAsParameters)
+		{
+			return _DbAccess.ExecuteStoredProcedure(new StoredProcedureRequest(sp, anonymousTypeInstanceAsParameters));
+		}
+
 		protected T Cast<T>(object oValue)
 		{
 			return DbExtensions.TryConvert<T>(oValue);
