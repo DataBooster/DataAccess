@@ -30,6 +30,30 @@ namespace DbParallel.DataAccess
 			_xmlSettings = xmlSettings ?? _defaultXmlSettings;
 		}
 
+		public IEnumerable<string> PropertyNames()
+		{
+			return _data.Keys;
+		}
+
+		public IEnumerable<object> PropertyValues()
+		{
+			return _data.Values;
+		}
+
+		public object Property(string propertyName)
+		{
+			object value;
+			TryGetValue(propertyName, out value);
+			return value;
+		}
+
+		public T Property<T>(string propertyName)
+		{
+			T value;
+			TryGetValue<T>(propertyName, out value);
+			return value;
+		}
+
 		#region DynamicObject Members
 
 		/// <returns>A sequence that contains dynamic member names.</returns>
@@ -207,17 +231,39 @@ namespace DbParallel.DataAccess
 			return _data.Remove(key);
 		}
 
-		bool IDictionary<string, object>.TryGetValue(string key, out object value)
+		public bool TryGetValue(string propertyName, out object value)
 		{
-			return _data.TryGetValue(key, out value);
+			if (string.IsNullOrEmpty("propertyName"))
+			{
+				value = null;
+				return false;
+			}
+			else
+				return _data.TryGetValue(propertyName, out value);
+		}
+
+		public bool TryGetValue<T>(string propertyName, out T value)
+		{
+			object oValue;
+
+			if (TryGetValue(propertyName, out oValue))
+			{
+				value = DbExtensions.TryConvert<T>(oValue);
+				return true;
+			}
+			else
+			{
+				value = default(T);
+				return false;
+			}
 		}
 
 		ICollection<object> IDictionary<string, object>.Values { get { return _data.Values; } }
 
-		object IDictionary<string, object>.this[string key]
+		public object this[string propertyName]
 		{
-			get { return _data[key]; }
-			set { _data[key] = value; }
+			get { return Property(propertyName); }
+			set { _data[propertyName] = value; }
 		}
 
 		void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
@@ -249,7 +295,7 @@ namespace DbParallel.DataAccess
 			return _data.Remove(item);
 		}
 
-		IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 		{
 			return _data.GetEnumerator();
 		}

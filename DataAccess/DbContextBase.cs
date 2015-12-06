@@ -15,12 +15,12 @@ namespace DbParallel.DataAccess
 			_DbAccess = new DbAccess(dbProviderFactory, connectionString);
 		}
 
-		public virtual StoredProcedureResponse ExecuteProcedure(string sp, IDictionary<string, object> parameters = null)
+		public StoredProcedureResponse ExecuteProcedure(string sp, IDictionary<string, object> parameters = null)
 		{
 			return _DbAccess.ExecuteStoredProcedure(new StoredProcedureRequest(sp, parameters));
 		}
 
-		public virtual StoredProcedureResponse ExecuteProcedure(string sp, object anonymousTypeInstanceAsParameters)
+		public StoredProcedureResponse ExecuteProcedure(string sp, object anonymousTypeInstanceAsParameters)
 		{
 			return _DbAccess.ExecuteStoredProcedure(new StoredProcedureRequest(sp, anonymousTypeInstanceAsParameters));
 		}

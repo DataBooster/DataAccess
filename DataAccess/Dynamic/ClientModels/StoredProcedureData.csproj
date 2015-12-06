@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\DbExtensions.common.cs">
+      <Link>DbExtensions.common.cs</Link>
+    </Compile>
     <Compile Include="..\BindableDynamicObject.cs">
       <Link>BindableDynamicObject.cs</Link>
     </Compile>
