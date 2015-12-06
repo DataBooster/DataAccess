@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Data.Linq;
 using System.Data.Common;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,23 +30,6 @@ namespace DbParallel.DataAccess
 			return false;
 		}
 		#endregion
-
-		internal static T TryConvert<T>(object dbValue)
-		{
-			if (dbValue == null || Convert.IsDBNull(dbValue))
-				return default(T);
-			else
-			{
-				try
-				{
-					return (T)dbValue;
-				}
-				catch (InvalidCastException)
-				{
-					return DBConvert.ChangeType<T>(dbValue);	//	(T)Convert.ChangeType(dbValue, typeof(T).TryUnderlyingType());
-				}
-			}
-		}
 
 		public static object GetColumnValue(this DbDataReader dataRecord, int ordinal)
 		{

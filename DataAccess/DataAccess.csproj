@@ -62,6 +62,7 @@
     <Compile Include="DbAccess.cs" />
     <Compile Include="DbAccess.slot.cs" />
     <Compile Include="DbContextBase.cs" />
+    <Compile Include="DbExtensions.common.cs" />
     <Compile Include="DbExtensions.cs" />
     <Compile Include="DbExtensions.expression.cs" />
     <Compile Include="DbFieldMap.cs" />
