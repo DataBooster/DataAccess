@@ -124,28 +124,16 @@ namespace DbParallel.DataAccess
 			_AllowAutoMatch = allowAutoMatch;
 		}
 
-		internal void AddAllPropertiesOrFields()
-		{
-			Type type = typeof(T);
-
-			foreach (FieldInfo f in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
-				if (f.IsInitOnly == false && f.FieldType.GetNonNullableType().CanMapToDbType())
-					_FieldList.Add(new ColumnMemberInfo(f.Name, f));
-
-			foreach (PropertyInfo p in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
-				if (p.CanWrite && p.CanRead && p.PropertyType.GetNonNullableType().CanMapToDbType())
-					_FieldList.Add(new ColumnMemberInfo(p.Name, p));
-
-			_AutoMatchAllPropertiesOrFields = true;
-		}
-
 		internal void PrepareResultMap(Action<DbFieldMap<T>> resultMap = null)
 		{
 			if (resultMap != null)
 				resultMap(this);
 			else
 				if (_AllowAutoMatch)
-					AddAllPropertiesOrFields();
+				{
+					_FieldList.AddRange(typeof(T).AllPropertiesOrFields());
+					_AutoMatchAllPropertiesOrFields = true;
+				}
 		}
 
 		internal T ReadNew(DbDataReader dataReader)

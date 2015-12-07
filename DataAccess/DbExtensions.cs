@@ -8,29 +8,6 @@ namespace DbParallel.DataAccess
 {
 	public static partial class DbExtensions
 	{
-		#region Type helper
-		internal static bool IsNullable(this Type type)
-		{
-			return (type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
-		}
-
-		internal static Type GetNonNullableType(this Type type)
-		{
-			return type.IsNullable() ? Nullable.GetUnderlyingType(type) : type;
-		}
-
-		internal static bool CanMapToDbType(this Type type)
-		{
-			if (typeof(IConvertible).IsAssignableFrom(type))
-				return true;
-			if (type.IsValueType)
-				return true;
-			if (type == typeof(string))
-				return true;
-			return false;
-		}
-		#endregion
-
 		public static object GetColumnValue(this DbDataReader dataRecord, int ordinal)
 		{
 			try
