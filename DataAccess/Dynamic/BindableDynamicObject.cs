@@ -30,16 +30,29 @@ namespace DbParallel.DataAccess
 			_xmlSettings = xmlSettings ?? _defaultXmlSettings;
 		}
 
+		/// <summary>
+		/// Gets all property names of this dynamic object.
+		/// </summary>
+		/// <returns>An <see cref="IEnumerable{string}"/> of this dynamic object's property names.</returns>
 		public IEnumerable<string> PropertyNames()
 		{
 			return _data.Keys;
 		}
 
+		/// <summary>
+		/// Gets an <see cref="IEnumerable{object}"/> of this dynamic object's property values.
+		/// </summary>
+		/// <returns>An <see cref="IEnumerable{object}"/> of this dynamic object's property values.</returns>
 		public IEnumerable<object> PropertyValues()
 		{
 			return _data.Values;
 		}
 
+		/// <summary>
+		/// Gets the value with the specified propertyName. 
+		/// </summary>
+		/// <param name="propertyName">The property name.</param>
+		/// <returns>The raw value with the specified propertyName, or null if the specified propertyName is not found.</returns>
 		public object Property(string propertyName)
 		{
 			object value;
@@ -47,11 +60,48 @@ namespace DbParallel.DataAccess
 			return value;
 		}
 
+		/// <summary>
+		/// Gets the value of the specified propertyName, converted to the specified type.
+		/// </summary>
+		/// <typeparam name="T">The type to convert the value to.</typeparam>
+		/// <param name="propertyName">The property name.</param>
+		/// <returns>The type-converted value of the specified propertyName, or default(T) if the specified propertyName is not found.</returns>
 		public T Property<T>(string propertyName)
 		{
 			T value;
 			TryGetValue<T>(propertyName, out value);
 			return value;
+		}
+
+		/// <summary>
+		/// Creates the specified type from this dynamic object, transfers all matched properties by names.
+		/// </summary>
+		/// <typeparam name="T">The target object type.</typeparam>
+		/// <returns>The new object created from this dynamic object.</returns>
+		public T ToObject<T>() where T : new()
+		{
+			T instance = new T();
+			return ToObject<T>(instance);
+		}
+
+		/// <summary>
+		/// Transfers all matched properties (by names) to a created object.
+		/// </summary>
+		/// <typeparam name="T">The target object type.</typeparam>
+		/// <param name="createdInstance">The created object to be filled.</param>
+		/// <returns>The createdInstance.</returns>
+		public T ToObject<T>(T createdInstance)
+		{
+			if (createdInstance == null)
+				return createdInstance;
+
+			object value;
+
+			foreach (var member in createdInstance.GetType().AllPropertiesOrFields())
+				if (TryGetValue(member.ColumnName, out value))
+					member.SetValue(createdInstance, value);
+
+			return createdInstance;
 		}
 
 		#region DynamicObject Members

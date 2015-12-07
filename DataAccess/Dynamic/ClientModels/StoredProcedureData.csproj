@@ -50,8 +50,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\ColumnMemberInfo.cs">
+      <Link>ColumnMemberInfo.cs</Link>
+    </Compile>
     <Compile Include="..\..\DbExtensions.common.cs">
       <Link>DbExtensions.common.cs</Link>
+    </Compile>
+    <Compile Include="..\..\DbExtensions.expression.cs">
+      <Link>DbExtensions.expression.cs</Link>
+    </Compile>
+    <Compile Include="..\..\PropertyOrField.cs">
+      <Link>PropertyOrField.cs</Link>
     </Compile>
     <Compile Include="..\BindableDynamicObject.cs">
       <Link>BindableDynamicObject.cs</Link>
