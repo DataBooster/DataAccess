@@ -52,11 +52,12 @@ namespace DbParallel.DataAccess
 		/// Gets the value with the specified propertyName. 
 		/// </summary>
 		/// <param name="propertyName">The property name.</param>
+		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
 		/// <returns>The raw value with the specified propertyName, or null if the specified propertyName is not found.</returns>
-		public object Property(string propertyName)
+		public object Property(string propertyName, bool ignoreCase = true)
 		{
 			object value;
-			TryGetValue(propertyName, out value);
+			TryGetValue(propertyName, out value, ignoreCase);
 			return value;
 		}
 
@@ -65,11 +66,12 @@ namespace DbParallel.DataAccess
 		/// </summary>
 		/// <typeparam name="T">The type to convert the value to.</typeparam>
 		/// <param name="propertyName">The property name.</param>
+		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
 		/// <returns>The type-converted value of the specified propertyName, or default(T) if the specified propertyName is not found.</returns>
-		public T Property<T>(string propertyName)
+		public T Property<T>(string propertyName, bool ignoreCase = true)
 		{
 			T value;
-			TryGetValue<T>(propertyName, out value);
+			TryGetValue<T>(propertyName, out value, ignoreCase);
 			return value;
 		}
 
@@ -77,11 +79,12 @@ namespace DbParallel.DataAccess
 		/// Creates the specified type from this dynamic object, transfers all matched properties by names.
 		/// </summary>
 		/// <typeparam name="T">The target object type.</typeparam>
+		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
 		/// <returns>The new object created from this dynamic object.</returns>
-		public T ToObject<T>() where T : new()
+		public T ToObject<T>(bool ignoreCase = true) where T : class, new()
 		{
 			T instance = new T();
-			return ToObject<T>(instance);
+			return ToObject<T>(instance, ignoreCase);
 		}
 
 		/// <summary>
@@ -89,8 +92,9 @@ namespace DbParallel.DataAccess
 		/// </summary>
 		/// <typeparam name="T">The target object type.</typeparam>
 		/// <param name="createdInstance">The pre-created object to be filled.</param>
+		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
 		/// <returns>The createdInstance.</returns>
-		public T ToObject<T>(T createdInstance)
+		public T ToObject<T>(T createdInstance, bool ignoreCase = true) where T : class
 		{
 			if (createdInstance == null)
 				return createdInstance;
@@ -98,7 +102,7 @@ namespace DbParallel.DataAccess
 			object value;
 
 			foreach (var member in createdInstance.GetType().AllPropertiesOrFields())
-				if (TryGetValue(member.ColumnName, out value))
+				if (TryGetValue(member.ColumnName, out value, ignoreCase))
 					member.SetValue(createdInstance, value);
 
 			return createdInstance;
@@ -117,7 +121,7 @@ namespace DbParallel.DataAccess
 		/// <returns>true if the operation is successful; otherwise, false. If this method returns false, the run-time binder of the language determines the behavior. (In most cases, a run-time exception is thrown.)</returns>
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			return _data.TryGetValue(binder.Name, out result);
+			return TryGetValue(binder.Name, out result, binder.IgnoreCase);
 		}
 
 		/// <param name="binder">Provides information about the object that called the dynamic operation. The binder.Name property provides the name of the member to which the value is being assigned. For example, for the statement sampleObject.SampleProperty = "Test", where sampleObject is an instance of the class derived from the <see cref="T:System.Dynamic.DynamicObject"/> class, binder.Name returns "SampleProperty". The binder.IgnoreCase property specifies whether the member name is case-sensitive.</param>
@@ -281,22 +285,58 @@ namespace DbParallel.DataAccess
 			return _data.Remove(key);
 		}
 
+		/// <summary>
+		/// Gets the value associated with the specified key (propertyName).
+		/// </summary>
+		/// <param name="propertyName">The specified key (propertyName) of the value to get - be matched ignoring case.</param>
+		/// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter.This parameter is passed uninitialized.</param>
+		/// <returns>True if the member (propertyName) exists in the dynamic object, otherwise false.</returns>
 		public bool TryGetValue(string propertyName, out object value)
 		{
-			if (string.IsNullOrEmpty("propertyName"))
-			{
-				value = null;
-				return false;
-			}
-			else
-				return _data.TryGetValue(propertyName, out value);
+			return TryGetValue(propertyName, out value, true);
 		}
 
-		public bool TryGetValue<T>(string propertyName, out T value)
+		/// <summary>
+		/// Gets the value associated with the specified key (propertyName).
+		/// </summary>
+		/// <param name="propertyName">The specified key (propertyName) of the value to get.</param>
+		/// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter.This parameter is passed uninitialized.</param>
+		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise.</param>
+		/// <returns>True if the member (propertyName) exists in the dynamic object, otherwise false.</returns>
+		public bool TryGetValue(string propertyName, out object value, bool ignoreCase)
+		{
+			if (!string.IsNullOrEmpty("propertyName"))
+			{
+				if (_data.TryGetValue(propertyName, out value))
+					return true;
+				else if (ignoreCase)
+				{
+					foreach (var prop in _data)
+						if (prop.Key.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
+						{
+							value = prop.Value;
+							return true;
+						}
+				}
+			}
+
+			value = null;
+			return false;
+		}
+
+		/// <summary>
+		/// Gets the value associated with the specified key (propertyName), converted to the specified type.
+		/// </summary>
+		/// <typeparam name="T">The type to convert the value to.</typeparam>
+		/// <param name="propertyName">The specified key (propertyName) of the value to get.</param>
+		/// <param name="value">When this method returns, contains the type-converted value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter.This parameter is passed uninitialized.</param>
+		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
+		/// <returns>True if the member (propertyName) exists in the dynamic object, otherwise false.</returns>
+		public bool TryGetValue<T>(string propertyName, out T value, bool ignoreCase = true)
 		{
 			object oValue;
 
-			if (TryGetValue(propertyName, out oValue))
+			if (TryGetValue(propertyName, out oValue, ignoreCase))
 			{
 				value = DbExtensions.TryConvert<T>(oValue);
 				return true;
