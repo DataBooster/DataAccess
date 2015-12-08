@@ -33,16 +33,16 @@ namespace DbParallel.DataAccess
 		/// <summary>
 		/// Gets all property names of this dynamic object.
 		/// </summary>
-		/// <returns>An <see cref="IEnumerable{string}"/> of this dynamic object's property names.</returns>
+		/// <returns>An IEnumerable&lt;string&gt; of this dynamic object's property names.</returns>
 		public IEnumerable<string> PropertyNames()
 		{
 			return _data.Keys;
 		}
 
 		/// <summary>
-		/// Gets an <see cref="IEnumerable{object}"/> of this dynamic object's property values.
+		/// Gets an IEnumerable&lt;object&gt; of this dynamic object's property values.
 		/// </summary>
-		/// <returns>An <see cref="IEnumerable{object}"/> of this dynamic object's property values.</returns>
+		/// <returns>An IEnumerable&lt;object&gt; of this dynamic object's property values.</returns>
 		public IEnumerable<object> PropertyValues()
 		{
 			return _data.Values;
@@ -85,10 +85,10 @@ namespace DbParallel.DataAccess
 		}
 
 		/// <summary>
-		/// Transfers all matched properties (by names) to a created object.
+		/// Transfers all matched properties (by names) to a pre-created object.
 		/// </summary>
 		/// <typeparam name="T">The target object type.</typeparam>
-		/// <param name="createdInstance">The created object to be filled.</param>
+		/// <param name="createdInstance">The pre-created object to be filled.</param>
 		/// <returns>The createdInstance.</returns>
 		public T ToObject<T>(T createdInstance)
 		{
