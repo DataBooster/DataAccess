@@ -52,7 +52,7 @@ namespace DbParallel.DataAccess
 		/// Gets the value with the specified propertyName. 
 		/// </summary>
 		/// <param name="propertyName">The property name.</param>
-		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
+		/// <param name="ignoreCase">True if the propertyName should be matched ignoring case; false otherwise. The default is true.</param>
 		/// <returns>The raw value with the specified propertyName, or null if the specified propertyName is not found.</returns>
 		public object Property(string propertyName, bool ignoreCase = true)
 		{
@@ -66,7 +66,7 @@ namespace DbParallel.DataAccess
 		/// </summary>
 		/// <typeparam name="T">The type to convert the value to.</typeparam>
 		/// <param name="propertyName">The property name.</param>
-		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
+		/// <param name="ignoreCase">True if the propertyName should be matched ignoring case; false otherwise. The default is true.</param>
 		/// <returns>The type-converted value of the specified propertyName, or default(T) if the specified propertyName is not found.</returns>
 		public T Property<T>(string propertyName, bool ignoreCase = true)
 		{
@@ -79,7 +79,7 @@ namespace DbParallel.DataAccess
 		/// Creates the specified type from this dynamic object, transfers all matched properties by names.
 		/// </summary>
 		/// <typeparam name="T">The target object type.</typeparam>
-		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
+		/// <param name="ignoreCase">True if the propertyNames should be matched ignoring case; false otherwise. The default is true.</param>
 		/// <returns>The new object created from this dynamic object.</returns>
 		public T ToObject<T>(bool ignoreCase = true) where T : class, new()
 		{
@@ -92,18 +92,40 @@ namespace DbParallel.DataAccess
 		/// </summary>
 		/// <typeparam name="T">The target object type.</typeparam>
 		/// <param name="createdInstance">The pre-created object to be filled.</param>
-		/// <param name="ignoreCase">True if the specified key (propertyName) should be matched ignoring case; false otherwise. The default is true.</param>
+		/// <param name="ignoreCase">True if the propertyNames should be matched ignoring case; false otherwise. The default is true.</param>
 		/// <returns>The createdInstance.</returns>
 		public T ToObject<T>(T createdInstance, bool ignoreCase = true) where T : class
 		{
 			if (createdInstance == null)
 				return createdInstance;
 
-			object value;
+			Dictionary<string, ColumnMemberInfo> memInfoDict = createdInstance.GetType().AllPropertiesOrFields().ToDictionary(m => m.ColumnName);
+			Dictionary<string, object> dynDataDict = new Dictionary<string, object>(_data.Count, StringComparer.OrdinalIgnoreCase);
+			ColumnMemberInfo memInfo;
 
-			foreach (var member in createdInstance.GetType().AllPropertiesOrFields())
-				if (TryGetValue(member.ColumnName, out value, ignoreCase))
-					member.SetValue(createdInstance, value);
+			foreach (var dynProp in _data)	// Case-sensitive
+			{
+				if (memInfoDict.TryGetValue(dynProp.Key, out memInfo))
+				{
+					memInfo.SetValue(createdInstance, dynProp.Value);
+					memInfoDict.Remove(dynProp.Key);
+
+					if (memInfoDict.Count == 0)
+						break;
+				}
+
+				if (ignoreCase && !dynDataDict.ContainsKey(dynProp.Key))
+					dynDataDict.Add(dynProp.Key, dynProp.Value);
+			}
+
+			if (ignoreCase)					// Case-insensitive
+			{
+				object value;
+
+				foreach (var rest in memInfoDict)
+					if (dynDataDict.TryGetValue(rest.Key, out value))
+						rest.Value.SetValue(createdInstance, value);
+			}
 
 			return createdInstance;
 		}
