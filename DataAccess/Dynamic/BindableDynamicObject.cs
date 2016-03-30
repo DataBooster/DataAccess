@@ -327,7 +327,7 @@ namespace DbParallel.DataAccess
 		/// <returns>True if the member (propertyName) exists in the dynamic object, otherwise false.</returns>
 		public bool TryGetValue(string propertyName, out object value, bool ignoreCase)
 		{
-			if (!string.IsNullOrEmpty("propertyName"))
+			if (!string.IsNullOrEmpty(propertyName))
 			{
 				if (_data.TryGetValue(propertyName, out value))
 					return true;

@@ -66,42 +66,50 @@ namespace DbParallel.DataAccess
 
 		#region Load result sets into dynamic data
 
-		protected string[] GetVisibleFieldNames(DbDataReader reader)
+		private bool _ReadVisibleFieldsOnly = false;
+		public bool ReadVisibleFieldsOnly
 		{
-			string[] visibleFieldNames = new string[reader.VisibleFieldCount];
+			get { return _ReadVisibleFieldsOnly; }
+			set { _ReadVisibleFieldsOnly = value; }
+		}
+
+		protected string[] GetFieldNames(DbDataReader reader)
+		{
+			int fieldCount = _ReadVisibleFieldsOnly ? reader.VisibleFieldCount : reader.FieldCount;
+			string[] fieldNames = new string[fieldCount];
 			string columnName;
 
-			for (int i = 0; i < reader.VisibleFieldCount; i++)
+			for (int i = 0; i < fieldCount; i++)
 			{
 				columnName = reader.GetName(i);
-				visibleFieldNames[i] = DynamicPropertyNamingResolver(columnName);
+				fieldNames[i] = DynamicPropertyNamingResolver(columnName);
 
-				if (string.IsNullOrWhiteSpace(visibleFieldNames[i]))
+				if (string.IsNullOrWhiteSpace(fieldNames[i]))
 					throw new ArgumentNullException(string.Format("DynamicPropertyNameOfColumn{0} - \"{1}\"", i, columnName));
 			}
 
-			return visibleFieldNames;
+			return fieldNames;
 		}
 
-		private T CreateExpando<T>(DbDataReader reader, string[] visibleFieldNames) where T : IDictionary<string, object>, new()
+		private T CreateExpando<T>(DbDataReader reader, string[] fieldNames) where T : IDictionary<string, object>, new()
 		{
 			T expandoObject = new T();
 
-			if (visibleFieldNames == null)
-				visibleFieldNames = GetVisibleFieldNames(reader);
+			if (fieldNames == null)
+				fieldNames = GetFieldNames(reader);
 
-			for (int i = 0; i < visibleFieldNames.Length; i++)
-				expandoObject.Add(visibleFieldNames[i], reader.GetColumnValue(i));
+			for (int i = 0; i < fieldNames.Length; i++)
+				expandoObject.Add(fieldNames[i], reader.GetColumnValue(i));
 
 			return expandoObject;
 		}
 
 		private IEnumerable<BindableDynamicObject> LoadDynamicData<T>(DbDataReader reader) where T : IDictionary<string, object>, new()
 		{
-			string[] visibleFieldNames = GetVisibleFieldNames(reader);
+			string[] fieldNames = GetFieldNames(reader);
 
 			while (reader.Read())
-				yield return new BindableDynamicObject(CreateExpando<T>(reader, visibleFieldNames), _DynamicObjectXmlSettings);
+				yield return new BindableDynamicObject(CreateExpando<T>(reader, fieldNames), _DynamicObjectXmlSettings);
 		}
 
 		protected DbParameter ExecuteStoredProcedure(StoredProcedureRequest request, Action<DbDataReader> readAction, out List<DbParameter> outputParameters)
