@@ -43,6 +43,12 @@
     <DocumentationFile>bin\Release\Oracle\DataDirect\DbParallel.DataAccess.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>DataBooster.Oracle.DataDirect.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DDTek.Oracle">
       <HintPath>DDTek.Oracle.dll</HintPath>
@@ -103,6 +109,7 @@
   <ItemGroup>
     <None Include="Booster\Booster.cd" />
     <None Include="DataAccess.cd" />
+    <None Include="DataBooster.Oracle.DataDirect.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
