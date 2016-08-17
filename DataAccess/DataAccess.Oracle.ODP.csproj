@@ -43,6 +43,12 @@
     <DocumentationFile>bin\Release\Oracle\ODP.NET.Unmanaged\DbParallel.DataAccess.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>DataBooster.Oracle.ODP.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Oracle.DataAccess, Version=4.112.3.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86">
@@ -103,6 +109,7 @@
   <ItemGroup>
     <None Include="Booster\Booster.cd" />
     <None Include="DataAccess.cd" />
+    <None Include="DataBooster.Oracle.ODP.snk" />
     <None Include="packages.DataAccess.Oracle.ODP.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
