@@ -209,21 +209,48 @@ namespace DbParallel.DataAccess
 			{
 				Type t = typeof(T);
 
+				if (t == typeof(object))
+				{
+					T firstItem = enumerableData.FirstOrDefault();
+
+					if (firstItem != null)
+						t = firstItem.GetType();
+				}
+
 				if (typeof(IConvertible).IsAssignableFrom(t))						// Oracle Associative Array Parameter
 					return enumerableData.ToArray();
-				else if (typeof(SqlDataRecord).IsAssignableFrom(t))					// Table-Valued Parameter (SQL Server 2008+) - SqlDataRecord
-					return enumerableData;
-				else if (typeof(IDictionary<string, object>).IsAssignableFrom(t))	// Table-Valued Parameter (SQL Server 2008+) - IDictionary<string, object>
-					return enumerableData.AsOfType<IDictionary<string, object>>().ToDataTable();
-				else																// Table-Valued Parameter (SQL Server 2008+) - Anonymous or named type instances
-				{
-					DataTable tvp = enumerableData.AsOfType<object>().ToDataTable();
+				else
+					return enumerableData.AsParameterValue_TVP(t);
+			}
+		}
 
-					if (tvp.Columns.Count > 0)
-						return tvp;
-					else
-						return enumerableData;
-				}
+		public static object AsParameterValue(this IEnumerable enumerableData, Type elementType)
+		{
+			if (enumerableData == null)
+				return null;
+			else
+			{
+				if (typeof(IConvertible).IsAssignableFrom(elementType))				// Oracle Associative Array Parameter
+					return enumerableData.AsOfType<IConvertible>().ToArray();
+				else
+					return enumerableData.AsParameterValue_TVP(elementType);
+			}
+		}
+
+		private static object AsParameterValue_TVP(this IEnumerable enumerableData, Type type)
+		{
+			if (typeof(SqlDataRecord).IsAssignableFrom(type))						// Table-Valued Parameter (SQL Server 2008+) - SqlDataRecord
+				return enumerableData;
+			else if (typeof(IDictionary<string, object>).IsAssignableFrom(type))	// Table-Valued Parameter (SQL Server 2008+) - IDictionary<string, object>
+				return enumerableData.AsOfType<IDictionary<string, object>>().ToDataTable();
+			else																	// Table-Valued Parameter (SQL Server 2008+) - Anonymous or named type instances
+			{
+				DataTable tvp = enumerableData.AsOfType<object>().ToDataTable();
+
+				if (tvp.Columns.Count > 0)
+					return tvp;
+				else
+					return enumerableData;
 			}
 		}
 
