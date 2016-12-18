@@ -203,43 +203,27 @@ namespace DbParallel.DataAccess
 		/// <returns></returns>
 		public static object AsParameterValue<T>(this IEnumerable<T> enumerableData)
 		{
-			if (enumerableData == null)
-				return null;
-			else
-			{
-				Type t = typeof(T);
-
-				if (t == typeof(object))
-				{
-					T firstItem = enumerableData.FirstOrDefault();
-
-					if (firstItem != null)
-						t = firstItem.GetType();
-				}
-
-				if (typeof(IConvertible).IsAssignableFrom(t))						// Oracle Associative Array Parameter
-					return enumerableData.ToArray();
-				else
-					return enumerableData.AsParameterValue_TVP(t);
-			}
+			return enumerableData.AsParameterValue(typeof(T));
 		}
 
 		public static object AsParameterValue(this IEnumerable enumerableData, Type elementType)
 		{
-			if (enumerableData == null)
-				return null;
+			if (enumerableData == null || elementType == null)
+				return enumerableData;
 			else
 			{
-				if (typeof(IConvertible).IsAssignableFrom(elementType))				// Oracle Associative Array Parameter
-					return enumerableData.AsOfType<IConvertible>().ToArray();
-				else
-					return enumerableData.AsParameterValue_TVP(elementType);
+				if (elementType == typeof(object))
+					elementType = enumerableData.GetEnumerableElementType() ?? elementType;
+
+				return enumerableData.AsParameterValue_TVP(elementType);
 			}
 		}
 
 		private static object AsParameterValue_TVP(this IEnumerable enumerableData, Type type)
 		{
-			if (typeof(SqlDataRecord).IsAssignableFrom(type))						// Table-Valued Parameter (SQL Server 2008+) - SqlDataRecord
+			if (typeof(IConvertible).IsAssignableFrom(type))						// Oracle Associative Array Parameter
+				return enumerableData.ToArray(type);
+			else if (typeof(SqlDataRecord).IsAssignableFrom(type))					// Table-Valued Parameter (SQL Server 2008+) - SqlDataRecord
 				return enumerableData;
 			else if (typeof(IDictionary<string, object>).IsAssignableFrom(type))	// Table-Valued Parameter (SQL Server 2008+) - IDictionary<string, object>
 				return enumerableData.AsOfType<IDictionary<string, object>>().ToDataTable();
@@ -265,6 +249,61 @@ namespace DbParallel.DataAccess
 		public static IEnumerable<T> AsOfType<T>(this IEnumerable source)
 		{
 			return (source as IEnumerable<T>) ?? source.OfType<T>();
+		}
+
+		private static Type GetEnumerableElementType(this IEnumerable enumerableData)
+		{
+			foreach (var e in enumerableData)
+				if (e != null)
+					return e.GetType();
+
+			return null;
+		}
+
+		private static Array ToArray(this IEnumerable enumerableData, Type type)
+		{
+			Array items = enumerableData as Array;
+
+			if (items == null)
+			{
+				ICollection c = enumerableData as ICollection;
+
+				if (c != null)
+				{
+					items = Array.CreateInstance(type, c.Count);
+					c.CopyTo(items, 0);
+				}
+				else
+				{
+					int count = 0;
+
+					foreach (var item in enumerableData)
+					{
+						if (items == null)
+							items = Array.CreateInstance(type, 4);
+						else if (count == items.Length)
+						{
+							Array newItems = Array.CreateInstance(type, checked(count * 2));
+							Array.Copy(items, 0, newItems, 0, count);
+							items = newItems;
+						}
+
+						items.SetValue(item, count);
+						count++;
+					}
+
+					if (count == 0)
+						items = Array.CreateInstance(type, count);
+					else if (count < items.Length)
+					{
+						Array newItems = Array.CreateInstance(type, count);
+						Array.Copy(items, 0, newItems, 0, count);
+						items = newItems;
+					}
+				}
+			}
+
+			return items;
 		}
 
 		/// <summary>
