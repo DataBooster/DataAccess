@@ -22,7 +22,7 @@ The detail implement closely depends on the specific database. For the moment, t
 <strong><span style="color:#2b91af">OracleLauncher</span></strong> and <strong><span style="color:#2b91af">SqlLauncher</span></strong> are ready for Oracle and SQL Server. They handle the throughput control and other low-level synchronization details. They
  are thread-safe which avoid locks. By using the Launcher, you can maximize the performance of your code while filling data row-by-row simply.
 </li></ul>
-<div><img src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=databooster&DownloadId=386321" alt="Data Launcher" width="600" height="336" style="vertical-align:middle"></div>
+<div><img src="Home_Launcher.png" alt="Data Launcher" width="600" height="336" style="vertical-align:middle"></div>
 <p><strong>Table of Contents</strong></p>
 <ul>
 <li><a href="#project-description">Project Description</a> </li><li><a href="#quick-starts">Quick Starts</a>
@@ -293,7 +293,7 @@ E.g. A database column named &quot;USER_FIRST_NAME&quot; will auto-map to a .Net
 </li></ul>
 &nbsp; </li><li><a name="data-type-mapping"></a><u>Data Type Mapping</u><br>
 Supported mapping of Database Engine Data Types to .NET Common Language Runtime Types relies on two levels conversion:<br>
-<div style="padding-left:40px"><img src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=databooster&DownloadId=757070" alt="Data Type Mapping"></div>
+<div style="padding-left:40px"><img src="Home_type-mapping.png" alt="Data Type Mapping"></div>
 <ol>
 <li>ADO.NET Provider converts database data type into inferred .NET Framework data type;
 </li><li>If level 1 conversion has not yet reached business target type, an appropriate
@@ -328,8 +328,8 @@ In data-driven application developments, there are also a large number of scenar
 <div style="padding-left:40px"><br>
 Http clients can use Stored Procedure Name or Database Function Name as endpoint (e.g. http://BaseURL/YourStoredProcedureName) without programming effort, no special configuration is required to expose a stored procedure or function. Just put required parameters
  in JSON format request body (Content-Type: &quot;application/json&quot;). The response JSON (Accept: application/json) or XML (Accept: application/xml) will have all Result Sets, Output Parameters and Return Value.<br>
-Please visit <a href="https://github.com/DataBooster/DbWebApi/wiki" target="_blank">
-https://github.com/DataBooster/DbWebApi/wiki</a> for more information about <a href="https://github.com/DataBooster/DbWebApi" target="_blank">
+Please visit <a href="//github.com/DataBooster/DbWebApi/wiki" target="_blank">
+https://github.com/DataBooster/DbWebApi/wiki</a> for more information about <a href="//github.com/DataBooster/DbWebApi" target="_blank">
 DbWebApi</a>.</div>
 <div style="padding-left:40px"><br>
 If you are building an entirely generic ASP.NET SignalR application, this ExecuteStoredProcedure method can also be used directly.</div>
@@ -493,7 +493,7 @@ A quick example: </li></ul>
 </pre>
 </div>
 <div>The <em>_DefaultMultipleRockets</em> is <span style="color:#ff0000">6</span>:</div>
-<div><img src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=databooster&DownloadId=386327" alt="Multiple Rockets" width="360" height="180" style="vertical-align:middle"></div>
+<div><img src="Home_multi-rockets.png" alt="Multiple Rockets" width="360" height="180" style="vertical-align:middle"></div>
 <p><br>
 <a name="api-oraclelauncher-methods"></a><strong>Methods</strong><br>
 <a name="api-oraclelauncher-post"></a>- Post:</p>
@@ -537,23 +537,23 @@ SqlBulkCopyColumnMappingCollection</a> on MSDN.</p>
 </tr>
 <tr>
 <td>DataBooster for SQL Server</td>
-<td><a href="http://www.nuget.org/packages/DataBooster.SqlServer" target="_blank">DataBooster.SqlServer</a></td>
+<td><a href="//www.nuget.org/packages/DataBooster.SqlServer" target="_blank">DataBooster.SqlServer</a></td>
 </tr>
 <tr>
 <td>DataBooster for SQL Server &#43; Oracle (use ODP.NET Provider)</td>
-<td><a href="http://www.nuget.org/packages/DataBooster.Oracle.ODP" target="_blank">DataBooster.Oracle.ODP</a></td>
+<td><a href="//www.nuget.org/packages/DataBooster.Oracle.ODP" target="_blank">DataBooster.Oracle.ODP</a></td>
 </tr>
 <tr>
 <td>DataBooster for SQL Server &#43; Oracle (use ODP.NET Managed Driver) &nbsp;</td>
-<td><a href="http://www.nuget.org/packages/DataBooster.Oracle.Managed" target="_blank">DataBooster.Oracle.Managed</a></td>
+<td><a href="//www.nuget.org/packages/DataBooster.Oracle.Managed" target="_blank">DataBooster.Oracle.Managed</a></td>
 </tr>
 <tr>
 <td>DataBooster for SQL Server &#43; Oracle (use DataDirect Provider)</td>
-<td><a href="http://www.nuget.org/packages/DataBooster.Oracle.DataDirect" target="_blank">DataBooster.Oracle.DataDirect</a> &nbsp;</td>
+<td><a href="//www.nuget.org/packages/DataBooster.Oracle.DataDirect" target="_blank">DataBooster.Oracle.DataDirect</a> &nbsp;</td>
 </tr>
 </tbody>
 </table>
-<img src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=databooster&DownloadId=735881" alt=""><br>
+<img src="Home_multi-rockets.png" alt=""><br>
 <br>
 All sample code is only available in DEBUG mode, you can even turn off sample code in DEBUG mode easily, just add NO_SAMPLE into your project Conditional Compilation Symbols (Visual Studio Project Properties Dialog -&gt; Build -&gt; General -&gt; Conditional
  Compilation Symbols).<br>
