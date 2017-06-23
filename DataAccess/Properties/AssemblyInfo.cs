@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("DataBooster")]
-[assembly: AssemblyDescription("DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing huge numbers of records to database. Please visit http://databooster.codeplex.com for detail.")]
+[assembly: AssemblyDescription("DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing huge numbers of records to database. Please visit http://databooster.codeplex.com or https://github.com/DataBooster/DataAccess for detail.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Abel Cheng")]
 [assembly: AssemblyProduct("dbParallel Database Task Parallel Foundation")]
-[assembly: AssemblyCopyright("Copyright © 2012-2015 Abel Cheng")]
+[assembly: AssemblyCopyright("Copyright © 2012-2017 Abel Cheng")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.8.1.3")]
-[assembly: AssemblyFileVersion("1.8.1.3")]
+[assembly: AssemblyVersion("1.8.1.5")]
+[assembly: AssemblyFileVersion("1.8.1.5")]

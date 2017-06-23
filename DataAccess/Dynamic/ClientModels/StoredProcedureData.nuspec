@@ -7,7 +7,7 @@
 		<authors>$author$</authors>
 		<owners>http://databooster.codeplex.com</owners>
 		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
-		<projectUrl>http://databooster.codeplex.com</projectUrl>
+		<projectUrl>https://github.com/DataBooster/DataAccess</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
 		<releaseNotes>http://databooster.codeplex.com/releases</releaseNotes>
