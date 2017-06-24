@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("DataBooster is a high-performance extension to ADO.NET Data Provider, includes a light encapsulation to minimize your DAL code and a booster to maximize throughput for writing huge numbers of records to database. Please visit http://databooster.codeplex.com or https://github.com/DataBooster/DataAccess for detail.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Abel Cheng")]
-[assembly: AssemblyProduct("dbParallel Database Task Parallel Foundation")]
+[assembly: AssemblyProduct("DataBooster-DataAccess")]
 [assembly: AssemblyCopyright("Copyright © 2012-2017 Abel Cheng")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -5,13 +5,6 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{0BD1299C-6AE3-407C-844D-F69B90037846}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{3FEA62E2-7223-4577-809D-D5561B6299C8}"
-	ProjectSection(SolutionItems) = preProject
-		License.txt = License.txt
-		Notice.txt = Notice.txt
-		Documents\wikipage_home.htm = Documents\wikipage_home.htm
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UtilityScripts", "UtilityScripts", "{6678001D-3677-4C0C-963B-9B04AE215E8B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Oracle", "Oracle", "{F2F76E08-6590-4F62-A2D3-A72F3A80A780}"
@@ -141,33 +134,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StoredProcedureData", "Stor
 		DataAccess\Dynamic\ClientModels\StoredProcedureData.nuspec = DataAccess\Dynamic\ClientModels\StoredProcedureData.nuspec
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{F2DF0AAD-3357-4FCD-B0AB-9DBEC0A44DCD}"
+	ProjectSection(SolutionItems) = preProject
+		docs\Home_Launcher.png = docs\Home_Launcher.png
+		docs\Home_multi-rockets.png = docs\Home_multi-rockets.png
+		docs\Home_nuget_packages.png = docs\Home_nuget_packages.png
+		docs\Home_type-mapping.png = docs\Home_type-mapping.png
+		docs\index.html = docs\index.html
+		License.txt = License.txt
+		Notice.txt = Notice.txt
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs23
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = DataAccess\\DataAccess.csproj
-		SccProjectTopLevelParentUniqueName1 = DataBooster.sln
-		SccProjectName1 = DataAccess
-		SccLocalPath1 = DataAccess
-		SccProjectUniqueName2 = DataAccess\\DataAccess.Oracle.Managed.csproj
-		SccProjectTopLevelParentUniqueName2 = DataBooster.sln
-		SccProjectName2 = DataAccess
-		SccLocalPath2 = DataAccess
-		SccProjectUniqueName3 = DataAccess\\DataAccess.Oracle.ODP.csproj
-		SccProjectTopLevelParentUniqueName3 = DataBooster.sln
-		SccProjectName3 = DataAccess
-		SccLocalPath3 = DataAccess
-		SccProjectUniqueName4 = DataAccess\\DataAccess.Oracle.DataDirect.csproj
-		SccProjectTopLevelParentUniqueName4 = DataBooster.sln
-		SccProjectName4 = DataAccess
-		SccLocalPath4 = DataAccess
-		SccProjectUniqueName5 = DataAccess\\Dynamic\\ClientModels\\StoredProcedureData.csproj
-		SccProjectTopLevelParentUniqueName5 = DataBooster.sln
-		SccProjectName5 = DataAccess/Dynamic/ClientModels
-		SccLocalPath5 = DataAccess\\Dynamic\\ClientModels
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

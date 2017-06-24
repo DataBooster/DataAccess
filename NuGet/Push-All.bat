@@ -25,7 +25,7 @@ COLOR
 GOTO :EOF
 )
 
-FOR %%P IN (%PKGSQL% %PKGOMG% %PKGODP% %PKGDDT%) DO ..\.nuget\NuGet.exe Push %%P
+FOR %%P IN (%PKGDDT% %PKGSQL% %PKGOMG% %PKGODP%) DO ..\.nuget\NuGet.exe Push %%P
 
 GOTO :EOF
 
