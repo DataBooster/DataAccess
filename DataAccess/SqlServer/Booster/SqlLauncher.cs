@@ -57,6 +57,7 @@ namespace DbParallel.DataAccess.Booster.SqlServer
 //	Original Author:	Abel Cheng <abelcys@gmail.com>
 //	Created Date:		2012-06-09
 //	Primary Host:		http://databooster.codeplex.com
+//	Updated Host:		https://github.com/DataBooster/DataAccess
 //	Change Log:
 //	Author				Date			Comment
 //

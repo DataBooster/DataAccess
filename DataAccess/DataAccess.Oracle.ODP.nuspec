@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata minClientVersion="2.6">
+		<id>DataBooster.Oracle.ODP</id>
+		<version>$version$</version>
+		<title>$title$ for SQL Server + Oracle(using ODP.NET Unmanaged Driver)</title>
+		<authors>$author$</authors>
+		<owners>http://databooster.codeplex.com</owners>
+		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
+		<projectUrl>https://github.com/DataBooster/DataAccess</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>$description$</description>
+		<releaseNotes>http://databooster.codeplex.com/releases</releaseNotes>
+		<copyright>Copyright 2012-2017 Abel Cheng</copyright>
+		<tags>ADO.NET Bulk Booster Launcher Throughput Oracle ODP.NET Database DataAccess</tags>
+		<frameworkAssemblies>
+			<frameworkAssembly assemblyName="System.Configuration" />
+			<frameworkAssembly assemblyName="Oracle.DataAccess" />
+		</frameworkAssemblies>
+	</metadata>
+	<files>
+		<file src="..\NuGet\SqlServer\Web.config.transform" target="content" />
+		<file src="..\NuGet\SqlServer\Web.config.transform" target="content\App.config.transform" />
+		<file src="..\NuGet\Oracle\ODP.NET\Web.config.install.xdt" target="content" />
+		<file src="..\NuGet\Oracle\ODP.NET\Web.config.install.xdt" target="content\App.config.install.xdt" />
+		<file src="..\NuGet\Oracle\ODP.NET\Web.config.uninstall.xdt" target="content" />
+		<file src="..\NuGet\Oracle\ODP.NET\Web.config.uninstall.xdt" target="content\App.config.uninstall.xdt" />
+		<file src="..\NuGet\Oracle\ODP.NET\Readme.txt" target="" />
+		<file src="..\NuGet\Oracle\ODP.NET\DataAccess\*.cs.pp" target="content\DataAccess\Oracle.ODP" />
+	</files>
+</package>

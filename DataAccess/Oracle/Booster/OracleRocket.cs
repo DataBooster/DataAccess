@@ -118,6 +118,7 @@ namespace DbParallel.DataAccess.Booster.Oracle
 //	Original Author:	Abel Cheng <abelcys@gmail.com>
 //	Created Date:		2012-05-18
 //	Primary Host:		http://databooster.codeplex.com
+//	Updated Host:		https://github.com/DataBooster/DataAccess
 //	Change Log:
 //	Author				Date			Comment
 //

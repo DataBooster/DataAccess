@@ -43,6 +43,7 @@ namespace DbParallel.DataAccess
 //	Created Date:		2013-07-‎29
 //	Original Host:		http://dbParallel.codeplex.com
 //	Primary Host:		http://DataBooster.codeplex.com
+//	Updated Host:		https://github.com/DataBooster/DataAccess
 //	Change Log:
 //	Author				Date			Comment
 //
