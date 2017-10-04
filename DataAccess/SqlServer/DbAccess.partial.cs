@@ -5,7 +5,7 @@ namespace DbParallel.DataAccess
 {
 	partial class DbAccess
 	{
-		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry, ref bool processed)
+		partial void OnSqlContextLost(Exception dbException, ref RetryAction retryAction, ref bool processed)
 		{
 			if (processed)
 				return;
@@ -15,14 +15,21 @@ namespace DbParallel.DataAccess
 				SqlException e = dbException as SqlException;
 
 				if (e == null)
-					canRetry = false;
+					retryAction = RetryAction.None;
 				else
 					switch (e.Number)
 					{
 						case 233:
-						case -2: canRetry = true; break;
+						case -2:
+							retryAction = RetryAction.Reconnect;
+							break;
+						case 201:
+						case 8144:
+							retryAction = RetryAction.RefreshParameters;
+							break;
 						// To add other cases
-						default: canRetry = false; break;
+						default: retryAction = RetryAction.None;
+							break;
 					}
 
 				processed = true;

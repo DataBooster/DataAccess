@@ -5,20 +5,20 @@ namespace DbParallel.DataAccess
 {
 	partial class DbAccess
 	{
-		partial void OnOracleConnectionLost(Exception dbException, ref bool canRetry, ref bool processed);
-		partial void OnSqlConnectionLost(Exception dbException, ref bool canRetry, ref bool processed);
-		private bool OnConnectionLost(Exception dbException)
+		partial void OnOracleContextLost(Exception dbException, ref RetryAction retryAction, ref bool processed);
+		partial void OnSqlContextLost(Exception dbException, ref RetryAction retryAction, ref bool processed);
+		private RetryAction OnContextLost(Exception dbException)
 		{
-			bool canRetry = false;
+			RetryAction retryAction = RetryAction.None;
 			bool hasBeenProcessed = false;
 
 			if (_TransactionManager.Transaction == null)
 			{
-				OnOracleConnectionLost(dbException, ref canRetry, ref hasBeenProcessed);
-				OnSqlConnectionLost(dbException, ref canRetry, ref hasBeenProcessed);
+				OnOracleContextLost(dbException, ref retryAction, ref hasBeenProcessed);
+				OnSqlContextLost(dbException, ref retryAction, ref hasBeenProcessed);
 			}
 
-			return canRetry;
+			return retryAction;
 		}
 
 		partial void OnOracleReaderExecuting(DbCommand dbCmd, int resultSetCnt/* = 1 */, ref bool processed);

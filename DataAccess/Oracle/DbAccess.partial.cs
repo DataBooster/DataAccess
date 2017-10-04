@@ -16,7 +16,7 @@ namespace DbParallel.DataAccess
 {
 	partial class DbAccess
 	{
-		partial void OnOracleConnectionLost(Exception dbException, ref bool canRetry, ref bool processed)
+		partial void OnOracleContextLost(Exception dbException, ref RetryAction retryAction, ref bool processed)
 		{
 			if (processed)
 				return;
@@ -26,14 +26,24 @@ namespace DbParallel.DataAccess
 				OracleException e = dbException as OracleException;
 
 				if (e == null)
-					canRetry = false;
+					retryAction = RetryAction.None;
 				else
 					switch (e.Number)
 					{
 						case 3113:
-						case 4068: canRetry = true; break;
+						case 4068:
+							retryAction = RetryAction.Reconnect;
+							break;
+						case 6550:
+							if (e.Errors.Count == 1 && e.Message.Contains("PLS-00306: "))
+								retryAction = RetryAction.RefreshParameters;
+							else
+								retryAction = RetryAction.None;
+							break;
 						// To add other cases
-						default: canRetry = false; break;
+						default:
+							retryAction = RetryAction.None;
+							break;
 					}
 
 				processed = true;

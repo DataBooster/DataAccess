@@ -23,9 +23,6 @@ namespace DbParallel.DataAccess
 			set { AutoDeriveRefCursorParameters = value; }
 		}
 
-		private const int _MaxRetryCount = 2;
-		private const int _IncreasingDelayRetry = 500;		// Increases 500 milliseconds delay time for every retry.
-
 		private DbProviderFactory _ProviderFactory;
 		private DbConnection _Connection;
 		public DbConnection Connection
@@ -37,6 +34,13 @@ namespace DbParallel.DataAccess
 
 				return _Connection;
 			}
+		}
+
+		private enum RetryAction
+		{
+			None = 0,
+			Reconnect = 1,
+			RefreshParameters = 2
 		}
 
 		#region Constructors
@@ -90,22 +94,49 @@ namespace DbParallel.DataAccess
 
 		private DbDataReader CreateReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int resultSetCnt = 1)
 		{
-			for (int retry = 0; ; retry++)
+			int recordsAffected;
+			return InternalExecute(commandText, commandTimeout, commandType, parametersBuilder, resultSetCnt, out recordsAffected);
+		}
+
+		private DbDataReader InternalExecute(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int resultSetCnt, out int recordsAffected)
+		{
+			for (int retry = 2; ; retry--)
 			{
 				try
 				{
 					DbCommand dbCmd = CreateCommand(commandText, commandTimeout, commandType, parametersBuilder);
 
-					OnReaderExecuting(dbCmd, resultSetCnt);
-
-					return dbCmd.ExecuteReader();
+					if (resultSetCnt > 0)
+					{
+						OnReaderExecuting(dbCmd, resultSetCnt);
+						recordsAffected = -1;
+						return dbCmd.ExecuteReader();
+					}
+					else
+					{
+						recordsAffected = dbCmd.ExecuteNonQuery();
+						return null;
+					}
 				}
 				catch (Exception e)
 				{
-					if (retry < _MaxRetryCount && OnConnectionLost(e))
-						ReConnect(retry);
-					else
+					if (retry <= 0)
 						throw;
+
+					switch (OnContextLost(e))
+					{
+						case RetryAction.Reconnect:
+							ReConnect();
+							break;
+						case RetryAction.RefreshParameters:
+							if (commandType == CommandType.StoredProcedure)
+								RefreshStoredProcedureParameters(commandText);
+							else
+								throw;
+							break;
+						default:
+							throw;
+					}
 				}
 			}
 		}
@@ -235,25 +266,11 @@ namespace DbParallel.DataAccess
 
 		public int ExecuteNonQuery(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder)
 		{
-			int nAffectedRows = 0;
+			int recordsAffected;
 
-			for (int retry = 0; ; retry++)
-			{
-				try
-				{
-					nAffectedRows = CreateCommand(commandText, commandTimeout, commandType, parametersBuilder).ExecuteNonQuery();
-					break;
-				}
-				catch (Exception e)
-				{
-					if (retry < _MaxRetryCount && OnConnectionLost(e))
-						ReConnect(retry);
-					else
-						throw;
-				}
-			}
+			InternalExecute(commandText, commandTimeout, commandType, parametersBuilder, 0, out recordsAffected);
 
-			return nAffectedRows;
+			return recordsAffected;
 		}
 
 		public int ExecuteNonQuery(string commandText, Action<DbParameterBuilder> parametersBuilder = null)
@@ -263,16 +280,12 @@ namespace DbParallel.DataAccess
 
 		#endregion
 
-		private void ReConnect(int retrying)
+		private void ReConnect()
 		{
 			if (_Connection != null)
 				if (_Connection.State != ConnectionState.Closed)
 				{
 					_Connection.Close();
-
-					if (retrying > 0)
-						Thread.Sleep(retrying * _IncreasingDelayRetry);	// retrying starts at 0, increases delay time for every retry.
-
 					_Connection.Open();
 				}
 		}
