@@ -35,10 +35,7 @@ namespace DbParallel.DataAccess
 							retryAction = RetryAction.Reconnect;
 							break;
 						case 6550:
-							if (e.Errors.Count == 1 && e.Message.Contains("PLS-00306: "))
-								retryAction = RetryAction.RefreshParameters;
-							else
-								retryAction = RetryAction.None;
+							retryAction = (e.Errors.Count == 1 && e.Message.Contains("PLS-00306: ")) ? RetryAction.RefreshParameters : RetryAction.None;
 							break;
 						// To add other cases
 						default:

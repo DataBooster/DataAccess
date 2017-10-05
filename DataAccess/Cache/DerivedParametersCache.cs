@@ -31,7 +31,7 @@ namespace DbParallel.DataAccess
 		static DerivedParametersCache()
 		{
 			_CacheRoot = new ConcurrentDictionary<string, StoredProcedureDictionary>(StringComparer.OrdinalIgnoreCase);
-			ExpireInterval = TimeSpan.FromHours(1);	// Default 1 hour
+			ExpireInterval = TimeSpan.FromHours(2);	// Defaults to 2 hour
 		}
 
 		#region Private Basic Operations

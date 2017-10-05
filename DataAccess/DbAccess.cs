@@ -95,32 +95,32 @@ namespace DbParallel.DataAccess
 		private DbDataReader CreateReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int resultSetCnt = 1)
 		{
 			int recordsAffected;
-			return InternalExecute(commandText, commandTimeout, commandType, parametersBuilder, resultSetCnt, out recordsAffected);
+			return ExecuteCommandInternal(commandText, commandTimeout, commandType, parametersBuilder, resultSetCnt, out recordsAffected);
 		}
 
-		private DbDataReader InternalExecute(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int resultSetCnt, out int recordsAffected)
+		private DbDataReader ExecuteCommandInternal(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int resultSetCnt, out int recordsAffected)
 		{
-			for (int retry = 2; ; retry--)
+			for (int retry = 0; ; retry++)
 			{
 				try
 				{
 					DbCommand dbCmd = CreateCommand(commandText, commandTimeout, commandType, parametersBuilder);
 
-					if (resultSetCnt > 0)
+					if (resultSetCnt < 0)
+					{
+						recordsAffected = dbCmd.ExecuteNonQuery();
+						return null;
+					}
+					else
 					{
 						OnReaderExecuting(dbCmd, resultSetCnt);
 						recordsAffected = -1;
 						return dbCmd.ExecuteReader();
 					}
-					else
-					{
-						recordsAffected = dbCmd.ExecuteNonQuery();
-						return null;
-					}
 				}
 				catch (Exception e)
 				{
-					if (retry <= 0)
+					if (retry > 0)
 						throw;
 
 					switch (OnContextLost(e))
@@ -268,7 +268,7 @@ namespace DbParallel.DataAccess
 		{
 			int recordsAffected;
 
-			InternalExecute(commandText, commandTimeout, commandType, parametersBuilder, 0, out recordsAffected);
+			ExecuteCommandInternal(commandText, commandTimeout, commandType, parametersBuilder, -1, out recordsAffected);
 
 			return recordsAffected;
 		}
