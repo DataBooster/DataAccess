@@ -30,8 +30,10 @@ namespace DbParallel.DataAccess
 				else
 					switch (e.Number)
 					{
-						case 3113:
-						case 4068:
+						case 2396:	// ORA-02396: exceeded maximum idle time, please connect again
+						case 3113:	// ORA-03113: end-of-file on communication channel
+						case 3135:	// ORA-03135: connection lost contact
+						case 4068:	// ORA-04068: existing state of packagesstringstringstring has been discarded
 							retryAction = RetryAction.Reconnect;
 							break;
 						case 6550:
