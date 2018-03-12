@@ -16,6 +16,13 @@ namespace DbParallel.DataAccess
 			set { _DefaultCommandType = value; }
 		}
 
+		private static int _DefaultCommandTimeout = 0;
+		public static int DefaultCommandTimeout
+		{
+			get { return _DefaultCommandTimeout; }
+			set { _DefaultCommandTimeout = (value < 0) ? 0 : value; }
+		}
+
 		private static bool _AutoDeriveRefCursorParameters = false;
 		public static bool AutoDeriveRefCursorParameters
 		{
@@ -82,9 +89,7 @@ namespace DbParallel.DataAccess
 			dbCommand.CommandType = commandType;
 			dbCommand.CommandText = commandText;
 			dbCommand.Transaction = _TransactionManager.Transaction;
-
-			if (commandTimeout > 0)
-				dbCommand.CommandTimeout = commandTimeout;
+			dbCommand.CommandTimeout = (commandTimeout > 0) ? commandTimeout : _DefaultCommandTimeout;
 
 			if (parametersBuilder != null)
 				parametersBuilder(new DbParameterBuilder(dbCommand));
@@ -158,7 +163,7 @@ namespace DbParallel.DataAccess
 
 		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader> dataReader, bool bulkRead = false)
 		{
-			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, dataReader, bulkRead);
+			ExecuteReader(commandText, _DefaultCommandTimeout, _DefaultCommandType, parametersBuilder, dataReader, bulkRead);
 		}
 
 		public void ExecuteReader(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader, int> dataReaders, bool bulkRead = false)
@@ -186,7 +191,7 @@ namespace DbParallel.DataAccess
 
 		public void ExecuteReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbDataReader, int> dataReaders, bool bulkRead = false)
 		{
-			ExecuteReader(commandText, 0, _DefaultCommandType, parametersBuilder, dataReaders, bulkRead);
+			ExecuteReader(commandText, _DefaultCommandTimeout, _DefaultCommandType, parametersBuilder, dataReaders, bulkRead);
 		}
 
 		public void ExecuteReader<T>(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder,
@@ -209,12 +214,12 @@ namespace DbParallel.DataAccess
 		public void ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder,
 			Action<DbFieldMap<T>> resultMap, Action<T> readEntity) where T : class, new()
 		{
-			ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap, readEntity);
+			ExecuteReader<T>(commandText, _DefaultCommandTimeout, _DefaultCommandType, parametersBuilder, resultMap, readEntity);
 		}
 
 		public void ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<T> readEntity) where T : class, new()
 		{
-			ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, null, readEntity);
+			ExecuteReader<T>(commandText, _DefaultCommandTimeout, _DefaultCommandType, parametersBuilder, null, readEntity);
 		}
 
 		public IEnumerable<T> ExecuteReader<T>(string commandText, int commandTimeout, CommandType commandType,
@@ -234,7 +239,7 @@ namespace DbParallel.DataAccess
 		public IEnumerable<T> ExecuteReader<T>(string commandText, Action<DbParameterBuilder> parametersBuilder,
 			Action<DbFieldMap<T>> resultMap = null) where T : class, new()
 		{
-			return ExecuteReader<T>(commandText, 0, _DefaultCommandType, parametersBuilder, resultMap);
+			return ExecuteReader<T>(commandText, _DefaultCommandTimeout, _DefaultCommandType, parametersBuilder, resultMap);
 		}
 
 		#endregion
@@ -257,7 +262,7 @@ namespace DbParallel.DataAccess
 
 		public void ExecuteMultiReader(string commandText, Action<DbParameterBuilder> parametersBuilder, Action<DbMultiResultSet> multiResultSetMap)
 		{
-			ExecuteMultiReader(commandText, 0, _DefaultCommandType, parametersBuilder, multiResultSetMap);
+			ExecuteMultiReader(commandText, _DefaultCommandTimeout, _DefaultCommandType, parametersBuilder, multiResultSetMap);
 		}
 
 		#endregion
@@ -275,7 +280,7 @@ namespace DbParallel.DataAccess
 
 		public int ExecuteNonQuery(string commandText, Action<DbParameterBuilder> parametersBuilder = null)
 		{
-			return ExecuteNonQuery(commandText, 0, _DefaultCommandType, parametersBuilder);
+			return ExecuteNonQuery(commandText, _DefaultCommandTimeout, _DefaultCommandType, parametersBuilder);
 		}
 
 		#endregion

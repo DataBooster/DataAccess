@@ -33,9 +33,7 @@ namespace DbParallel.DataAccess.Booster.SqlServer
 			SqlBulkCopy bulkCopy = new SqlBulkCopy(dbConnection);
 
 			bulkCopy.DestinationTableName = destinationTableName;
-
-			if (commandTimeout > 0)
-				bulkCopy.BulkCopyTimeout = commandTimeout;
+			bulkCopy.BulkCopyTimeout = (commandTimeout < 0) ? 0 : commandTimeout;
 
 			if (mapColumns != null)
 				mapColumns(bulkCopy.ColumnMappings);

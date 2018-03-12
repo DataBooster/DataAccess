@@ -243,7 +243,7 @@ namespace DbParallel.DataAccess
 			if (string.IsNullOrWhiteSpace(storedProcedureName))
 				throw new ArgumentNullException("storedProcedureName");
 
-			using (DbCommand dbCmd = CreateCommand(storedProcedureName, 0, CommandType.StoredProcedure, null))
+			using (DbCommand dbCmd = CreateCommand(storedProcedureName, _DefaultCommandTimeout, CommandType.StoredProcedure, null))
 			{
 				return DerivedParametersCache.DeriveParameters(dbCmd, null, true);
 			}
@@ -277,7 +277,7 @@ namespace DbParallel.DataAccess
 
 		public DbDataAdapter CreateDataAdapter(string selectCommandText, Action<DbParameterBuilder> parametersBuilder, int oraResultSets = 1)
 		{
-			return CreateDataAdapter(selectCommandText, 0, _DefaultCommandType, parametersBuilder, oraResultSets);
+			return CreateDataAdapter(selectCommandText, _DefaultCommandTimeout, _DefaultCommandType, parametersBuilder, oraResultSets);
 		}
 
 		#endregion

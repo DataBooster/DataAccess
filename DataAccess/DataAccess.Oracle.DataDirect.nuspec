@@ -5,13 +5,13 @@
 		<version>$version$</version>
 		<title>$title$ for SQL Server + Oracle(using DataDirect Provider)</title>
 		<authors>$author$</authors>
-		<owners>http://databooster.codeplex.com</owners>
-		<licenseUrl>http://databooster.codeplex.com/license</licenseUrl>
+		<owners>https://github.com/DataBooster/DataAccess</owners>
+		<licenseUrl>https://github.com/DataBooster/DataAccess/blob/master/License.txt</licenseUrl>
 		<projectUrl>https://github.com/DataBooster/DataAccess</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
-		<releaseNotes>http://databooster.codeplex.com/releases</releaseNotes>
-		<copyright>Copyright 2012-2017 Abel Cheng</copyright>
+		<releaseNotes>https://github.com/DataBooster/DataAccess/releases</releaseNotes>
+		<copyright>Copyright 2012-2018 Abel Cheng</copyright>
 		<tags>ADO.NET Bulk Booster Launcher Throughput Oracle Progress DataDirect Database DataAccess</tags>
 		<frameworkAssemblies>
 			<frameworkAssembly assemblyName="System.Configuration" />

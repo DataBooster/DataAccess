@@ -43,9 +43,7 @@ namespace DbParallel.DataAccess.Booster.Oracle
 			OracleCommand dbCommand = dbConnection.CreateCommand();
 			dbCommand.CommandType = CommandType.StoredProcedure;
 			dbCommand.CommandText = storedProcedure;
-
-			if (commandTimeout > 0)
-				dbCommand.CommandTimeout = commandTimeout;
+			dbCommand.CommandTimeout = (commandTimeout < 0) ? 0 : commandTimeout;
 
 			parametersBuilder(new DbParameterBuilder(dbCommand));
 
