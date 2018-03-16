@@ -49,9 +49,13 @@ namespace DbParallel.DataAccess
 			return parameter;
 		}
 
-		public DbParameter Add()
+		public DbParameter Add(string parameterName = null)
 		{
 			DbParameter parameter = _DbCommand.CreateParameter();
+
+			if (!string.IsNullOrEmpty(parameterName))
+				parameter.ParameterName = parameterName;
+
 			_DbCommand.Parameters.Add(parameter);
 
 			return parameter;
@@ -65,6 +69,17 @@ namespace DbParallel.DataAccess
 
 			if (nSize > 0)
 				parameter.Size = nSize;
+
+			_DbCommand.Parameters.Add(parameter);
+
+			return parameter;
+		}
+
+		public DbParameter Add(string parameterName, DbType dbType)
+		{
+			DbParameter parameter = _DbCommand.CreateParameter();
+			parameter.ParameterName = parameterName;
+			parameter.DbType = dbType;
 
 			_DbCommand.Parameters.Add(parameter);
 
