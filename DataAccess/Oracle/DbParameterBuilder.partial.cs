@@ -14,6 +14,33 @@ namespace DbParallel.DataAccess
 	partial class DbParameterBuilder
 	{
 		/// <summary>
+		/// <para>Specifies the binding method in the collection.</para>
+		/// <para>true: the parameters are bound by name;</para>
+		/// <para>false: the parameters are bound by position;</para>
+		/// </summary>
+		public bool BindByName
+		{
+			get
+			{
+				OracleCommand oraCommand = _DbCommand as OracleCommand;
+
+				if (oraCommand == null)
+					throw new InvalidOperationException();
+				else
+					return oraCommand.BindByName;
+			}
+			set
+			{
+				OracleCommand oraCommand = _DbCommand as OracleCommand;
+
+				if (oraCommand == null)
+					throw new InvalidOperationException();
+				else
+					oraCommand.BindByName = value;
+			}
+		}
+
+		/// <summary>
 		/// Add an Associative Array Parameter (Oracle)
 		/// </summary>
 		/// <param name="parameterName">The name of the parameter</param>
