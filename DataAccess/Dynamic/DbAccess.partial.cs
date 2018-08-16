@@ -93,7 +93,7 @@ namespace DbParallel.DataAccess
 			}
 		}
 
-		protected string[] GetFieldNames(DbDataReader reader)
+		internal string[] NameAllFields(DbDataReader reader)
 		{
 			int unnamedColumn = 0;
 			int fieldCount = _ReadVisibleFieldsOnly ? reader.VisibleFieldCount : reader.FieldCount;
@@ -129,7 +129,7 @@ namespace DbParallel.DataAccess
 			T expandoObject = new T();
 
 			if (fieldNames == null)
-				fieldNames = GetFieldNames(reader);
+				fieldNames = NameAllFields(reader);
 
 			for (int i = 0; i < fieldNames.Length; i++)
 				expandoObject.Add(fieldNames[i], reader.GetColumnValue(i));
@@ -139,7 +139,7 @@ namespace DbParallel.DataAccess
 
 		private IEnumerable<BindableDynamicObject> LoadDynamicData<T>(DbDataReader reader) where T : IDictionary<string, object>, new()
 		{
-			string[] fieldNames = GetFieldNames(reader);
+			string[] fieldNames = NameAllFields(reader);
 
 			while (reader.Read())
 				yield return new BindableDynamicObject(CreateExpando<T>(reader, fieldNames), _DynamicObjectXmlSettings);

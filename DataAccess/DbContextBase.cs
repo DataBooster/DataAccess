@@ -6,8 +6,8 @@ namespace DbParallel.DataAccess
 {
 	public abstract class DbContextBase : IDisposable
 	{
-		[Obsolete("This field is deprecated and will be private in the next major release. Use AccessChannel property instead.", false)]
-		protected DbAccess _DbAccess;
+		//[Obsolete("This field is deprecated and will be private in the next major release. Use AccessChannel property instead.", false)]
+		private DbAccess _DbAccess;
 		protected DbAccess AccessChannel { get { return _DbAccess; } }
 
 		public DbContextBase(DbProviderFactory dbProviderFactory, string connectionString)
@@ -23,6 +23,14 @@ namespace DbParallel.DataAccess
 		public StoredProcedureResponse ExecuteProcedure(string sp, object anonymousTypeInstanceAsParameters)
 		{
 			return _DbAccess.ExecuteStoredProcedure(new StoredProcedureRequest(sp, anonymousTypeInstanceAsParameters));
+		}
+
+		public string[] NameAllFields(DbDataReader reader)
+		{
+			if (reader == null)
+				throw new ArgumentNullException("DbDataReader reader");
+
+			return _DbAccess.NameAllFields(reader);
 		}
 
 		protected T Cast<T>(object oValue)
