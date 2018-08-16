@@ -3,6 +3,7 @@ using System.Linq;
 using System.Data;
 using System.Data.Common;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Dynamic;
 
 namespace DbParallel.DataAccess
@@ -73,19 +74,51 @@ namespace DbParallel.DataAccess
 			set { _ReadVisibleFieldsOnly = value; }
 		}
 
+		private static string _UnnamedColumn_AutonamingFormat = "__UNNAMED__COLUMN__{0:D5}__";
+		public static string UnnamedColumn_AutonamingFormat
+		{
+			get
+			{
+				return _UnnamedColumn_AutonamingFormat;
+			}
+			set
+			{
+				if (string.IsNullOrWhiteSpace(value))
+					throw new ArgumentNullException("UnnamedColumn_AutonamingFormat");
+
+				if (!Regex.IsMatch(value, @"^\w+\{0[^}]*\}\w*$"))
+					throw new FormatException("The value being set to UnnamedColumn_AutonamingFormat is not a valid format.");
+
+				_UnnamedColumn_AutonamingFormat = value;
+			}
+		}
+
 		protected string[] GetFieldNames(DbDataReader reader)
 		{
+			int unnamedColumn = 0;
 			int fieldCount = _ReadVisibleFieldsOnly ? reader.VisibleFieldCount : reader.FieldCount;
+			HashSet<string> existingNames = new HashSet<string>(StringComparer.Ordinal);
 			string[] fieldNames = new string[fieldCount];
-			string columnName;
+			string columnName, upperName;
 
 			for (int i = 0; i < fieldCount; i++)
 			{
-				columnName = reader.GetName(i);
-				fieldNames[i] = DynamicPropertyNamingResolver(columnName);
+				columnName = DynamicPropertyNamingResolver(reader.GetName(i));
 
-				if (string.IsNullOrWhiteSpace(fieldNames[i]))
-					throw new ArgumentNullException(string.Format("DynamicPropertyNameOfColumn{0} - \"{1}\"", i, columnName));
+				if (string.IsNullOrWhiteSpace(columnName))
+				{
+					do
+					{
+						columnName = string.Format(_UnnamedColumn_AutonamingFormat, ++unnamedColumn);
+						upperName = columnName.ToUpperInvariant();
+					}
+					while (existingNames.Contains(upperName));
+				}
+				else
+					upperName = columnName.ToUpperInvariant();
+
+				existingNames.Add(upperName);
+				fieldNames[i] = columnName;
 			}
 
 			return fieldNames;
