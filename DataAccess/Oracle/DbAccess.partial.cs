@@ -102,6 +102,22 @@ namespace DbParallel.DataAccess
 			}
 		}
 #endif
+
+		partial void OnOracleReconnecting(ref bool processed)
+		{
+			if (processed)
+				return;
+
+			OracleConnection conn = _Connection as OracleConnection;
+
+			if (conn == null)
+				return;
+
+			OracleConnection.ClearPool(conn);
+
+			processed = true;
+		}
+
 	}
 }
 #endif

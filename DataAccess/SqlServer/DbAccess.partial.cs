@@ -39,6 +39,21 @@ namespace DbParallel.DataAccess
 				processed = true;
 			}
 		}
+
+		partial void OnSqlReconnecting(ref bool processed)
+		{
+			if (processed)
+				return;
+
+			SqlConnection conn = _Connection as SqlConnection;
+
+			if (conn == null)
+				return;
+
+			SqlConnection.ClearPool(conn);
+
+			processed = true;
+		}
 	}
 }
 

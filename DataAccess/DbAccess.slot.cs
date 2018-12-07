@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Data.Common;
 
 namespace DbParallel.DataAccess
@@ -27,6 +28,23 @@ namespace DbParallel.DataAccess
 			bool hasBeenProcessed = false;
 
 			OnOracleReaderExecuting(dbCmd, resultSetCnt, ref hasBeenProcessed);
+		}
+
+		partial void OnOracleReconnecting(ref bool processed);
+		partial void OnSqlReconnecting(ref bool processed);
+		private void OnReconnecting()
+		{
+			bool hasBeenProcessed = false;
+
+			try
+			{
+				OnOracleReconnecting(ref hasBeenProcessed);
+				OnSqlReconnecting(ref hasBeenProcessed);
+			}
+			catch
+			{
+				Thread.Sleep(1000);
+			}
 		}
 	}
 }

@@ -105,7 +105,7 @@ namespace DbParallel.DataAccess
 
 		private DbDataReader ExecuteCommandInternal(string commandText, int commandTimeout, CommandType commandType, Action<DbParameterBuilder> parametersBuilder, int resultSetCnt, out int recordsAffected)
 		{
-			for (int retry = 0; ; retry++)
+			for (int retry = 2; ; retry--)
 			{
 				try
 				{
@@ -125,7 +125,7 @@ namespace DbParallel.DataAccess
 				}
 				catch (Exception e)
 				{
-					if (retry > 0)
+					if (retry <= 0)
 						throw;
 
 					switch (OnContextLost(e))
@@ -135,7 +135,10 @@ namespace DbParallel.DataAccess
 							break;
 						case RetryAction.RefreshParameters:
 							if (commandType == CommandType.StoredProcedure)
+							{
 								RefreshStoredProcedureParameters(commandText);
+								retry = 0;
+							}
 							else
 								throw;
 							break;
@@ -288,8 +291,11 @@ namespace DbParallel.DataAccess
 		private void ReConnect()
 		{
 			if (_Connection != null)
-				if (_Connection.State != ConnectionState.Closed)
+				if (_Connection.State == ConnectionState.Closed)
+					_Connection.Open();
+				else
 				{
+					OnReconnecting();
 					_Connection.Close();
 					_Connection.Open();
 				}
