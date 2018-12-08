@@ -43,7 +43,7 @@ namespace DbParallel.DataAccess
 			}
 			catch
 			{
-				Thread.Sleep(1000);
+				Thread.Sleep(618);
 			}
 		}
 	}
